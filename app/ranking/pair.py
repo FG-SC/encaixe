@@ -165,7 +165,9 @@ def hard_filters(c: CandidateFeatures, j: JobFeatures, req: RequirementEval, sid
                 "arrangement_not_accepted", j.arrangement, list(wants.arrangements), {"arrangement": j.arrangement}
             )
         )
-    elif j.arrangement in ("onsite", "hybrid") and wants.max_distance_km is not None:
+    elif j.arrangement != "remote" and wants.max_distance_km is not None:
+        # An unknown arrangement counts as onsite for the distance: a job that does not say it is remote is
+        # rarely remote. Without a known city, a job in another country is beyond any distance limit.
         d = distance_km(c, j)
         if d is not None and d > wants.max_distance_km:
             out.append(
@@ -173,7 +175,20 @@ def hard_filters(c: CandidateFeatures, j: JobFeatures, req: RequirementEval, sid
                     "beyond_distance",
                     round(d),
                     wants.max_distance_km,
-                    {"distance_km": d, "max_distance_km": wants.max_distance_km},
+                    {"distance_km": d, "max_distance_km": wants.max_distance_km, "arrangement": j.arrangement},
+                )
+            )
+        elif d is None and j.country and c.country and j.country != c.country:
+            out.append(
+                FilterReason(
+                    "beyond_distance",
+                    j.country,
+                    c.country,
+                    {
+                        "other_country": j.country,
+                        "max_distance_km": wants.max_distance_km,
+                        "arrangement": j.arrangement,
+                    },
                 )
             )
     if j.eligibility and c.country and c.country not in j.eligibility:

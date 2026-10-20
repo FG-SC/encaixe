@@ -26,7 +26,7 @@ encaixe/
 │   ├── geo/               # cities.csv, countries.csv, location/eligibility/timezone parsing, haversine
 │   ├── companies.py       # name normalization, get_or_create_company
 │   ├── extraction/        # heuristic extractor for jobs and CVs, with provenance
-│   ├── embeddings/        # backends (fastembed | tfidf | fake), embed texts, in-memory index, 2D projection
+│   ├── embeddings/        # backends (onnx | tfidf | fake), embed texts, in-memory index, 2D projection
 │   ├── ranking/           # filters, criteria, positions, aggregators, good fit, counterfactuals,
 │   │                      # feedback, exploration, deck assembly, explanations
 │   ├── profiles/          # candidate profile service + revisions
@@ -80,7 +80,7 @@ encaixe/
 | `llm` | provider, model, `rpm/rpd/tpm/tpd` (from the Groq docs, with date), `onboarding_timeout_s=20`, `background_top_n=20`, prompt versions, `sends` (what is sent) | |
 | `ingest` | per-source `enabled`, boards/repos, rate limits, `close_after_missed_runs=2`, `user_agent`, terms URLs | disabled sources are listed with `enabled=False` |
 
-`Settings` (env, `.env` supported): `EMBEDDINGS` (fastembed|tfidf|fake), `GROQ_API_KEY`, `LLM_MODEL`, `ENCAIXE_VAR_DIR` (default `./var`), `ENCAIXE_DB_URL`, `EMBED_THREADS`, `LOG_LEVEL`.
+`Settings` (env, `.env` supported): `EMBEDDINGS` (onnx|tfidf|fake), `GROQ_API_KEY`, `LLM_MODEL`, `ENCAIXE_VAR_DIR` (default `./var`), `ENCAIXE_DB_URL`, `EMBED_THREADS`, `LOG_LEVEL`.
 
 The front reads only `GET /api/rules/public`; it never hardcodes a rule number (UI-only constants such as the swipe pixel threshold are fine).
 
@@ -138,8 +138,9 @@ Each trap from the spec has a dedicated test (`tests/test_traps.py::test_trap_1_
 
 ## 8. Embeddings (`app/embeddings/`)
 
-- `get_embedder()`: `EMBEDDINGS=fastembed` (default) | `tfidf` | `fake`. When fastembed cannot load, it falls back to tfidf and logs `WARNING embeddings fallback to tfidf: <reason>`; the reason shows in the dev panel.
-- `embed(texts) -> float32 (n, d)`, L2-normalized, processed in batches of `RULES.embeddings.batch_size`. fastembed runs with `cache_dir=var/models`, `parallel=None`, `threads` from settings.
+- `get_embedder()`: `EMBEDDINGS=onnx` (default; `fastembed` is an alias) | `tfidf` | `fake`. When the model cannot load, it falls back to tfidf and logs `WARNING embeddings fallback to tfidf: <reason>`; the reason shows in the dev panel.
+- `onnx`: the quantized ONNX export of `paraphrase-multilingual-MiniLM-L12-v2` on ONNX Runtime (CPU arena off, `threads` from settings), tokenized with the model's sentencepiece vocabulary (XLM-R ids: sentencepiece id + 1, `<s> … </s>`, 128 tokens), mean pooling. Both files are pinned by commit and cached in `var/models`. It reproduces fastembed 0.8.1 exactly (DECISIONS #35) with 211 MB less RAM.
+- `embed(texts) -> float32 (n, d)`, L2-normalized, processed in batches of `RULES.embeddings.batch_size`.
 - tfidf: TfidfVectorizer(1–2-grams) + TruncatedSVD, fitted on the current corpus and persisted in `var/models/tfidf.joblib`. fake: deterministic hashed bag of words (tests only).
 - Texts (≤ ~100 words, no personal data): job = title + must + nice skills + first sentences of the role summary (no institutional text); candidate = headline + titles of the 3 most recent experiences + up to 20 skills (proven before listed) + description of the most recent experience. Title vectors: job title; candidate = mean of experience-title vectors (headline when there are no experiences). A test asserts the embedder never receives longer strings.
 - `JobIndex` / `CandidateIndex`: in-memory numpy matrices with the vectors and the structured arrays the ranking needs, rebuilt when `Setting["jobs_version"]` / `["candidates_version"]` changes.
@@ -159,7 +160,7 @@ FilteredItem{ item_id, reasons: [{code, value, threshold, adjust}] }
 ### 9.1 Hard filters (pair-level, same code for both sides; every failing filter is recorded)
 1. `closed` (job not open, C side) / `not_visible` (candidate not visible, B side).
 2. `arrangement_not_accepted`: the job's arrangement is not among the candidate's accepted arrangements.
-3. `beyond_distance`: onsite/hybrid job whose city is farther than `max_distance_km` (haversine between cities). Unknown city or unknown distance → not filtered, flagged.
+3. `beyond_distance`: onsite, hybrid or unknown-arrangement job (a job that does not say it is remote counts as onsite) whose city is farther than `max_distance_km` (haversine between cities); with no known city, a non-remote job whose country differs from the candidate's. Unknown city in the candidate's own country → not filtered, flagged.
 4. `country_eligibility`: the job lists countries and the candidate's country is not among them.
 5. `salary_below_min`: converted job comp_max (comp_min when it is the only value) < `comp_min_ratio` × candidate comp_min, both known.
 6. `seniority_gap`: |job level − candidate level| ≥ `seniority_gap_exclude`, both known.
@@ -237,7 +238,8 @@ Passes the filters, must credit / must total ≥ `must_share`, seniority gap ≤
 
 - Sources enabled: Greenhouse job boards, Lever postings, GitHub issues of Brazilian job repositories (the terms check found no explicit permission; the owner turned them on, DECISIONS #24). Others are listed disabled, without connectors; a disabled source runs only with `--accept-terms`.
 - HTTP: identifiable User-Agent, per-source rate limits from config, on-disk cache (`var/cache/http`, ETag/Last-Modified), `--record` / `--offline` modes; `encaixe bench` replays recorded responses.
-- Pipeline: raw posting → heuristic extraction → upsert by `(source, source_id)`; cross-source dedup by normalized company + normalized title + city; `last_seen` update; `IngestRun` per (source, board); a job missing from 2 consecutive runs of its source is closed. GitHub labels become `stated` fields (`method="label"`); issue bodies are stored without contact data (e-mails, phones) — the card links to the issue.
+- Scope (`RULES.scope`, `app/ingest/scope.py`, DECISIONS #38): only onsite/hybrid postings in the region (Santa Catarina) and remote postings open to Brazil are stored; the rest is counted per board in the `ingest_out_of_scope` setting and in the run report. A stored job that falls out of scope closes at once.
+- Pipeline: raw posting → heuristic extraction → scope → upsert by `(source, source_id)`; cross-source dedup by normalized company + normalized title + city; `last_seen` update; `IngestRun` per (source, board); a job missing from 2 consecutive runs of its source is closed. GitHub labels become `stated` fields (`method="label"`); issue bodies are stored without contact data (e-mails, phones) — the card links to the issue.
 - Every job shows its origin with a link ("via Greenhouse — <empresa>", "via backend-br/vagas").
 - `encaixe ingest --all` (cron-friendly, heuristic only). `encaixe snapshot save|load <name>` stores jobs (with provenance/method), companies and the LLM cache entries they used in `var/snapshots/`; loading recomputes vectors and the projection.
 

@@ -35,11 +35,10 @@ dependencies = [
     "scipy==1.18.1",
     "scikit-learn==1.9.1",
     # --- local embeddings (ONNX Runtime, no torch) ---
-    "fastembed==0.8.1",
     "onnxruntime==1.30.0; sys_platform != 'darwin' or platform_machine != 'x86_64'",
     "onnxruntime==1.23.2; sys_platform == 'darwin' and platform_machine == 'x86_64'",  # Intel Macs: ORT >=1.24 ships no macOS x86_64 wheels
-    "tokenizers==0.23.2",
-    "huggingface-hub==1.33.0",     # fastembed 0.8.1 and tokenizers 0.23.2 both require huggingface-hub<2.0
+    "sentencepiece==0.2.2",        # XLM-R tokenizer: 38 MB in RAM where `tokenizers` took 249 MB (DECISIONS #35)
+    "huggingface-hub==1.33.0",     # downloads the pinned model files into var/models
     # --- optional LLM via Groq ---
     "langchain-groq==1.1.3",
     "langchain-core==1.6.6",

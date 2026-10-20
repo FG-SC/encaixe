@@ -1,6 +1,6 @@
 # Encaixe — job matching with open rules
 
-**Encaixe** ("fit", in Portuguese) is a two-sided job-matching MVP — candidates and recruiters — built around one promise: **the rules are public**. Anyone can see how the ranking decides, why a job or a candidate showed up, why something did not, and what would change the result. The UI is in Brazilian Portuguese; the code, docs and this README are in English.
+**Encaixe** ("fit", in Portuguese) is a two-sided job-matching MVP for the Brazilian market — candidates and recruiters — built around one promise: **the rules are public**. Anyone can see how the ranking decides, why a job or a candidate showed up, why something did not, and what would change the result. The UI is in Brazilian Portuguese; the code, docs and this README are in English.
 
 > Portfolio project, local-first, free to run (local embeddings, optional free-tier LLM). All people in the demo are synthetic; all seed companies are fictional.
 
@@ -31,20 +31,20 @@ Alternatives (reciprocal rank fusion, Cormack et al., SIGIR 2009; a weighted bas
 
 ## Evaluation (honest numbers)
 
-From [docs/EVAL.md](docs/EVAL.md): 2,801 open jobs (2,733 real postings from Greenhouse, Lever and GitHub, frozen in a local snapshot, plus 68 fictional ones), 100 synthetic candidates with simulated histories, local `fastembed` embeddings. People are simulated, so every number below measures the method against a stated synthetic oracle, not real hiring outcomes.
+From [docs/EVAL.md](docs/EVAL.md): 727 open jobs (659 real postings from Greenhouse, Lever and GitHub inside the sample scope, frozen in a local snapshot, plus 68 fictional ones), 100 synthetic candidates with simulated histories, local embeddings. People are simulated, so every number below measures the method against a stated synthetic oracle, not real hiring outcomes.
 
 | | result |
 |---|---|
-| Replay (where liked jobs land among 2,801) | `feedback-v1` MRR 0.053 vs `static-v1` 0.040, Recall@20 0.25 vs 0.15. The replay's AUC is distorted by the logging policy (static comes out at 0.37, below random), which the unbiased check explains |
-| Unbiased check against the oracle (all eligible jobs, no logging policy) | `static-v1` AUC 0.70, precision@10 0.69 against a 0.27 share of liked jobs; RRF 0.74 / 0.71; the weighted baseline reaches precision@10 0.86 on an oracle that is itself a weighted sum, which the report flags |
-| Drift (preference switch on a known day) | learning helps before the switch (precision@10 0.81 vs 0.64), falls *further* right after it (0.14 vs 0.18: old likes point the wrong way) and ends the window well above static (0.38 vs 0.18); without time decay it ends at 0.24 |
+| Replay (where liked jobs land among 727) | `feedback-v1` MRR 0.064 vs `static-v1` 0.046, Recall@20 0.30 vs 0.17. The replay's AUC is distorted by the logging policy (static comes out at 0.46, below random), which the unbiased check explains |
+| Unbiased check against the oracle (all eligible jobs, no logging policy) | `static-v1` AUC 0.78, precision@10 0.58 against a 0.31 share of liked jobs; RRF 0.79 / 0.61; the weighted baseline reaches precision@10 0.81 on an oracle that is itself a weighted sum, which the report flags |
+| Drift (preference switch on a known day) | learning helps before the switch (precision@10 0.66 vs 0.33), falls *further* right after it (0.20 vs 0.28: old likes point the wrong way) and ends the window above static (0.40 vs 0.28); without time decay it ends at 0.34 |
 | Congestion | 24 distinct candidates fill 39 top-5 slots (≈33 expected at random); Gini of exposure 0.81 — measured, not optimized |
-| Latency | p95 162 ms for 2,000 jobs, 71 ms for 300 candidates (target 500 ms) |
-| Memory (`encaixe bench`) | server with the model loaded: 722 MB at peak with 2,801 jobs, **over the 700 MB budget** (665 MB with 68 jobs; [DECISIONS #32](docs/DECISIONS.md)); embedding 1,000 jobs 780 MB; t-SNE 161 MB; drift 718 MB; ingestion 93 MB (budget 1 GB) |
+| Latency | p95 214 ms for 2,000 jobs, 57 ms for 300 candidates (target 500 ms) |
+| Memory (`encaixe bench`) | server with the model loaded 471 MB (budget 700); embedding 1,000 jobs 541 MB; t-SNE 160 MB; drift 526 MB; ingestion 92 MB (budget 1 GB) |
 
 ## Stack
 
-Python 3.12 · FastAPI · SQLModel/SQLite · Typer · numpy/scikit-learn · local embeddings with [fastembed](https://github.com/qdrant/fastembed) (ONNX Runtime, no PyTorch) and `paraphrase-multilingual-MiniLM-L12-v2` · optional Groq LLM (`openai/gpt-oss-20b`, strict structured outputs) · Vite + React + TypeScript · Zustand · Observable Plot · Leaflet + OpenStreetMap. Designed for a machine with ~3 GB of free RAM: one heavy process at a time (`tools/heavy.py`).
+Python 3.12 · FastAPI · SQLModel/SQLite · Typer · numpy/scikit-learn · local embeddings: `paraphrase-multilingual-MiniLM-L12-v2` on ONNX Runtime with its sentencepiece vocabulary (no PyTorch) · optional Groq LLM (`openai/gpt-oss-20b`, strict structured outputs) · Vite + React + TypeScript · Zustand · Observable Plot · Leaflet + OpenStreetMap. Designed for a machine with ~3 GB of free RAM: one heavy process at a time (`tools/heavy.py`).
 
 ## Quickstart
 
@@ -82,6 +82,7 @@ Tests: `python tools/heavy.py -- .venv/Scripts/python -m pytest` (offline, fake 
 
 - **Everything stays local**, in `var/` (database, model cache, HTTP cache, snapshots), which is never committed. Seed and test data are fictional.
 - **What goes to the LLM**: nothing unless `GROQ_API_KEY` is set. With a key, a CV is sent only when the person ticks "Usar IA para ler meu CV" (off by default), once, at onboarding; recruiter-published jobs and market jobs entering someone's top 20 may be re-read in the background. The LLM never rewrites a saved profile; any failure falls back to the heuristic extractor, visibly.
+- **Scope: a sample.** Ingestion keeps onsite/hybrid jobs in Santa Catarina and remote jobs open to people in Brazil; other postings are not stored, only counted per board, and the rules page states the rule.
 - **Job sources.** Greenhouse and Lever public job-board APIs and GitHub issues of Brazilian job repositories, only through their documented endpoints, serially, at least 1 s apart, once a day per board. A terms check (2026-10-19) found public endpoints and no prohibition, but no explicit permission to aggregate and redisplay third-party postings; they first shipped disabled and were **turned on by the project owner's decision** (2026-10-20), which the rules page states. Every job links back to its source, contacts are stripped, and GitHub issue bodies are never redisplayed. Other boards are listed and off; We Work Remotely's terms forbid this use.
 - **Recruiter-side aggregates** exclude candidates who chose to be invisible and render any count below 5 as "<5".
 - AI in recruitment is classified as high-risk by the EU AI Act (Regulation (EU) 2024/1689, Annex III, point 4); in Brazil, the LGPD (Lei 13.709/2018, art. 20) gives people the right to request a review of automated decisions. Encaixe is a portfolio MVP, not a compliance product, but it is designed in that spirit.

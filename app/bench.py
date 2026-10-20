@@ -98,7 +98,7 @@ def _run(name: str, code: str, env: dict[str, str], budget: int) -> dict:
         # A Windows venv's python.exe is a launcher that runs the real interpreter as a child: sum the tree.
         try:
             tree = [p, *p.children(recursive=True)]
-        except psutil.Error:
+        except psutil.Error:  # the process ended between poll() and children()
             break
         rss = 0
         for q in tree:
@@ -108,7 +108,7 @@ def _run(name: str, code: str, env: dict[str, str], budget: int) -> dict:
                 continue
         peak = max(peak, rss)
         time.sleep(0.05)
-    out = proc.stdout.read() if proc.stdout else ""
+    out, _ = proc.communicate()  # also waits: after a break above, returncode would still be None
     ok = proc.returncode == 0
     return {
         "name": name,

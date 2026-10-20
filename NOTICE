@@ -14,5 +14,10 @@ app/geo/regions.csv
   Region memberships (Latin America and the Caribbean, Americas, South America, Europe, EMEA, Northern
   America) follow the UN M49 standard (https://unstats.un.org/unsd/methodology/m49/).
 
+Embedding model (downloaded on first run into var/models, not distributed with this repository)
+  sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 (its sentencepiece vocabulary) and the quantized
+  ONNX export qdrant/paraphrase-multilingual-MiniLM-L12-v2-onnx-Q, both under the Apache License 2.0
+  (https://www.apache.org/licenses/LICENSE-2.0); revisions pinned in app/config.py.
+
 Time zone data at runtime comes from the IANA tz database (public domain) via the tzdata package.
 All companies and people in app/seed/ and tests/ are fictional.

@@ -1,7 +1,7 @@
 # Como o Encaixe decide
 
 > Esta página é gerada automaticamente a partir de `app/config.py`, a mesma configuração que o ranking usa.
-> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `7c3cfca72c94`.
+> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `2ec37ce71c24`.
 
 O Encaixe ordena vagas para candidatos (lado C) e candidatos para vagas (lado B) com o **mesmo procedimento**.
 Ele não usa pesos escolhidos à mão: cada item é ordenado em cada critério, as posições são somadas e a lista sai
@@ -17,7 +17,7 @@ Antes de ordenar, cada vaga passa por filtros. Uma vaga filtrada **não some em 
 | Vaga fechada | a vaga não está mais aberta (lado C) |
 | Perfil não visível | o candidato escolheu não aparecer para recrutadores (lado B) |
 | Modalidade não aceita | a vaga é remota, híbrida ou presencial e você não marcou essa modalidade |
-| Fora da distância | vaga presencial ou híbrida a mais de `max_distance_km` da sua cidade (distância em linha reta entre as cidades) |
+| Fora da distância | vaga presencial, híbrida ou sem modalidade informada (quem não diz que é remota conta como presencial) a mais de `max_distance_km` da sua cidade (distância em linha reta entre as cidades); sem cidade reconhecida, vaga em outro país que não é remota |
 | Elegibilidade de país | a vaga aceita apenas pessoas de certos países e o seu não está entre eles |
 | Salário abaixo do mínimo | o teto da vaga fica abaixo de **70%** do seu salário mínimo (quando os dois são conhecidos) |
 | Senioridade distante | a distância na escada de senioridade é de **3 ou mais** níveis |
@@ -165,6 +165,11 @@ A IA (provedor `groq`, modelo `openai/gpt-oss-20b`) é opcional. Sem chave, tudo
 - Limites do plano gratuito configurados: 30 requisições/min, 1000 por dia, 8000 tokens/min, 200000 tokens/dia (documentação do Groq, plano gratuito, lida em 19/10/2026). Quando a IA falha ou o limite estoura, o Encaixe usa o extrator heurístico e avisa.
 
 ## 10. Fontes de vagas e câmbio
+
+**Escopo: uma amostra.** O Encaixe coleta vagas presenciais e híbridas em cidades de Santa Catarina e vagas remotas
+abertas a quem mora no Brasil (com lista de elegibilidade que inclui o país, ou sem lista e sem local em outro
+país). As outras não são guardadas; a coleta conta quantas ficaram de fora em cada fonte. Vagas publicadas por recrutadores
+na plataforma não passam por esse recorte (os filtros valem para elas).
 
 Fontes ligadas: Greenhouse, Lever, GitHub. Toda vaga mostra de onde veio, com link. Fontes desligadas no MVP: Ashby, Remotive, RemoteOK, Himalayas, We Work Remotely.
 

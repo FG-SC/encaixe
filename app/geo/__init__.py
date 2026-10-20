@@ -200,7 +200,7 @@ class Geo:
         return list(out)
 
     def location_country(self, location_text: str | None) -> str | None:
-        """Country of a location field: its city, else a country name, else an uppercase code."""
+        """Country of a location field: its city, else the LAST country named ("City, Region, Country"), else a code."""
         if not location_text:
             return None
         city = self.find_city(location_text)
@@ -208,7 +208,7 @@ class Geo:
             return self.cities[city.city_id].country
         names = self.find_countries(location_text)
         if names:
-            return names[0]
+            return names[-1]
         codes = self.codes_in_location_field(location_text)
         return codes[0] if codes else None
 

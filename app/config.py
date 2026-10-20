@@ -28,7 +28,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_VAR_DIR = REPO_ROOT / "var"
 DEFAULT_ENV_FILE = REPO_ROOT / ".env"
 
-EMBEDDING_BACKENDS = ("fastembed", "tfidf", "fake")
+EMBEDDING_BACKENDS = ("onnx", "tfidf", "fake")
+EMBEDDING_ALIASES = {"fastembed": "onnx"}  # the first backend; same model and vectors
 LOG_LEVELS = ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
 
 
@@ -294,16 +295,20 @@ class ProjectionRules:
 
 @dataclass(frozen=True)
 class EmbeddingRules:
-    """Local embeddings (fastembed / ONNX Runtime, no torch).
+    """Local embeddings: the multilingual MiniLM on ONNX Runtime (no torch), tokenized with sentencepiece.
 
-    fastembed 0.8.1 facts (research, 2026-10-19): it returns float64, NOT L2-normalized vectors for
-    this model (we cast to float32 and L2-normalize ourselves); it truncates the input at 128
-    tokens (no public option changes that, hence the short texts below); embed() is a generator
-    (keep parallel=None); the first load calls the Hugging Face API, later loads use
-    local_files_only=True with cache_dir=var/models.
+    Files are pinned by commit and downloaded once into var/models (Hugging Face cache layout): the
+    quantized ONNX export that fastembed 0.8.1 uses, and the model's own sentencepiece vocabulary. Same
+    vectors as fastembed (mean pooling, 128-token truncation), without the 249 MB `tokenizers` vocabulary.
     """
 
     model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    onnx_repo: str = "qdrant/paraphrase-multilingual-MiniLM-L12-v2-onnx-Q"
+    onnx_revision: str = "faf4aa4225822f3bc6376869cb1164e8e3feedd0"
+    onnx_file: str = "model_optimized.onnx"
+    tokenizer_repo: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    tokenizer_revision: str = "e8f8c211226b894fcb81acc59f3b34ba3efd5f42"
+    tokenizer_file: str = "sentencepiece.bpe.model"
     dim: int = 384
     max_tokens: int = 128
     batch_size: int = 32  # spec says 64; lowered for the ~1.4 GB-free dev machine (docs/DECISIONS.md)
@@ -517,6 +522,17 @@ class IngestRules:
 
 
 @dataclass(frozen=True)
+class ScopeRules:
+    """The MVP is a sample of one region (owner's decision, 2026-10-20): onsite/hybrid jobs in Santa Catarina and
+    remote jobs open to people in Brazil. Applied to market postings at ingestion (app/ingest/scope.py): out-of-scope
+    postings are not stored, only counted.
+    """
+
+    country: str = "BR"
+    region: str = "SC"  # state code of the onsite/hybrid sample
+
+
+@dataclass(frozen=True)
 class Rules:
     filters: FilterRules = field(default_factory=FilterRules)
     criteria: CriteriaRules = field(default_factory=CriteriaRules)
@@ -538,6 +554,7 @@ class Rules:
     embeddings: EmbeddingRules = field(default_factory=EmbeddingRules)
     llm: LlmRules = field(default_factory=LlmRules)
     ingest: IngestRules = field(default_factory=IngestRules)
+    scope: ScopeRules = field(default_factory=ScopeRules)
 
 
 RULES = Rules()
@@ -617,7 +634,7 @@ def read_env_file(path: Path | None) -> dict[str, str]:
 class Settings:
     var_dir: Path
     db_url: str
-    embeddings: str  # fastembed | tfidf | fake
+    embeddings: str  # onnx | tfidf | fake
     groq_api_key: str | None = field(default=None, repr=False)
     llm_model: str = RULES.llm.model
     embed_threads: int = RULES.embeddings.threads
@@ -632,7 +649,8 @@ class Settings:
         default_db_url = f"sqlite:///{(var_dir / 'encaixe.db').as_posix()}"
         db_url = (env.get("ENCAIXE_DB_URL") or "").strip() or default_db_url
 
-        embeddings = (env.get("EMBEDDINGS") or "fastembed").strip().lower()
+        embeddings = (env.get("EMBEDDINGS") or "onnx").strip().lower()
+        embeddings = EMBEDDING_ALIASES.get(embeddings, embeddings)
         if embeddings not in EMBEDDING_BACKENDS:
             raise ValueError(f"EMBEDDINGS must be one of {EMBEDDING_BACKENDS}, got {embeddings!r}")
 

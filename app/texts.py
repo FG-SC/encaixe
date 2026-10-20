@@ -56,6 +56,8 @@ LANGUAGE_LABELS: dict[str, str] = {
     "it": "italiano",
 }
 
+STATE_NAMES: dict[str, str] = {"SC": "Santa Catarina"}  # regions the scope (RULES.scope.region) can name
+
 BLIND_HIDDEN_LABELS: dict[str, str] = {
     "name": "nome",
     "contact": "contato",
@@ -150,7 +152,7 @@ FILTER_TITLES: dict[str, str] = {
     "closed": "vagas fechadas",
     "not_visible": "perfis não visíveis para recrutadores",
     "arrangement_not_accepted": "modalidade que você não aceita",
-    "beyond_distance": "presenciais ou híbridas fora da distância que você aceita",
+    "beyond_distance": "presenciais, híbridas ou sem modalidade informada, fora da distância que você aceita",
     "country_eligibility": "exigem elegibilidade de país que você não tem",
     "salary_below_min": "salário abaixo do seu mínimo",
     "seniority_gap": "senioridade muito distante da sua",
@@ -179,8 +181,11 @@ def filter_detail(code: str, **p: object) -> str:
         arrangement = ARRANGEMENT_LABELS.get(str(p.get("arrangement")), str(p.get("arrangement")))
         return f"A vaga é {arrangement}, modalidade que você não marcou como aceita."
     if code == "beyond_distance":
+        unknown = " A vaga não diz que é remota, então conta como presencial." if p.get("arrangement") is None else ""
+        if p.get("other_country"):
+            return f"A vaga fica em outro país ({p['other_country']}) e não é remota.{unknown}"
         distance, limit = fmt_number(float(p["distance_km"])), fmt_number(float(p["max_distance_km"]))  # type: ignore[arg-type]
-        return f"A vaga fica a {distance} km; você aceita até {limit} km."
+        return f"A vaga fica a {distance} km; você aceita até {limit} km.{unknown}"
     if code == "country_eligibility":
         countries = ", ".join(str(c) for c in p.get("countries", []))  # type: ignore[union-attr]
         return f"A vaga aceita apenas pessoas elegíveis em: {countries}."

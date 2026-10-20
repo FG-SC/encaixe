@@ -332,7 +332,12 @@ def ingest(
         )
     for r in reports:
         run = r.run
-        counts = f" seen={run.n_seen} new={run.n_new} updated={run.n_updated} closed={run.n_closed}" if run else ""
+        out = sum((r.details.get("out_of_scope") or {}).values())
+        counts = (
+            f" seen={run.n_seen} new={run.n_new} updated={run.n_updated} closed={run.n_closed} out_of_scope={out}"
+            if run
+            else ""
+        )
         typer.echo(f"{r.source:10} {r.board:24} {r.status:7}{counts} {r.message}")
     if any(r.status == "ok" for r in reports):
         _vectors_and_projection()

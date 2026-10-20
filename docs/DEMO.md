@@ -9,7 +9,7 @@ About 8 minutes. Everything happens in the browser at <http://127.0.0.1:8000>; U
 .venv/Scripts/encaixe serve
 ```
 
-With the real-jobs snapshot (`encaixe demo reset --snapshot demo`, 2,801 jobs) the story's step 8 does not work yet: Carla's job lands around position 374 of Ana's 1,200 eligible jobs, because of the salary and location issues listed in the evaluation notes. Use that world to explore, not for the script.
+With the real-jobs snapshot (`encaixe demo reset --snapshot demo`, 727 jobs) the story's step 8 does not work yet: Carla's job lands around position 180 of Ana's 395 eligible jobs, because its honest salary (R$ 8,000) ranks below the median that undisclosed salaries receive. Use that world to explore, not for the script.
 
 Keep two files at hand: `app/seed/personas/ana.txt` (Ana's CV) and `app/seed/personas/lumen_ml_engineer_jr.txt` (Carla's job).
 

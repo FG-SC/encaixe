@@ -1,8 +1,7 @@
-"""Embedding backends: fastembed (default, local ONNX), tfidf (automatic fallback), fake (tests).
+"""Embedding backends: onnx (default, local MiniLM), tfidf (automatic fallback), fake (tests).
 
-Every backend returns float32, L2-normalized rows, so a dot product is a cosine. fastembed 0.8.1 returns
-float64 non-normalized vectors for this model; we fix both here. Texts are short by construction (see
-``app.embeddings.texts``); the model truncates at 128 tokens anyway.
+Every backend returns float32, L2-normalized rows, so a dot product is a cosine. Texts are short by
+construction (see ``app.embeddings.texts``); the model truncates at 128 tokens anyway.
 """
 
 from __future__ import annotations
@@ -108,45 +107,83 @@ class TfidfEmbedder:
         return _normalize(out)
 
 
-class FastEmbedder:
-    """fastembed (ONNX Runtime, no torch) with the multilingual MiniLM model, loaded lazily."""
+BOS, PAD, EOS, UNK = 0, 1, 2, 3  # XLM-R special token ids
 
-    name = "fastembed"
+
+class OnnxEmbedder:
+    """The multilingual MiniLM on ONNX Runtime (no torch), tokenized with sentencepiece; loaded lazily.
+
+    Same vectors as fastembed 0.8.1 with the same ONNX file (token ids identical on 5,112 corpus texts,
+    cosine 1.000000 on 404 sampled embeddings), but the sentencepiece vocabulary holds 38 MB where the
+    `tokenizers` one held 249 MB of the server's 700 MB budget (docs/DECISIONS.md).
+    """
+
+    name = "onnx"
     dim = RULES.embeddings.dim
 
     def __init__(self, cache_dir: Path, threads: int) -> None:
         self.cache_dir = cache_dir
         self.threads = threads
-        self._model = None
+        self._session = None
+        self._spm = None
+        self._inputs: set[str] = set()
         self._lock = threading.Lock()
 
+    def _fetch(self, repo: str, revision: str, filename: str) -> str:
+        from huggingface_hub import hf_hub_download
+
+        kwargs = {"revision": revision, "cache_dir": str(self.cache_dir)}
+        try:  # after the first download, never call the Hugging Face API again
+            return hf_hub_download(repo, filename, local_files_only=True, **kwargs)
+        except Exception:
+            return hf_hub_download(repo, filename, **kwargs)
+
     def load(self) -> None:
-        if self._model is not None:
+        if self._session is not None:
             return
         with self._lock:
-            if self._model is not None:
+            if self._session is not None:
                 return
-            from fastembed import TextEmbedding
+            import onnxruntime as ort
+            import sentencepiece as spm
 
+            e = RULES.embeddings
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-            marker = self.cache_dir / ".fastembed_ready"
-            # The ONNX Runtime CPU arena keeps batch buffers forever: measured 815 MB peak with it,
-            # 613 MB without it (load + 256 texts in batches of 32), so it is off (docs/DECISIONS.md).
-            kwargs = {"cache_dir": str(self.cache_dir), "threads": self.threads, "enable_cpu_mem_arena": False}
-            try:
-                # After the first download, never call the Hugging Face API again.
-                self._model = TextEmbedding(RULES.embeddings.model, local_files_only=marker.exists(), **kwargs)
-            except Exception:
-                if not marker.exists():
-                    raise
-                self._model = TextEmbedding(RULES.embeddings.model, **kwargs)
-            marker.write_text("ok", encoding="utf-8")
+            onnx_path = self._fetch(e.onnx_repo, e.onnx_revision, e.onnx_file)
+            spm_path = self._fetch(e.tokenizer_repo, e.tokenizer_revision, e.tokenizer_file)
+            so = ort.SessionOptions()
+            so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+            # The CPU arena keeps batch buffers forever: measured 815 MB peak with it, 613 MB without it.
+            so.enable_cpu_mem_arena = False
+            so.intra_op_num_threads = so.inter_op_num_threads = self.threads
+            self._spm = spm.SentencePieceProcessor(model_file=spm_path)
+            session = ort.InferenceSession(onnx_path, so, providers=["CPUExecutionProvider"])
+            self._inputs = {i.name for i in session.get_inputs()}
+            self._session = session
+
+    def token_ids(self, text: str) -> list[int]:
+        """XLM-R ids: sentencepiece id + 1 (fairseq offset), its <unk> (0) → 3; <s> … </s>; 128 tokens at most."""
+        assert self._spm is not None
+        pieces = [UNK if i == 0 else i + 1 for i in self._spm.encode(text)]
+        return [BOS, *pieces[: RULES.embeddings.max_tokens - 2], EOS]
 
     def embed(self, texts: list[str]) -> np.ndarray:
         self.load()
-        assert self._model is not None
-        rows = list(self._model.embed(texts, batch_size=RULES.embeddings.batch_size, parallel=None))
-        return _normalize(np.vstack(rows)) if rows else np.zeros((0, self.dim), dtype=np.float32)
+        assert self._session is not None
+        out = []
+        bs = RULES.embeddings.batch_size
+        for k in range(0, len(texts), bs):
+            rows = [self.token_ids(t) for t in texts[k : k + bs]]
+            ids = np.full((len(rows), max(map(len, rows))), PAD, dtype=np.int64)
+            mask = np.zeros_like(ids)
+            for r, row in enumerate(rows):
+                ids[r, : len(row)], mask[r, : len(row)] = row, 1
+            feeds = {"input_ids": ids, "attention_mask": mask}
+            if "token_type_ids" in self._inputs:
+                feeds["token_type_ids"] = np.zeros_like(ids)
+            hidden = self._session.run(None, feeds)[0]
+            out.append((hidden * mask[..., None]).sum(1) / mask.sum(1, keepdims=True))  # mean pooling
+        return _normalize(np.vstack(out)) if out else np.zeros((0, self.dim), dtype=np.float32)
 
 
 _embedder: Embedder | None = None
@@ -155,7 +192,7 @@ _lock = threading.Lock()
 
 
 def get_embedder() -> Embedder:
-    """The process-wide embedder. fastembed failures fall back to tfidf, logged and shown in the dev panel."""
+    """The process-wide embedder. onnx failures fall back to tfidf, logged and shown in the dev panel."""
     global _embedder
     if _embedder is not None:
         return _embedder
@@ -171,10 +208,10 @@ def get_embedder() -> Embedder:
         elif requested == "tfidf":
             emb = TfidfEmbedder(tfidf_path)
         else:
-            fe = FastEmbedder(settings.models_dir, settings.embed_threads)
+            onnx = OnnxEmbedder(settings.models_dir, settings.embed_threads)
             try:
-                fe.load()
-                emb = fe
+                onnx.load()
+                emb = onnx
             except Exception as exc:  # no model, no network, ONNX error…
                 reason = f"{type(exc).__name__}: {exc}"[:300]
                 log.warning("embeddings fallback to tfidf: %s", reason)

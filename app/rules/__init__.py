@@ -11,6 +11,7 @@ from pathlib import Path
 import numpy as np
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
+from app import geo as geo_mod
 from app import texts
 from app.config import REPO_ROOT, RULES, Rules, rules_hash
 from app.schemas import Offers, Wants
@@ -235,6 +236,8 @@ def build_context(rules: Rules = RULES) -> dict:
         "sources_on": ", ".join(s.label for s in sources.values() if s.enabled) or "nenhuma",
         "sources_off": ", ".join(s.label for s in sources.values() if not s.enabled) or "nenhuma",
         "sources_terms": [s for s in sources.values() if s.enabled],
+        "scope_country": geo_mod.load().countries.get(rules.scope.country, {}).get("name_pt", rules.scope.country),
+        "scope_region": texts.STATE_NAMES.get(rules.scope.region, rules.scope.region),
         "example": worked_example(rules),
     }
 

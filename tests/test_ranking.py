@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 from sqlmodel import Session, select
 
+from app import texts
 from app.config import RULES
 from app.embeddings import FakeEmbedder
 from app.extraction.cv import extract_cv
@@ -106,6 +107,28 @@ def test_hard_filter_reasons(session: Session, world: dict) -> None:
     us_only = session.exec(select(Job).where(Job.title == "Senior Machine Learning Engineer")).one()
     entry = next(f for f in result.filtered if f.item_id == us_only.id)
     assert "country_eligibility" in [r.code for r in entry.reasons]
+
+
+def test_jobs_abroad_that_do_not_say_remote_are_beyond_distance(session: Session, world: dict) -> None:
+    """Real postings: no arrangement stated + a city abroad, or a country abroad without a known city."""
+    reqs = "Requisitos\n- SQL\n- Python\n- Power BI"
+    ids = {}
+    for key, location, extra in (
+        ("unknown_city_abroad", "Saskatoon, Saskatchewan, Canada", ""),  # not in cities.csv
+        ("known_city_abroad", "New York, New York, United States", ""),
+        ("remote_abroad", "Toronto, Ontario, Canada", "\nVaga 100% remota."),
+    ):
+        draft = extract_job(RawPosting(title="Analista de Dados", description=reqs + extra, location_text=location))
+        ids[key] = upsert_job(session, draft, source="t", source_id=key).job.id
+    session.commit()
+    result = rank_for_candidate(session, world["ana"])
+    reasons = {f.item_id: {r.code: r for r in f.reasons} for f in result.filtered}
+    abroad = reasons[ids["unknown_city_abroad"]]["beyond_distance"]
+    assert abroad.detail["other_country"] == "CA" and abroad.detail["arrangement"] is None
+    assert "outro país (CA)" in texts.filter_detail("beyond_distance", **abroad.detail)
+    far = reasons[ids["known_city_abroad"]]["beyond_distance"].detail
+    assert far["distance_km"] > 5000 and "conta como presencial" in texts.filter_detail("beyond_distance", **far)
+    assert "beyond_distance" not in reasons.get(ids["remote_abroad"], {})
 
 
 def test_trap_9_keyword_stuffing_does_not_beat_proof(session: Session) -> None:

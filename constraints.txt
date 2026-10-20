@@ -1,7 +1,8 @@
 # Encaixe full transitive lock (pip constraints format), Python 3.12, resolved on Windows x64 with pip 25.0.1 on 2026-10-19.
 # Every version below was first uploaded to PyPI on or before 2026-10-05 (14-day rule). Use: pip install -c constraints.txt -e .[dev]
-# Win-only markers pulled in: colorama, win32-setctime (harmless as constraints on Linux/macOS).
+# Win-only markers pulled in: colorama (harmless as constraints on Linux/macOS).
 # Copied from research/constraints-2026-10-05.txt (Phase 0); markdown-it-py promoted to a direct dependency.
+# 2026-10-20: fastembed, tokenizers and their exclusive deps (loguru, mmh3, pillow, py-rust-stemmers, win32-setctime) removed.
 annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1  # direct
@@ -12,7 +13,6 @@ cloudpickle==3.1.2
 colorama==0.4.6
 distro==1.9.0
 fastapi==0.142.2  # direct
-fastembed==0.8.1  # direct
 filelock==4.0.12
 flatbuffers==25.12.19
 fsspec==2026.9.0
@@ -35,11 +35,9 @@ langchain-core==1.6.6  # direct
 langchain-groq==1.1.3  # direct
 langchain-protocol==0.0.19
 langsmith==0.14.4
-loguru==0.7.3
 markdown-it-py==4.2.0  # direct (rules page; also required by rich); verified on PyPI 2026-10-19
 markupsafe==3.0.4
 mdurl==0.1.2
-mmh3==5.3.1
 narwhals==2.26.0
 numpy==2.5.3  # direct
 onnxruntime==1.30.0; sys_platform != 'darwin' or platform_machine != 'x86_64'  # direct
@@ -47,11 +45,9 @@ onnxruntime==1.23.2; sys_platform == 'darwin' and platform_machine == 'x86_64'  
 opentelemetry-api==1.45.0
 orjson==3.12.0
 packaging==26.3
-pillow==12.3.0
 pluggy==1.6.0
 protobuf==7.36.2
 psutil==7.2.2  # direct
-py-rust-stemmers==0.1.8
 pydantic==2.13.5  # direct
 pydantic-core==2.46.5
 pygments==2.21.0
@@ -65,6 +61,7 @@ rich==15.0.0
 ruff==0.16.10  # direct
 scikit-learn==1.9.1  # direct
 scipy==1.18.1  # direct
+sentencepiece==0.2.2  # direct (2026-10-20: replaces fastembed and tokenizers; uploaded 2026-07-12)
 shellingham==1.5.4
 sniffio==1.3.1
 sqlalchemy==2.0.54  # direct
@@ -72,7 +69,6 @@ sqlmodel==0.0.47  # direct
 starlette==1.7.0  # direct
 tenacity==9.1.4
 threadpoolctl==3.7.0
-tokenizers==0.23.2  # direct
 tqdm==4.70.1
 truststore==0.10.4
 typer==0.27.2  # direct
@@ -83,7 +79,6 @@ urllib3==2.8.0
 uuid-utils==0.17.1
 uvicorn==0.54.0  # direct
 websockets==17.2
-win32-setctime==1.2.0
 xxhash==4.0.1
 zstandard==0.25.0
 # Intel-Mac-only transitive deps of onnxruntime 1.23.2 (all uploaded before 2026-10-05):

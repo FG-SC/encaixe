@@ -1,5 +1,6 @@
-"""Ingestion runs (spec 5.1): fetch → heuristic extraction → upsert, dedup, last_seen, IngestRun, closing.
+"""Ingestion runs (spec 5.1): fetch → heuristic extraction → scope → upsert, dedup, last_seen, IngestRun, closing.
 
+- Only postings inside RULES.scope (one country) are stored; the others are counted per board (app/ingest/scope.py).
 - Dedup by (source, source_id) and, across sources, by normalized company + normalized title + city.
 - A job missing from RULES.ingest.close_after_missed_runs consecutive runs of its board is closed.
 - Batch ingestion is always heuristic; the LLM upgrade happens later, in the background (spec 6).
@@ -9,6 +10,7 @@
 from __future__ import annotations
 
 import logging
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import timedelta
 
@@ -18,12 +20,14 @@ from app import clock
 from app.companies import normalize
 from app.config import RULES
 from app.extraction.job import RawPosting, extract_job, normalized_title
+from app.ingest import scope
 from app.ingest.connectors import github_postings, greenhouse_postings, lever_postings
 from app.ingest.http import HttpClient, SourceUnavailable
 from app.jobs import bump_jobs_version, upsert_job
-from app.models import Company, IngestRun, Job
+from app.models import Company, IngestRun, Job, Setting
 
 log = logging.getLogger(__name__)
+SCOPE_KEY = "ingest_out_of_scope"
 
 
 @dataclass
@@ -80,12 +84,21 @@ def ingest_board(session: Session, source: str, board: str, client: HttpClient) 
     for j in session.exec(select(Job).where(Job.status == "open", Job.source != source, Job.origin == "market")):
         others[_dedup_key(session, j.company_id, j.title, j.city_id)] = j.id  # type: ignore[assignment]
     seen: set[str] = set()
-    n_new = n_updated = n_dup = 0
+    n_new = n_updated = n_dup = n_closed = 0
+    out_of_scope: Counter[str] = Counter()
     for raw in postings:
         sid = raw.source_id or ""
-        seen.add(sid)
         draft = extract_job(raw)
         existing = session.exec(select(Job).where(Job.source == source, Job.source_id == sid)).first()
+        decision = scope.decide(raw, draft)
+        if not decision.in_scope:  # not stored; a stored copy closes (the posting or the scope changed)
+            out_of_scope[decision.code] += 1
+            if existing is not None and existing.status == "open":
+                existing.status = "closed"
+                session.add(existing)
+                n_closed += 1
+            continue
+        seen.add(sid)
         if existing is None:
             company = normalize(draft.company)
             key = (company, normalized_title(draft.title), draft.city_id or "")
@@ -95,7 +108,6 @@ def ingest_board(session: Session, source: str, board: str, client: HttpClient) 
         res = upsert_job(session, draft, source=source, source_id=sid, origin="market", url=raw.url, labels=raw.labels)
         n_new += res.status == "new"
         n_updated += res.status in ("updated", "reopened")
-    n_closed = 0
     for job in session.exec(
         select(Job).where(Job.source == source, col(Job.source_id).startswith(prefix), Job.status == "open")
     ).all():
@@ -118,8 +130,24 @@ def ingest_board(session: Session, source: str, board: str, client: HttpClient) 
         n_closed=n_closed,
     )
     session.add(run)
+    _record_scope(session, source, board, len(postings), out_of_scope)
     session.flush()
-    return RunReport(source, board, "ok", run=run, details={"duplicates_across_sources": n_dup})
+    details = {"duplicates_across_sources": n_dup, "out_of_scope": dict(out_of_scope)}
+    return RunReport(source, board, "ok", run=run, details=details)
+
+
+def _record_scope(session: Session, source: str, board: str, n_seen: int, out: Counter[str]) -> None:
+    """Latest out-of-scope counts per board (Setting SCOPE_KEY), so what was left out stays visible."""
+    row = session.get(Setting, SCOPE_KEY) or Setting(key=SCOPE_KEY, value={})
+    value = dict(row.value or {})
+    value[f"{source}/{board}"] = {
+        "ts": clock.now().isoformat(),
+        "seen": n_seen,
+        "out_of_scope": sum(out.values()),
+        "by_rule": dict(out),
+    }
+    row.value = value
+    session.add(row)
 
 
 def ran_recently(session: Session, source: str, board: str) -> bool:

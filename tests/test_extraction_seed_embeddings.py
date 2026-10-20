@@ -124,8 +124,9 @@ def test_tfidf_backend_fits_once_and_persists(tmp_path) -> None:  # type: ignore
     assert np.allclose(again[0], v[0], atol=1e-5)
 
 
-def test_fastembed_failure_falls_back_to_tfidf(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EMBEDDINGS", "fastembed")
+@pytest.mark.parametrize("requested", ["onnx", "fastembed"])  # "fastembed" is the first backend's name (alias)
+def test_onnx_failure_falls_back_to_tfidf(monkeypatch: pytest.MonkeyPatch, requested: str) -> None:
+    monkeypatch.setenv("EMBEDDINGS", requested)
     from app.config import reset_settings
 
     reset_settings()
@@ -134,11 +135,25 @@ def test_fastembed_failure_falls_back_to_tfidf(monkeypatch: pytest.MonkeyPatch) 
     def boom(self) -> None:  # type: ignore[no-untyped-def]
         raise RuntimeError("no model offline")
 
-    monkeypatch.setattr(embeddings.FastEmbedder, "load", boom)
+    monkeypatch.setattr(embeddings.OnnxEmbedder, "load", boom)
     e = get_embedder()
     assert e.name == "tfidf"
     status = embeddings.embedding_status()
-    assert status["requested"] == "fastembed" and "no model offline" in (status["fallback_reason"] or "")
+    assert status["requested"] == "onnx" and "no model offline" in (status["fallback_reason"] or "")
+
+
+def test_onnx_token_ids_follow_xlm_roberta(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    """sentencepiece id + 1 (fairseq offset), sentencepiece <unk> (0) → 3, wrapped in <s> … </s>, 128 at most."""
+
+    class FakeSpm:
+        def encode(self, text: str) -> list[int]:
+            return [0, 5, 7] if text == "abc" else list(range(10, 10 + 300))
+
+    e = embeddings.OnnxEmbedder(tmp_path, 1)
+    e._spm = FakeSpm()  # type: ignore[assignment]
+    assert e.token_ids("abc") == [0, 3, 6, 8, 2]
+    long = e.token_ids("long")
+    assert len(long) == RULES.embeddings.max_tokens and long[0] == 0 and long[-1] == 2 and long[1] == 11
 
 
 def test_embedder_only_receives_short_strings(session: Session, monkeypatch: pytest.MonkeyPatch) -> None:

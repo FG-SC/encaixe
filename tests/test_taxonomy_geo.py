@@ -87,6 +87,20 @@ def test_find_city(text: str, city: str) -> None:
     assert m is not None and m.city_id == city
 
 
+@pytest.mark.parametrize(
+    ("text", "country"),
+    [
+        ("Vancouver, British Columbia, Canada", "CA"),  # "British" is also a demonym of GB
+        ("Vancouver, British Columbia", "CA"),
+        ("Sydney, New South Wales, Australia", "AU"),  # "Wales" is part of GB
+        ("Remote - Brazil or Mexico", "MX"),  # several countries: the last one named
+        ("London, United Kingdom", "GB"),
+    ],
+)
+def test_location_country_real_postings(text: str, country: str) -> None:
+    assert load_geo().location_country(text) == country
+
+
 def test_eligibility_phrases() -> None:
     g = load_geo()
     assert g.find_eligibility("Must be located in the United States") == ["US"]
