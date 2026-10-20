@@ -18,8 +18,168 @@ from app.ranking.service import rank_for_candidate
 SIGNATURE = "feito no Encaixe — vagas com regras abertas"
 
 
+def explore_data(session: Session, candidate_id: int) -> dict:
+    """Explorar (spec 12): where the jobs are, which skill unlocks most, salaries, revealed preferences, timeline."""
+    from collections import Counter
+
+    from sqlmodel import col, select
+
+    from app.events.status import candidate_judgments
+    from app.models import ProfileRevision
+    from app.money import convert
+    from app.ranking.index import features_for_revision
+    from app.ranking.pair import evaluate_requirements, good_fit, hard_filters
+
+    tax = tax_mod.load()
+    geo = geo_mod.load()
+    xray = xray_data(session, candidate_id)
+    result = rank_for_candidate(session, candidate_id, ranker="static-v1")
+    c = result.meta["candidate"]
+    idx = job_index(session)
+    good_ids = {it.item_id for it in result.items if it.good_fit.is_good_fit}
+    eligible_ids = {it.item_id for it in result.items}
+    # where the jobs are (remote counted apart)
+    per_city: dict[str, Counter[str]] = {}
+    remote: Counter[str] = Counter()
+    for j in idx.jobs:
+        status = "good_fit" if j.job_id in good_ids else ("eligible" if j.job_id in eligible_ids else "filtered")
+        if j.arrangement == "remote":
+            remote[status] += 1
+        elif j.city_id in geo.cities:
+            per_city.setdefault(j.city_id, Counter())[status] += 1  # type: ignore[index]
+    cities = [
+        {
+            "city_id": cid,
+            "name": geo.cities[cid].name,
+            "lat": geo.cities[cid].lat,
+            "lon": geo.cities[cid].lon,
+            "total": sum(cnt.values()),
+            **dict(cnt),
+        }
+        for cid, cnt in per_city.items()
+    ]
+    # which skills unlock most (top 10, with example jobs)
+    unlock = unlock_counts(c, idx.jobs)
+    by_id = {j.job_id: j for j in idx.jobs}
+    examples: dict[str, list[str]] = {}
+    from app.ranking.counterfactual import with_skills
+
+    for skill, _ in unlock.most_common(10):
+        cs = with_skills(c, [skill])
+        hits = []
+        for j in idx.jobs:
+            if j.job_id in good_ids or skill not in j.must:
+                continue
+            r = evaluate_requirements(cs, j)
+            if good_fit(cs, j, r, not hard_filters(cs, j, r, "candidate")).is_good_fit:
+                hits.append(j.title)
+        examples[skill] = hits[:3]
+    unlock_rows = [
+        {"skill": s, "label": tax.label(s), "jobs": n, "examples": examples.get(s, [])}
+        for s, n in unlock.most_common(10)
+    ]
+    # salaries of good fits vs the declared minimum (approximate FX flagged)
+    salaries = []
+    for jid in good_ids:
+        j = by_id.get(jid)
+        if j is None:
+            continue
+        lo = convert(j.offers.comp_min, j.offers.currency, j.offers.period, c.wants.currency, c.wants.period)
+        hi = convert(j.offers.comp_max, j.offers.currency, j.offers.period, c.wants.currency, c.wants.period)
+        if hi or lo:
+            salaries.append(
+                {
+                    "job_id": jid,
+                    "title": j.title,
+                    "min": round((lo or hi).value),  # type: ignore[union-attr]
+                    "max": round((hi or lo).value),
+                    "approx_fx": bool((hi or lo).approx_fx),
+                }
+            )  # type: ignore[union-attr]
+    # revealed preferences: reasons given when swiping left
+    lefts = [e for e in candidate_judgments(session, candidate_id) if e.type == "swipe_left"]
+    reasons = Counter(e.reason or "none" for e in lefts)
+    rejected_comp = []
+    for e in lefts:
+        j = by_id.get(e.item_id)
+        if e.reason == "salary" and j is not None:
+            conv = convert(
+                j.offers.comp_max if j.offers.comp_max is not None else j.offers.comp_min,
+                j.offers.currency,
+                j.offers.period,
+                c.wants.currency,
+                c.wants.period,
+            )
+            if conv:
+                rejected_comp.append(conv.value)
+    # profile timeline: good fits per revision (each revision ranked against today's open jobs)
+    timeline = []
+    for rev in session.exec(
+        select(ProfileRevision).where(ProfileRevision.candidate_id == candidate_id).order_by(col(ProfileRevision.ts))
+    ).all():
+        from app.models import Candidate
+
+        cand = session.get(Candidate, candidate_id)
+        if rev.embedding is None or cand is None:
+            continue
+        cf = features_for_revision(session, cand, rev)
+        n_good = 0
+        for j in idx.jobs:
+            r = evaluate_requirements(cf, j)
+            if good_fit(cf, j, r, not hard_filters(cf, j, r, "candidate")).is_good_fit:
+                n_good += 1
+        timeline.append({"ts": rev.ts.isoformat(), "kind": rev.kind, "good_fit": n_good})
+    return {
+        "map": xray["map"],
+        "star": xray["star"],
+        "cities": cities,
+        "remote": dict(remote),
+        "unlock": unlock_rows,
+        "salaries": {
+            "jobs": salaries,
+            "comp_min": c.wants.comp_min,
+            "currency": c.wants.currency,
+            "period": c.wants.period,
+        },
+        "revealed": {
+            "reasons": [
+                {"reason": r, "label": texts.REASON_LABELS_CANDIDATE.get(r, "sem motivo"), "count": n}
+                for r, n in reasons.most_common()
+            ],
+            "salary_rejected_median": float(np.median(rejected_comp)) if rejected_comp else None,
+            "declared_min": c.wants.comp_min,
+            "text": _revealed_text(reasons, rejected_comp, c.wants.comp_min),
+        },
+        "timeline": timeline,
+    }
+
+
+def _revealed_text(reasons, rejected_comp, declared) -> str | None:  # type: ignore[no-untyped-def]
+    n = reasons.get("salary", 0)
+    if not n or not rejected_comp:
+        return None
+    median = float(np.median(rejected_comp))
+    sentence = (
+        f"Você recusou {n} vaga(s) por salário; a mediana do teto dessas vagas era {texts.fmt_money(median, 'BRL')}."
+    )
+    if declared:
+        sentence += f" Seu mínimo declarado é {texts.fmt_money(declared, 'BRL')}."
+        if median >= declared:
+            sentence += " Talvez seu mínimo real seja maior do que o declarado."
+    return sentence
+
+
 def _map_points(session: Session) -> tuple[list[dict], np.ndarray, list[int]]:
     idx = job_index(session)
+    if idx.jobs and all(
+        (session.get(Job, j.job_id) or Job(source="", source_id="", title="")).x is None for j in idx.jobs
+    ):
+        # The map was never computed (jobs loaded some other way): compute it now, so the Raio-X works on first use.
+        from app.embeddings.projection import compute_projection
+
+        compute_projection(session)
+        session.flush()
+        idx = job_index(session)
     pts, xy, rows = [], [], []
     for i, j in enumerate(idx.jobs):
         job = session.get(Job, j.job_id)

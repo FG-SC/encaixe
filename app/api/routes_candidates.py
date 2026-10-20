@@ -263,3 +263,11 @@ def candidate_profile_or_404(session: Session, candidate_id: int) -> CandidatePr
     if profile is None:
         raise HTTPException(404, "perfil não encontrado")
     return profile
+
+
+@router.get("/{candidate_id}/explore")
+def explore(candidate_id: int, session: Session = Depends(get_session)) -> dict:
+    from app.explore.candidate import explore_data
+
+    _candidate(session, candidate_id)
+    return explore_data(session, candidate_id)

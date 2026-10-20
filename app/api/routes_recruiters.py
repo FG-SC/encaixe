@@ -225,3 +225,19 @@ def matches(rid: int, session: Session = Depends(get_session)) -> list:
             }
         )
     return out
+
+
+@router.get("/recruiters/{rid}/jobs/{jid}/funnel")
+def job_funnel(rid: int, jid: int, session: Session = Depends(get_session)) -> dict:
+    from app.explore.recruiter import funnel
+
+    _owned_job(session, rid, jid)
+    return funnel(session, jid)
+
+
+@router.get("/recruiters/{rid}/jobs/{jid}/explore")
+def job_explore(rid: int, jid: int, session: Session = Depends(get_session)) -> dict:
+    from app.explore.recruiter import explore
+
+    _owned_job(session, rid, jid)
+    return explore(session, jid)

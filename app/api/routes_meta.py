@@ -54,6 +54,23 @@ def build_rules_public() -> RulesPublic:
     )
 
 
+@router.get("/meta/skills")
+def meta_skills() -> list[dict]:
+    from app.taxonomy import load
+
+    tax = load()
+    return [
+        {"id": s.id, "label": s.label, "domain": s.domain} for s in sorted(tax.skills.values(), key=lambda s: s.label)
+    ]
+
+
+@router.get("/meta/cities")
+def meta_cities() -> list[dict]:
+    from app.geo import load
+
+    return [{"id": c.id, "name": c.name, "state": c.state, "country": c.country} for c in load().cities.values()]
+
+
 @router.get("/health", response_model=Health)
 def health() -> Health:
     return Health(ok=True, version=__version__, rules_hash=rules_hash())
