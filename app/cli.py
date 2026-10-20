@@ -102,6 +102,183 @@ def project() -> None:
     _vectors_and_projection()
 
 
+synth_app = typer.Typer(help="Pessoas sintéticas (nunca dados reais).", no_args_is_help=True)
+app.add_typer(synth_app, name="synth")
+demo_app = typer.Typer(help="Modo demo.", no_args_is_help=True)
+app.add_typer(demo_app, name="demo")
+
+
+@synth_app.command("recruiters")
+def synth_recruiters() -> None:
+    """The synthetic B side: 5 fictional companies with one recruiter each (Lumen Dados / Carla included)."""
+    _setup()
+    from app.db import session_scope
+    from app.seed.loader import load_recruiters
+
+    with session_scope() as s:
+        typer.echo(f"recruiters: {len(load_recruiters(s))}")
+
+
+@synth_app.command("candidates")
+def synth_candidates(
+    n: int = typer.Option(100, "--n"),
+    seed: int = typer.Option(42, "--seed"),
+    days: int = typer.Option(56, "--days", help="Simulated history length (days before now)."),
+) -> None:
+    """Generate synthetic candidates and play their histories (swipes, applications, recruiter reviews)."""
+    _setup()
+    _vectors_and_projection()
+    counts = _synth(n, seed, days)
+    typer.echo(f"synthetic candidates: {n}; history: {counts}")
+
+
+def _synth(n: int, seed: int, days: int) -> dict:
+    from app import clock
+    from app.db import session_scope
+    from app.synth.personas import make_personas
+    from app.synth.simulate import sim_start_for, simulate
+
+    start = sim_start_for(days, clock.today())
+    personas = make_personas(n, seed, clock.today(), start.date(), days)
+    with session_scope() as s:
+        return simulate(s, personas, start, days, seed)
+
+
+@demo_app.command("reset")
+def demo_reset(
+    snapshot: str | None = typer.Option(None, "--snapshot", help="Load this snapshot instead of the seed jobs."),
+    n: int = typer.Option(100, "--n"),
+    seed: int = typer.Option(42, "--seed"),
+    days: int = typer.Option(56, "--days"),
+) -> None:
+    """Fresh demo world: jobs (seed or snapshot), synthetic B side, 100 synthetic candidates with histories."""
+    import shutil
+
+    settings = get_settings()
+    db = settings.var_dir / "encaixe.db"
+    for suffix in ("", "-wal", "-shm"):
+        p = db.with_name(db.name + suffix)
+        if p.exists():
+            p.unlink()
+    shutil.rmtree(settings.var_dir / "eval", ignore_errors=True)
+    _setup()
+    from app import clock
+    from app.db import session_scope
+    from app.seed.loader import load_recruiters, load_seed_jobs
+
+    clock.set_offset_days(0)
+    with session_scope() as s:
+        if snapshot:
+            from app.ingest.snapshot import load_snapshot
+
+            typer.echo(f"snapshot: {load_snapshot(s, snapshot)}")
+        else:
+            typer.echo(f"seed jobs: {load_seed_jobs(s)}")
+        typer.echo(f"recruiters: {len(load_recruiters(s))}")
+    _vectors_and_projection()
+    typer.echo(f"history: {_synth(n, seed, days)}")
+    typer.echo("demo pronta: encaixe serve  (roteiro em docs/DEMO.md)")
+
+
+eval_app = typer.Typer(help="Avaliação (resultados em var/eval, relatório em docs/EVAL.md).", no_args_is_help=True)
+app.add_typer(eval_app, name="eval")
+
+
+@eval_app.command("replay")
+def eval_replay(max_sessions: int = typer.Option(400, "--max-sessions")) -> None:
+    _setup()
+    from app.db import session_scope
+    from app.eval.replay import run_replay
+    from app.eval.report import save_result
+
+    with session_scope() as s:
+        res = run_replay(s, max_sessions=max_sessions)
+    save_result("replay", res)
+    for name, m in res["variants"].items():
+        typer.echo(f"{name:40} MRR={m['mrr']:.3f} R@10={m['recall@10']:.3f} AUC={m['auc'] or 0:.3f}")
+
+
+@eval_app.command("drift")
+def eval_drift(
+    users: int = typer.Option(30, "--users"),
+    days: int = typer.Option(40, "--days"),
+    seed: int = typer.Option(7, "--seed"),
+) -> None:
+    _setup()
+    from app.db import session_scope
+    from app.eval.drift import run_drift
+    from app.eval.report import save_result
+
+    with session_scope() as s:
+        res = run_drift(s, users=users, days=days, seed=seed)
+    save_result("drift", res)
+    for name, v in res.get("curves", {}).items():
+        typer.echo(f"{name:40} recovery={v['recovery_days']} days")
+
+
+@eval_app.command("congestion")
+def eval_congestion() -> None:
+    _setup()
+    from app.db import session_scope
+    from app.eval.congestion import run_congestion
+    from app.eval.report import save_result
+
+    with session_scope() as s:
+        res = run_congestion(s)
+    save_result("congestion", res)
+    typer.echo(res)
+
+
+@eval_app.command("latency")
+def eval_latency() -> None:
+    _setup()
+    from app.db import session_scope
+    from app.eval.latency import run_latency
+    from app.eval.report import save_result
+
+    with session_scope() as s:
+        res = run_latency(s)
+    save_result("latency", res)
+    typer.echo(res)
+
+
+@eval_app.command("report")
+def eval_report() -> None:
+    _setup()
+    from app.db import session_scope
+    from app.eval.report import write_report
+
+    with session_scope() as s:
+        typer.echo(f"wrote {write_report(s)}")
+
+
+@app.command()
+def bench() -> None:
+    """Peak RSS of five steps, one subprocess at a time (spec 3)."""
+    _setup()
+    from app.bench import run_bench
+    from app.eval.report import save_result
+
+    res = run_bench()
+    save_result("bench", res)
+    for step in res["steps"]:
+        flag = "ok " if step["within_budget"] and step["ok"] else "!! "
+        typer.echo(
+            f"{flag}{step['name']:50} pico {step['peak_mb']:6.0f} MB  (orçamento {step['budget_mb']} MB)"
+            f"  {step['seconds']} s{'' if step['ok'] else '  FALHOU: ' + step['output_tail'][-200:]}"
+        )
+
+
+@eval_app.command("all")
+def eval_all() -> None:
+    """replay + drift + congestion + latency + report (one at a time)."""
+    eval_replay(400)
+    eval_drift(30, 40, 7)
+    eval_congestion()
+    eval_latency()
+    eval_report()
+
+
 snapshot_app = typer.Typer(help="Congela e restaura as vagas (demo e avaliação reproduzíveis).", no_args_is_help=True)
 app.add_typer(snapshot_app, name="snapshot")
 
