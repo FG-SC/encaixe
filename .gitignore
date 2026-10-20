@@ -1,0 +1,15 @@
+# local data (database, model cache, uploads, snapshots, eval output, heavy.lock)
+var/
+# environments and secrets
+.venv/
+.env
+# Python build/test artefacts
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+# front
+node_modules/
+front/dist/

@@ -1,0 +1,88 @@
+[build-system]
+# Newest setuptools uploaded to PyPI on/before 2026-10-05 (checked 2026-10-19). Pinned because pip's
+# build isolation ignores constraints.txt.
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "encaixe"
+version = "0.1.0"
+description = "Open-rules job matching MVP: every ranking rule is public, every card explains itself."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+# Pins = newest release uploaded to PyPI on/before 2026-10-05 (14 days before 2026-10-19),
+# lowered only where a dependency's requires_dist forces it (see notes).
+# Reproducible install (also freezes the transitive packages under the same rule):
+#   pip install -c constraints.txt -e .[dev]
+dependencies = [
+    # --- web / API ---
+    "fastapi==0.142.2",
+    "starlette==1.7.0",            # fastapi 0.142.2 only says starlette>=0.46.0 (no cap): pin it or pip takes 1.9.0 (2026-10-18)
+    "uvicorn==0.54.0",             # plain uvicorn: no [standard] (no WebSockets needed; uvloop is not used on Windows anyway)
+    "python-multipart==0.0.32",    # Form()/UploadFile (PDF upload)
+    "jinja2==3.1.6",
+    "markdown-it-py==4.2.0",       # rules page: Markdown -> HTML (newest release on/before 2026-10-05, uploaded 2026-05-07; verified on PyPI 2026-10-19)
+    # --- persistence / config ---
+    "sqlmodel==0.0.47",
+    "sqlalchemy==2.0.54",          # sqlmodel 0.0.47 requires SQLAlchemy<2.1.0,>=2.0.14 (2.1.3 is newer but not allowed)
+    "pydantic==2.13.5",            # pins pydantic-core==2.46.5 itself
+    "pyyaml==6.0.3",
+    "tzdata==2026.5",              # zoneinfo data on Windows
+    # --- CLI ---
+    "typer==0.27.2",
+    # --- numeric / ranking ---
+    "numpy==2.5.3",
+    "scipy==1.18.1",
+    "scikit-learn==1.9.1",
+    # --- local embeddings (ONNX Runtime, no torch) ---
+    "fastembed==0.8.1",
+    "onnxruntime==1.30.0; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+    "onnxruntime==1.23.2; sys_platform == 'darwin' and platform_machine == 'x86_64'",  # Intel Macs: ORT >=1.24 ships no macOS x86_64 wheels
+    "tokenizers==0.23.2",
+    "huggingface-hub==1.33.0",     # fastembed 0.8.1 and tokenizers 0.23.2 both require huggingface-hub<2.0
+    # --- optional LLM via Groq ---
+    "langchain-groq==1.1.3",
+    "langchain-core==1.6.6",
+    "groq==0.37.1",                # langchain-groq 1.1.3 requires groq<1.0.0,>=0.30.0 (groq 1.x exists but is not allowed)
+    "httpx==0.28.1",
+    # --- documents / system ---
+    "pypdf==6.19.0",
+    "psutil==7.2.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "anyio==4.15.1",               # async tests via AnyIO's built-in pytest plugin (@pytest.mark.anyio); no pytest-asyncio
+    "ruff==0.16.10",
+]
+
+[project.scripts]
+encaixe = "app.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+# Data files anywhere under app/ (taxonomy, cities, seed jobs, personas, rules template).
+app = ["**/*.yaml", "**/*.csv", "**/*.json", "**/*.txt", "**/*.j2"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["front", "var"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = [
+    "B008",  # FastAPI/Typer parameter defaults are calls by design
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+# Async tests use AnyIO's built-in pytest plugin (@pytest.mark.anyio); no extra plugin is needed.

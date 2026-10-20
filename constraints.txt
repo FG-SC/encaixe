@@ -1,0 +1,93 @@
+# Encaixe full transitive lock (pip constraints format), Python 3.12, resolved on Windows x64 with pip 25.0.1 on 2026-10-19.
+# Every version below was first uploaded to PyPI on or before 2026-10-05 (14-day rule). Use: pip install -c constraints.txt -e .[dev]
+# Win-only markers pulled in: colorama, win32-setctime (harmless as constraints on Linux/macOS).
+# Copied from research/constraints-2026-10-05.txt (Phase 0); markdown-it-py promoted to a direct dependency.
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.15.1  # direct
+certifi==2026.7.22
+charset-normalizer==3.5.2
+click==8.5.0
+cloudpickle==3.1.2
+colorama==0.4.6
+distro==1.9.0
+fastapi==0.142.2  # direct
+fastembed==0.8.1  # direct
+filelock==4.0.12
+flatbuffers==25.12.19
+fsspec==2026.9.0
+greenlet==3.5.6
+groq==0.37.1  # direct
+h11==0.16.0
+hf-xet==1.6.0
+httpcore==1.0.9
+httpcore2==2.13.1
+httpx==0.28.1  # direct
+httpx2==2.13.1
+huggingface-hub==1.33.0  # direct
+idna==3.20
+iniconfig==2.3.0
+jinja2==3.1.6  # direct
+joblib==1.6.0
+jsonpatch==1.33
+jsonpointer==3.1.1
+langchain-core==1.6.6  # direct
+langchain-groq==1.1.3  # direct
+langchain-protocol==0.0.19
+langsmith==0.14.4
+loguru==0.7.3
+markdown-it-py==4.2.0  # direct (rules page; also required by rich); verified on PyPI 2026-10-19
+markupsafe==3.0.4
+mdurl==0.1.2
+mmh3==5.3.1
+narwhals==2.26.0
+numpy==2.5.3  # direct
+onnxruntime==1.30.0; sys_platform != 'darwin' or platform_machine != 'x86_64'  # direct
+onnxruntime==1.23.2; sys_platform == 'darwin' and platform_machine == 'x86_64'  # direct, Intel-Mac fallback
+opentelemetry-api==1.45.0
+orjson==3.12.0
+packaging==26.3
+pillow==12.3.0
+pluggy==1.6.0
+protobuf==7.36.2
+psutil==7.2.2  # direct
+py-rust-stemmers==0.1.8
+pydantic==2.13.5  # direct
+pydantic-core==2.46.5
+pygments==2.21.0
+pypdf==6.19.0  # direct
+pytest==9.1.1  # direct
+python-multipart==0.0.32  # direct
+pyyaml==6.0.3  # direct
+requests==2.34.2
+requests-toolbelt==1.0.0
+rich==15.0.0
+ruff==0.16.10  # direct
+scikit-learn==1.9.1  # direct
+scipy==1.18.1  # direct
+shellingham==1.5.4
+sniffio==1.3.1
+sqlalchemy==2.0.54  # direct
+sqlmodel==0.0.47  # direct
+starlette==1.7.0  # direct
+tenacity==9.1.4
+threadpoolctl==3.7.0
+tokenizers==0.23.2  # direct
+tqdm==4.70.1
+truststore==0.10.4
+typer==0.27.2  # direct
+typing-extensions==4.16.0
+typing-inspection==0.4.4
+tzdata==2026.5  # direct
+urllib3==2.8.0
+uuid-utils==0.17.1
+uvicorn==0.54.0  # direct
+websockets==17.2
+win32-setctime==1.2.0
+xxhash==4.0.1
+zstandard==0.25.0
+# Intel-Mac-only transitive deps of onnxruntime 1.23.2 (all uploaded before 2026-10-05):
+coloredlogs==15.0.1; sys_platform == 'darwin' and platform_machine == 'x86_64'
+humanfriendly==10.0; sys_platform == 'darwin' and platform_machine == 'x86_64'
+sympy==1.14.0; sys_platform == 'darwin' and platform_machine == 'x86_64'
+mpmath==1.3.0; sys_platform == 'darwin' and platform_machine == 'x86_64'
