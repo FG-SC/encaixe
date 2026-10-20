@@ -61,11 +61,16 @@ class CreateCandidateIn(BaseModel):
     profile: CandidateProfile
     visible_to_recruiters: bool | None = None
     llm_consent: bool = False
+    llm_cache_key: str | None = None  # from the parsed draft: purged together with the candidate
 
 
 @router.post("")
 def create(body: CreateCandidateIn, session: Session = Depends(get_session)) -> dict:
+    from app.models import Setting
+
     res = create_candidate(session, body.profile, visible=body.visible_to_recruiters, llm_consent=body.llm_consent)
+    if body.llm_cache_key:
+        session.add(Setting(key=f"llm_cv_cache:{res.candidate.id}:{body.llm_cache_key}", value=body.llm_cache_key))
     session.commit()
     return {
         "candidate_id": res.candidate.id,

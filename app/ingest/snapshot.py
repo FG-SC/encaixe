@@ -48,7 +48,9 @@ def snapshot_path(name: str) -> Path:
 
 
 def _llm_keys(job: Job) -> set[str]:
-    return {v.get("cache_key") for v in (job.provenance or {}).values() if isinstance(v, dict) and v.get("cache_key")}  # type: ignore[misc]
+    """The LLM cache entry used by a job (app.llm.client stores its key in provenance["_llm"])."""
+    entry = (job.provenance or {}).get("_llm")
+    return {entry["source_span"]} if isinstance(entry, dict) and entry.get("source_span") else set()
 
 
 def save_snapshot(session: Session, name: str) -> Path:

@@ -319,13 +319,16 @@ class LlmRules:
 
     provider: str = "groq"
     model: str = "openai/gpt-oss-20b"  # default; LLM_MODEL overrides it at runtime
-    # Free-plan limits from the 2026 survey quoted by the spec -- to confirm in Phase 6 against the
-    # Groq docs (research/groq.md, read 2026-10-19, lists 30 RPM / 1K RPD / 8K TPM / 200K TPD).
+    # Free-plan limits for openai/gpt-oss-20b, Groq docs (console.groq.com/docs/rate-limits, "Free Plan
+    # Limits"), read and independently re-checked on 2026-10-19. Per-org values may differ (account settings).
     rpm: int = 30
     rpd: int = 1000
     tpm: int = 8000
-    tpd: int | None = None
-    limits_as_of: str = "2026 (levantamento citado na especificação; a confirmar na fase 6)"
+    tpd: int | None = 200_000
+    limits_as_of: str = "documentação do Groq, plano gratuito, lida em 19/10/2026"
+    reasoning_effort: str = "low"  # gpt-oss accepts low/medium/high; reasoning tokens count toward the budget
+    max_completion_tokens: int = 2048
+    background_timeout_s: int = 60
     onboarding_timeout_s: int = 20  # one synchronous call at onboarding, then heuristic fallback
     background_top_n: int = 20  # market jobs entering someone's top 20 get a background upgrade
     prompt_versions: FrozenDict = FrozenDict({"cv_extraction": "cv-v1", "job_extraction": "job-v1"})

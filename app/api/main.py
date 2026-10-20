@@ -53,6 +53,11 @@ def create_app(front_dist: Path | None = FRONT_DIST) -> FastAPI:
     app = FastAPI(title="Encaixe", version=__version__, lifespan=_lifespan)
     app.state.startup_hooks = []
     app.state.shutdown_hooks = []
+    if get_settings().llm_enabled:  # background LLM upgrades of market jobs (never blocks a request)
+        from app.llm import queue
+
+        app.state.startup_hooks.append(queue.start_worker)
+        app.state.shutdown_hooks.append(queue.stop_worker)
 
     from app.api import routes_meta
 

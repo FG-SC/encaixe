@@ -138,7 +138,8 @@ class CandidateDraft(CandidateProfile):
     provenance: dict[str, Provenance] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
     method: ExtractionMethod = "heuristic"
-    llm_status: str | None = None  # e.g. "off", "ok", "fallback: timeout" (Phase 6)
+    llm_status: str | None = None  # e.g. "off", "ok", "fallback: timeout"
+    llm_cache_key: str | None = None  # links the CV's LLM cache entry to the candidate (purged with them)
 
 
 class JobDraft(_Model):
