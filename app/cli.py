@@ -92,6 +92,42 @@ def project() -> None:
     _vectors_and_projection()
 
 
+@app.command()
+def export(candidate: int = typer.Option(..., "--candidate", help="Candidate id.")) -> None:
+    """Print, as JSON, everything Encaixe stores about a candidate (events included)."""
+    import json
+
+    _setup()
+    from app.db import session_scope
+    from app.privacy import export_candidate
+
+    with session_scope() as s:
+        data = export_candidate(s, candidate)
+    if data is None:
+        raise typer.Exit(code=1)
+    typer.echo(json.dumps(data, ensure_ascii=False, indent=1))
+
+
+@app.command()
+def purge(
+    candidate: int = typer.Option(..., "--candidate", help="Candidate id."),
+    yes: bool = typer.Option(False, "--yes", help="Do not ask for confirmation."),
+) -> None:
+    """Delete a candidate: profile, revisions, events (as actor or item), matches and CV LLM cache."""
+    _setup()
+    if not yes:
+        typer.confirm(f"Apagar definitivamente o candidato {candidate}?", abort=True)
+    from app.db import session_scope
+    from app.privacy import purge_candidate
+
+    with session_scope() as s:
+        counts = purge_candidate(s, candidate)
+    if not counts:
+        typer.echo("candidato não encontrado")
+        raise typer.Exit(code=1)
+    typer.echo(f"apagado: {counts}")
+
+
 @clock_app.command("show")
 def clock_show() -> None:
     _setup()
