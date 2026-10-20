@@ -318,6 +318,7 @@ def haversine_km(a: City, b: City) -> float:
     return 2 * r * math.asin(min(1.0, math.sqrt(h)))
 
 
+@lru_cache(maxsize=8192)
 def tz_overlap_hours(tz_a: str, tz_b: str, on_date: date, start_hour: int, end_hour: int) -> float:
     """Hours of overlap between the [start_hour, end_hour) local workdays of two timezones on a date."""
 

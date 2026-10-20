@@ -24,3 +24,6 @@ Choices made where the product spec was silent or open to interpretation, and ev
 | 18 | "Transversal" skills (Excel, Git, negotiation, project management…) define no domain and do not count as proof of area. | An analyst who uses Excel must not make a sales job "in area"; an analyst who builds sales dashboards does not prove sales. |
 | 19 | Sentences stating an interest ("Interesse em machine learning") do not create listed skills. | Interest is not a claim of skill. |
 | 20 | A Brazilian CV written in Portuguese gets Portuguese (native) as an inferred language. | CVs rarely list the mother tongue; it is shown as "inferido" for review. |
+| 21 | Counterfactual skill order: zero-credit musts first, then the skill that unlocks most jobs, then the more specific one (deeper in the taxonomy), then alphabetical. | When several single changes work, "com PyTorch" is more actionable than "com deep learning". |
+| 22 | Languages are required items for the requirement criterion and good fit, but never count as "proof of area" in the out-of-area filter. | A Brazilian proving Portuguese would otherwise never see an out-of-area job filtered. |
+| 23 | The salary criterion uses the job's `comp_max`, or its `comp_min` when it is the only figure. | A single disclosed number is both the floor and the top of the range. |

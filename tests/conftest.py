@@ -57,7 +57,7 @@ def _reset_optional_caches() -> None:
     """Modules from later phases register in-memory caches (embedder, indexes); drop them."""
     import importlib
 
-    for name in ("app.embeddings", "app.embeddings.index"):
+    for name in ("app.embeddings", "app.ranking.index"):
         try:
             module = importlib.import_module(name)
         except ModuleNotFoundError:
