@@ -41,7 +41,9 @@ def test_worked_example_is_consistent() -> None:
 
 def test_page_states_the_salary_side_effect_and_sessions() -> None:
     md = render_markdown()
-    assert "transparência salarial é recompensada" in md
+    assert (
+        "transparência salarial é recompensada" in md and "conta como se a vaga pagasse exatamente o seu mínimo" in md
+    )
     assert f"{RULES.events.session_idle_minutes} minutos sem atividade" in md
     assert "inclusive as de cartas sorteadas" in md
     assert "O que vai para a IA" in md and "O que o recrutador vê e o que não vê" in md

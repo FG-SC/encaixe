@@ -21,7 +21,7 @@ Encaixe answers with five commitments, valid for both sides:
 - **Hard filters first** (non-negotiables, each with its reason): arrangement, distance, country eligibility, salary below 70% of the candidate's minimum, seniority three or more levels apart, and *out of area* (no proven must requirement and no taxonomy domain in common). Learning never resurrects a filtered item.
 - **No hand-picked weights.** Following the logic of Joel Greenblatt's "magic formula" (*The Little Book That Beats the Market*, 2005), each item is ranked on each criterion, positions are summed within two pillars — **Atende** (does the candidate meet what the job asks?) and **Interessa** (does the job offer what the candidate wants?) — and the list is ordered by the sum of pillar positions. Scale-free: cosines, kilometres and salaries all become comparable positions.
 - **Evidence over keywords.** The requirements criterion is lexicographic: share of musts *proven* (used in a dated experience) → proven in the last 3 years → only *listed* → nice-to-haves. Fifty listed skills cannot beat five used recently (tested).
-- **Unknowns stay in the middle** (median imputation), and the page says so: a job that discloses a good salary moves up, a bad one moves down, an undisclosed one stays in the middle.
+- **Unknowns stay in the middle** (median imputation), with one stated exception: an undisclosed salary counts as paying exactly the candidate's minimum, the conservative reading of silence. A job that discloses more than the minimum moves up, one that discloses less moves down.
 - **An absolute "good fit" rule** (≥ 80% of musts proven, at most one seniority level apart) drives counts and counterfactuals, so "3rd in your list" and "not a good fit yet" never contradict each other.
 - **Time is explicit — the technical thesis.** Profiles are versioned (relevant vs minor revisions); every event records which version was judged. The learned pillar (`feedback-v1`) weighs swipes by `0.5^(days/21) · 0.5^(relevant revisions since)`, using the item *as it was* when judged, so a candidate who evolved escapes an old rejection, and a job where an application did not advance comes back after a relevant revision.
 - **Reciprocal and blind.** A match needs both sides; the recruiter sees a blind card (no name, contact, photo or age) until the match. Companies and schools are shown, but never ranked: there is no prestige score.
@@ -35,11 +35,11 @@ From [docs/EVAL.md](docs/EVAL.md): 727 open jobs (659 real postings from Greenho
 
 | | result |
 |---|---|
-| Replay (where liked jobs land among 727) | `feedback-v1` MRR 0.064 vs `static-v1` 0.046, Recall@20 0.30 vs 0.17. The replay's AUC is distorted by the logging policy (static comes out at 0.46, below random), which the unbiased check explains |
-| Unbiased check against the oracle (all eligible jobs, no logging policy) | `static-v1` AUC 0.78, precision@10 0.58 against a 0.31 share of liked jobs; RRF 0.79 / 0.61; the weighted baseline reaches precision@10 0.81 on an oracle that is itself a weighted sum, which the report flags |
-| Drift (preference switch on a known day) | learning helps before the switch (precision@10 0.66 vs 0.33), falls *further* right after it (0.20 vs 0.28: old likes point the wrong way) and ends the window above static (0.40 vs 0.28); without time decay it ends at 0.34 |
+| Replay (where liked jobs land among 727) | `feedback-v1` MRR 0.057 vs `static-v1` 0.041, Recall@20 0.24 vs 0.11. The replay's AUC is distorted by the logging policy (static comes out at 0.47, below random), which the unbiased check explains |
+| Unbiased check against the oracle (all eligible jobs, no logging policy) | `static-v1` AUC 0.79, precision@10 0.55 against a 0.31 share of liked jobs; RRF 0.79 / 0.61; the weighted baseline reaches precision@10 0.82 on an oracle that is itself a weighted sum, which the report flags |
+| Drift (preference switch on a known day) | learning helps before the switch (precision@10 0.61 vs 0.54), falls *further* right after it (0.13 vs 0.19: old likes point the wrong way) and ends the window above static (0.27 vs 0.19); without time decay it ends at 0.25 |
 | Congestion | 24 distinct candidates fill 39 top-5 slots (≈33 expected at random); Gini of exposure 0.81 — measured, not optimized |
-| Latency | p95 214 ms for 2,000 jobs, 57 ms for 300 candidates (target 500 ms) |
+| Latency | p95 210 ms for 2,000 jobs, 88 ms for 300 candidates (target 500 ms) |
 | Memory (`encaixe bench`) | server with the model loaded 471 MB (budget 700); embedding 1,000 jobs 541 MB; t-SNE 160 MB; drift 526 MB; ingestion 92 MB (budget 1 GB) |
 
 ## Stack

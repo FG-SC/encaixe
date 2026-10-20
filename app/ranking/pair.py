@@ -285,7 +285,18 @@ def raw_criteria(
                 "period": wants.period,
             },
         )
-    else:
+    elif job_max is None and wants.comp_min:  # undisclosed: counts as paying exactly the minimum (conservative)
+        out["salary"] = Raw(
+            RULES.criteria.salary_unknown_slack,
+            flags=("salary_unknown",),
+            info={
+                "job_comp": None,
+                "candidate_comp": wants.comp_min,
+                "currency": wants.currency,
+                "period": wants.period,
+            },
+        )
+    else:  # no minimum declared: nothing to compare, neutral (median)
         out["salary"] = Raw(
             None,
             flags=("salary_unknown",) if job_max is None else (),

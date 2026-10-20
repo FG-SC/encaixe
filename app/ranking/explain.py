@@ -40,6 +40,8 @@ def raw_text(crit: str, data: dict, req: RequirementEval, side: str) -> str:
         return texts.NOT_APPLICABLE_TEXT + " (vaga não remota)"
     if crit == "requirements":
         return requirements_text(req)
+    if crit == "salary" and "salary_unknown" in data.get("flags", []) and raw is not None:
+        return f"{texts.UNKNOWN_TEXT} (conta como {'o seu mínimo' if side == 'candidate' else 'o mínimo do candidato'})"
     if raw is None:
         return texts.UNKNOWN_TEXT
     if crit == "semantic":
@@ -78,7 +80,7 @@ def flags_text(item: RankedItem) -> list[str]:
         if "fx" in data.get("flags", []):
             out.append(texts.FX_FLAG)
     sal = item.criteria.get("salary")
-    if sal and sal["raw"] is None and sal["info"].get("job_comp") is None:
+    if sal and "salary_unknown" in sal.get("flags", []):
         out.append(texts.SALARY_UNKNOWN_FLAG)
     return out
 

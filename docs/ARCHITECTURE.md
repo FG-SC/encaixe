@@ -171,7 +171,7 @@ FilteredItem{ item_id, reasons: [{code, value, threshold, adjust}] }
 - `semantic`: cosine(job vector, candidate vector) — current versions.
 - `title`: cosine(job title vector, candidate title vector).
 - `seniority`: |job level − candidate level| (lower is better); unknown when either side is unknown.
-- `salary`: slack = (job comp_max in the candidate's currency/period − candidate comp_min) / candidate comp_min; FX conversion flagged `câmbio aproximado`; unknown when either side is missing.
+- `salary`: slack = (job comp_max in the candidate's currency/period − candidate comp_min) / candidate comp_min; FX conversion flagged `câmbio aproximado`; an undisclosed salary counts as slack `RULES.criteria.salary_unknown_slack` = 0 (exactly the minimum, flagged "salário não informado", DECISIONS #39); unknown (median) only when the candidate declared no minimum.
 - `distance`: 0 for an accepted remote job or the same city; otherwise km; unknown when a city is missing.
 - `timezone`: only remote jobs: overlap hours of the 09–18 workday between the candidate's city timezone and the job's timezone; non-remote jobs are `not_applicable` (neutral, like unknown); remote jobs without timezone information are unknown.
 

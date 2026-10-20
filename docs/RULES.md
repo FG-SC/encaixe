@@ -1,7 +1,7 @@
 # Como o Encaixe decide
 
 > Esta página é gerada automaticamente a partir de `app/config.py`, a mesma configuração que o ranking usa.
-> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `2ec37ce71c24`.
+> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `1b925f73e0bb`.
 
 O Encaixe ordena vagas para candidatos (lado C) e candidatos para vagas (lado B) com o **mesmo procedimento**.
 Ele não usa pesos escolhidos à mão: cada item é ordenado em cada critério, as posições são somadas e a lista sai
@@ -64,11 +64,12 @@ palavras-chave não funciona: skill listada, mesmo repetida, nunca supera skill 
 1. **Posição por critério.** Em cada critério, cada item recebe uma posição (1 = melhor).
    - **Empate:** valores dentro da precisão publicada contam como empate e recebem a posição média.
      Precisões: cosseno 0,02; salário 5%; distância 5 km; fuso 1 h; histórico 0,02.
-   - **Desconhecido** (por exemplo, vaga sem salário) recebe o valor mediano daquele critério e aparece como
-     "não informado". O fuso só se aplica a vagas remotas; nas outras ele fica neutro ("não se aplica").
-   - **Efeito colateral, dito com todas as letras:** no critério salário, a vaga que informa salário bom sobe, a que
-     informa salário ruim desce, e a que não informa fica no meio. Na prática, transparência salarial é recompensada
-     quando o salário é bom.
+   - **Desconhecido** (por exemplo, vaga sem senioridade identificada) recebe o valor mediano daquele critério e
+     aparece como "não informado". O fuso só se aplica a vagas remotas; nas outras ele fica neutro ("não se aplica").
+   - **Salário não informado é a exceção:** conta como se a vaga pagasse exatamente o seu mínimo, a suposição
+     conservadora. Dito com todas as letras: a vaga que informa salário acima do seu mínimo sobe, a que informa
+     abaixo (mas acima do corte de 70%) desce, e a que não informa fica junto das que pagam o
+     mínimo. Na prática, transparência salarial é recompensada quando o salário é bom.
 2. **Posição do pilar.** Em cada pilar, somam-se as posições dos critérios; a soma vira a posição do pilar.
 3. **Ordem final.** Ordena-se pela soma das posições dos pilares. Empate na soma: vem antes quem está melhor em
    Atende; depois, quem está melhor em Requisitos; por fim, a ordem de cadastro.
@@ -187,7 +188,7 @@ aceita vagas remotas e híbridas até 50 km) e três vagas. Os números abaixo s
 | Vaga | Requisitos | Semântica | Cargo | Senioridade | Salário | Distância | Fuso |
 |---|---|---|---|---|---|---|---|
 | Analista de Dados (remota) | 2 de 3 obrigatórios comprovados (2 nos últimos 3 anos); 1 só listado(s), sem experiência com datas | similaridade 0,71 | similaridade de cargo 0,80 | vaga Júnior, perfil Júnior (mesmo nível) | até R$ 7.000/mês (+ 40% em relação ao seu mínimo) | vaga remota | 9 h de sobreposição no expediente 9h–18h |
-| Cientista de Dados (híbrida) | 1 de 3 obrigatórios comprovados (1 nos últimos 3 anos) | similaridade 0,58 | similaridade de cargo 0,52 | vaga Pleno, perfil Júnior (1 nível de distância) | não informado | mesma cidade | não se aplica (vaga não remota) |
+| Cientista de Dados (híbrida) | 1 de 3 obrigatórios comprovados (1 nos últimos 3 anos) | similaridade 0,58 | similaridade de cargo 0,52 | vaga Pleno, perfil Júnior (1 nível de distância) | não informado (conta como o seu mínimo) | mesma cidade | não se aplica (vaga não remota) |
 | Analista de BI (híbrida) | 1 de 3 obrigatórios comprovados (1 nos últimos 3 anos); 1,5 só listado(s), sem experiência com datas | similaridade 0,66 | similaridade de cargo 0,74 | vaga Júnior, perfil Júnior (mesmo nível) | até R$ 4.500/mês (− 10% em relação ao seu mínimo) | a 8 km | não se aplica (vaga não remota) |
 
 

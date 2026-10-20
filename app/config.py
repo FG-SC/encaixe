@@ -96,6 +96,9 @@ class CriteriaRules:
     atende: tuple[str, ...] = ("requirements", "semantic", "title", "seniority")
     interessa: tuple[str, ...] = ("salary", "distance", "timezone")
     historico: tuple[str, ...] = ("history",)  # third pillar, feedback-v1 only
+    # An undisclosed salary counts as paying exactly the candidate's minimum (slack 0), not the median of the disclosed
+    # ones: the conservative assumption (owner's decision, 2026-10-20). Other unknown values still get the median.
+    salary_unknown_slack: float = 0.0
     # Which raw values are better: "max" = higher is better, "min" = lower is better.
     better: FrozenDict = FrozenDict(
         {

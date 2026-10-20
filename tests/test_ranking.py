@@ -59,25 +59,23 @@ def test_positions_ties_unknowns_and_tuples() -> None:
     assert list(positions([(1.0, 0.0, 0.0, 0.0), (0.0, 0.0, 1.0, 1.0)], "max")) == [1.0, 2.0]
 
 
-def test_salary_undisclosed_stays_in_the_middle() -> None:
-    pairs = []
-    from app.ranking.engine import PairEval
-    from app.ranking.pair import GoodFit, Raw, RequirementEval
+def test_undisclosed_salary_counts_as_the_minimum(session: Session, world: dict) -> None:
+    """Ana's minimum is R$ 5.000: above ranks better, below (but above the 70% cut) worse, undisclosed = minimum."""
+    ids = {}
+    for key, pay in (("above", "R$ 8.000"), ("minimum", "R$ 5.000"), ("undisclosed", None), ("below", "R$ 4.000")):
+        text = "Requisitos\n- SQL\n- Python\n- Power BI" + (f"\nSalário: {pay} por mês" if pay else "")
+        draft = extract_job(RawPosting(title="Analista de Dados", description=text, location_text="Florianópolis, SC"))
+        ids[key] = upsert_job(session, draft, source="t", source_id=key).job.id
+    session.commit()
+    by_id = {it.item_id: it for it in rank_for_candidate(session, world["ana"], ranker="static-v1").items}
+    pos = {k: by_id[i].criteria["salary"]["position"] for k, i in ids.items()}
+    assert pos["above"] < pos["minimum"] == pos["undisclosed"] < pos["below"]
+    undisclosed = by_id[ids["undisclosed"]].criteria["salary"]
+    assert undisclosed["raw"] == RULES.criteria.salary_unknown_slack == 0.0
+    from app.ranking.explain import raw_text
 
-    req = RequirementEval(must_total=1, must_credit=1, recent_credit=1, listed_credit=0, nice_total=0, nice_credit=0)
-    for item_id, salary in ((1, 0.5), (2, None), (3, -0.2)):
-        raw = {c: Raw(0.5) for c in ("semantic", "title")}
-        raw.update(
-            requirements=Raw(req.key),
-            seniority=Raw(0),
-            salary=Raw(salary),
-            distance=Raw(0.0),
-            timezone=Raw(None, na=True),
-        )
-        pairs.append(PairEval(item_id, req, raw, [], GoodFit(True, True, 1, 1, 0)))
-    result = rank(pairs, side="candidate", ranker="static-v1")
-    assert [it.item_id for it in result.items] == [1, 2, 3]
-    assert [it.criteria["salary"]["position"] for it in result.items] == [1.0, 2.0, 3.0]
+    text = raw_text("salary", undisclosed, by_id[ids["undisclosed"]].req, "candidate")
+    assert text == "não informado (conta como o seu mínimo)"
 
 
 # --------------------------------------------------------------------------- filters, anchors and traps
