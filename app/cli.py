@@ -11,6 +11,16 @@ from app.config import get_settings
 app = typer.Typer(help="Encaixe — vagas com regras abertas.", no_args_is_help=True)
 clock_app = typer.Typer(help="Relógio da aplicação (o modo demo avança o tempo).", no_args_is_help=True)
 app.add_typer(clock_app, name="clock")
+rules_app = typer.Typer(help="Página de regras (gerada de app/config.py).", no_args_is_help=True)
+app.add_typer(rules_app, name="rules")
+
+
+@rules_app.command("export")
+def rules_export() -> None:
+    """Write docs/RULES.md from app/config.py (same template as the in-app page)."""
+    from app.rules import export_rules_md
+
+    typer.echo(f"wrote {export_rules_md()}")
 
 
 def _setup() -> None:

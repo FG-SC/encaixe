@@ -318,6 +318,68 @@ def test_revision_kinds(session: Session, world: dict) -> None:
     assert [r.kind for r in revs] == ["relevant", "minor", "relevant"]
 
 
+def _reconstruct(cards: list[dict], side: str) -> list[int]:
+    def key(c: dict) -> tuple:
+        e = c["explanation"]
+        pillars = {p["pillar"]: p["position"] for p in e["pillars"]}
+        req = next(line["position"] for line in e["lines"] if line["criterion"] == "requirements")
+        group = 0 if (side == "recruiter" and c.get("applicant")) else 1
+        return (group, round(e["final_sum"], 9), pillars["atende"], req, c["item_id"])
+
+    return [c["item_id"] for c in sorted(cards, key=key)]
+
+
+def test_shown_positions_reconstruct_order_with_history_company_penalty_and_applicants(
+    session: Session, world: dict
+) -> None:
+    c = world["cand"]
+    jobs = [j for j in session.exec(select(Job).where(Job.origin == "market")).all()]
+    record_event(
+        session,
+        ev(
+            actor_type="candidate", actor_id=c, item_type="job", item_id=jobs[0].id, type="swipe_left", reason="company"
+        ),
+    )
+    for j in jobs[1 : RULES.feedback.k_min + 1]:
+        record_event(session, ev(actor_type="candidate", actor_id=c, item_type="job", item_id=j.id, type="swipe_right"))
+    session.commit()
+    deck = candidate_deck(session, c, "s-r", limit=60, ranker="feedback-v1")
+    assert deck["history_active"]
+    ranked = sorted(
+        (x for x in deck["cards"] if x["rank_meta"]["slot"] == "ranked"), key=lambda x: x["rank_meta"]["rank_position"]
+    )
+    assert _reconstruct(ranked, "candidate") == [x["item_id"] for x in ranked]
+    # side B: applicants first, in formula order
+    for i in range(4):
+        other = create_candidate(
+            session,
+            CandidateProfile(
+                headline="Analista de Dados",
+                city_id="florianopolis-sc-br",
+                wants=WANTS,
+                experiences=[ExperienceIn(role="Analista de Dados", start=date(2023, 1, 1), skills_used=["sql"])],
+            ),
+            synthetic=True,
+            visible=True,
+        ).candidate
+        if i % 2 == 0:
+            record_event(
+                session,
+                ev(
+                    actor_type="candidate",
+                    actor_id=other.id,
+                    item_type="job",
+                    item_id=world["pjob"],
+                    type="swipe_right",
+                ),
+            )
+    session.commit()
+    rdeck = recruiter_deck(session, world["rec"], world["pjob"], "s-b", limit=40)
+    cards = sorted(rdeck["cards"], key=lambda x: x["rank_meta"]["rank_position"])
+    assert [x["applicant"] for x in cards][:2] == [True, True]
+    assert _reconstruct(cards, "recruiter") == [x["item_id"] for x in cards]
+
+
 def test_export_and_purge(session: Session, world: dict) -> None:
     c = world["cand"]
     record_event(

@@ -47,15 +47,16 @@ def raw_text(crit: str, data: dict, req: RequirementEval, side: str) -> str:
     if crit == "title":
         return f"similaridade de cargo {raw:.2f}".replace(".", ",")
     if crit == "seniority":
+        gap = "mesmo nível" if raw == 0 else ("1 nível de distância" if raw == 1 else f"{raw} níveis de distância")
         return (
             f"vaga {texts.seniority_label(info.get('job_level'))}, perfil "
-            f"{texts.seniority_label(info.get('candidate_level'))} ({raw} nível(is) de distância)"
+            f"{texts.seniority_label(info.get('candidate_level'))} ({gap})"
         )
     if crit == "salary":
-        who = "seu mínimo" if side == "candidate" else "o mínimo do candidato"
+        who = "ao seu mínimo" if side == "candidate" else "ao mínimo do candidato"
         return (
             f"até {texts.fmt_money(info['job_comp'], info.get('currency', 'BRL'), info.get('period', 'month'))} "
-            f"({_pct(raw)} em relação a {who})"
+            f"({_pct(raw)} em relação {who})"
         )
     if crit == "distance":
         if info.get("remote"):
