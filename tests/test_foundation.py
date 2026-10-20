@@ -27,9 +27,7 @@ APP_DIR = Path(__file__).resolve().parents[1] / "app"
 
 def test_rules_hash_is_stable_and_tracks_changes() -> None:
     assert rules_hash() == rules_hash(Rules())
-    changed = dataclasses.replace(
-        RULES, feedback=dataclasses.replace(RULES.feedback, half_life_days=30)
-    )
+    changed = dataclasses.replace(RULES, feedback=dataclasses.replace(RULES.feedback, half_life_days=30))
     assert rules_hash(changed) != rules_hash()
 
 
@@ -85,8 +83,13 @@ def test_no_direct_system_clock_outside_clock_module() -> None:
 
 def _event(**kw: object) -> InteractionEvent:
     base: dict[str, object] = dict(
-        client_event_id="e-1", actor_type="candidate", actor_id=1, item_type="job", item_id=1,
-        type="impression", session_id="s",
+        client_event_id="e-1",
+        actor_type="candidate",
+        actor_id=1,
+        item_type="job",
+        item_id=1,
+        type="impression",
+        session_id="s",
     )
     base.update(kw)
     return InteractionEvent(**base)  # type: ignore[arg-type]

@@ -19,3 +19,8 @@ Choices made where the product spec was silent or open to interpretation, and ev
 | 13 | `Job.version` bumps only when the posting content changes; an LLM re-extraction updates the vectors of the same version. | A better extraction is not a new posting and must not trigger the "vaga atualizada" badge. |
 | 14 | Embedding batch size is 32 instead of 64. | The development machine had about 1.4 GB of free RAM; fastembed's temporaries grow linearly with the batch (see research notes). |
 | 15 | fastembed vectors are cast to float32 and L2-normalized by Encaixe. | fastembed 0.8.1 returns mean-pooled, non-normalized float64 vectors for this model. |
+| 16 | ONNX Runtime's CPU memory arena is disabled (`enable_cpu_mem_arena=False`). | Measured on the dev machine: 605 MB after loading the model; embedding 256 texts in batches of 32 peaked at 815 MB with the arena and 613 MB without it (the arena keeps the batch buffers). Needed for the 700 MB steady-state budget. |
+| 17 | When a job has a requirements section, skills found only in its title are desirable, not required. | The requirements list is what the company states; "ML Engineer" in a title would otherwise add a must that the posting never lists. |
+| 18 | "Transversal" skills (Excel, Git, negotiation, project management…) define no domain and do not count as proof of area. | An analyst who uses Excel must not make a sales job "in area"; an analyst who builds sales dashboards does not prove sales. |
+| 19 | Sentences stating an interest ("Interesse em machine learning") do not create listed skills. | Interest is not a claim of skill. |
+| 20 | A Brazilian CV written in Portuguese gets Portuguese (native) as an inferred language. | CVs rarely list the mother tongue; it is shown as "inferido" for review. |

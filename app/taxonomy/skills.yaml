@@ -1,0 +1,533 @@
+# Encaixe skills taxonomy (draft 2026-10-19). Matching contract and policies: ../taxonomy_notes.md
+# aliases: lowercase, accent-folded; matched on folded+lowercased text, alnum boundaries, leftmost-longest.
+# case_sensitive_aliases: matched on folded text with case preserved.
+# Optional keys (defaults): label_en (= label), also_domains ([]), transversal (false),
+#   case_sensitive_aliases ([]), blockers ([]; plain phrase or 're:' regex; vetoes overlapping matches of THIS skill).
+version: 1
+domains:
+  - {id: analytics, label_pt: "Análise de dados e BI", label_en: "Analytics & BI"}
+  - {id: ml, label_pt: "Machine learning e IA", label_en: "Machine learning & AI"}
+  - {id: data_eng, label_pt: "Engenharia de dados", label_en: "Data engineering"}
+  - {id: backend, label_pt: "Back-end", label_en: "Backend"}
+  - {id: frontend, label_pt: "Front-end", label_en: "Frontend"}
+  - {id: devops, label_pt: "DevOps e cloud", label_en: "DevOps & cloud"}
+  - {id: research, label_pt: "Pesquisa", label_en: "Research"}
+  - {id: business, label_pt: "Negócios", label_en: "Business"}
+
+skills:
+  # ===================== analytics =====================
+  - id: data_analysis
+    label: Análise de dados
+    label_en: Data analysis
+    domain: analytics
+    parent: null
+    aliases: [analise de dados, analises de dados, data analysis, data analytics, analytics, analista de dados, analistas de dados, data analyst, analise exploratoria, exploratory data analysis]
+  - id: business_intelligence
+    label: Business intelligence (BI)
+    domain: analytics
+    parent: null
+    aliases: [business intelligence, inteligencia de negocios, analista de bi, analistas de bi, desenvolvedor de bi, bi analyst, bi developer, bi engineer, ferramentas de bi, bi tools, self-service bi, qlik, qlikview, looker studio, data studio, superset, redash, microstrategy, ssrs]
+    case_sensitive_aliases: [BI]
+  - {id: power_bi, label: Power BI, domain: analytics, parent: business_intelligence, aliases: [power bi, powerbi, power-bi, pbi, power query]}
+  - {id: dax, label: DAX, domain: analytics, parent: power_bi, aliases: [dax]}
+  - {id: tableau, label: Tableau, domain: analytics, parent: business_intelligence, aliases: [tableau]}
+  - {id: looker, label: Looker, domain: analytics, parent: business_intelligence, aliases: [looker, lookml]}
+  - {id: metabase, label: Metabase, domain: analytics, parent: business_intelligence, aliases: [metabase]}
+  - id: google_analytics
+    label: Google Analytics / web analytics
+    domain: analytics
+    parent: null
+    aliases: [google analytics, ga4, ga 4, universal analytics, google tag manager, web analytics, analytics web, adobe analytics, mixpanel, amplitude analytics]
+  - id: data_visualization
+    label: Visualização de dados / dashboards
+    label_en: Data visualization / dashboards
+    domain: analytics
+    parent: data_analysis
+    aliases: [visualizacao de dados, visualizacoes de dados, data visualization, data visualisation, data viz, dataviz, dashboards, dashboard, storytelling com dados, data storytelling, matplotlib, seaborn, plotly, d3.js, d3js, streamlit]
+  - id: statistics
+    label: Estatística
+    label_en: Statistics
+    domain: analytics
+    also_domains: [ml, research]
+    parent: null
+    aliases: [estatistica, estatisticas, estatistico, statistics, statistical analysis, statistical modeling, statistical modelling, statistical models, statistical methods, analise estatistica, analises estatisticas, metodos estatisticos, modelos estatisticos, modelagem estatistica, inferencia estatistica, statistical inference, teste de hipotese, testes de hipotese, testes de hipoteses, hypothesis testing, regressao linear, regressao logistica, linear regression, logistic regression, anova, spss, stata, sas, minitab, monte carlo]
+  - id: a_b_testing
+    label: Testes A/B
+    label_en: A/B testing
+    domain: analytics
+    parent: experimental_design
+    aliases: [teste a/b, testes a/b, teste ab, testes ab, a/b testing, a/b test, a/b tests, ab testing, ab test, ab tests, experimento a/b, experimentos a/b, experimentacao online, online experimentation, split testing, split test]
+  - id: excel
+    label: Excel / planilhas
+    label_en: Excel / spreadsheets
+    domain: analytics
+    transversal: true
+    parent: null
+    aliases: [microsoft excel, ms excel, excel avancado, excel intermediario, excel basico, planilhas, planilha, spreadsheets, spreadsheet, google sheets, vba, tabela dinamica, tabelas dinamicas, pivot table, pivot tables, procv, vlookup, xlookup, procx]
+    case_sensitive_aliases: [Excel, EXCEL]
+    blockers: [excel at]
+  - {id: pandas, label: pandas, domain: analytics, parent: python, aliases: [pandas]}
+  - id: r
+    label: R
+    domain: analytics
+    also_domains: [research, ml]
+    parent: null
+    aliases: [linguagem r, r language, r lang, rstudio, r studio, tidyverse, dplyr, ggplot2, ggplot, r shiny, rmarkdown, r markdown]
+    case_sensitive_aliases: [R]
+    blockers: ["r$", r-squared, r squared, 're:\bR\.\s?[A-Z]']
+  - id: sql
+    label: SQL
+    domain: analytics
+    also_domains: [data_eng, backend]
+    parent: null
+    aliases: [sql, banco de dados relacional, bancos de dados relacionais, relational database, relational databases, rdbms, sgbd, sgbds]
+
+  # ===================== ml =====================
+  - id: machine_learning
+    label: Machine learning
+    domain: ml
+    parent: null
+    aliases: [machine learning, aprendizado de maquina, aprendizagem de maquina, aprendizado automatico, inteligencia artificial, artificial intelligence, ciencia de dados, data science, cientista de dados, cientistas de dados, data scientist, data scientists, ml engineer, ml engineering, engenheiro de ml, engenheira de ml, ai engineer, modelagem preditiva, modelos preditivos, predictive modeling, predictive modelling, predictive models, aprendizado supervisionado, aprendizado nao supervisionado, supervised learning, unsupervised learning, clustering, clusterizacao, k-means, kmeans, random forest, arvores de decisao, decision trees]
+    case_sensitive_aliases: [ML, IA, AI]
+  - id: deep_learning
+    label: Deep learning
+    domain: ml
+    parent: machine_learning
+    aliases: [deep learning, aprendizado profundo, aprendizagem profunda, redes neurais, rede neural, neural networks, neural network, cnn, cnns, rnn, rnns, lstm, transformer]
+    blockers: [cnn brasil, cnn international]
+  - {id: pytorch, label: PyTorch, domain: ml, parent: deep_learning, aliases: [pytorch, py torch, torchvision]}
+  - {id: tensorflow, label: TensorFlow, domain: ml, parent: deep_learning, aliases: [tensorflow, tensor flow]}
+  - {id: keras, label: Keras, domain: ml, parent: deep_learning, aliases: [keras]}
+  - {id: scikit_learn, label: scikit-learn, domain: ml, parent: machine_learning, aliases: [scikit-learn, scikit learn, scikitlearn, sklearn, scikit]}
+  - {id: gradient_boosting, label: Gradient boosting, domain: ml, parent: machine_learning, aliases: [gradient boosting, gradient boosted trees, gradient-boosted trees, gbm, gbdt, catboost]}
+  - {id: xgboost, label: XGBoost, domain: ml, parent: gradient_boosting, aliases: [xgboost, xg boost, xgb]}
+  - {id: lightgbm, label: LightGBM, domain: ml, parent: gradient_boosting, aliases: [lightgbm, light gbm, lgbm]}
+  - id: nlp
+    label: NLP / processamento de linguagem natural
+    label_en: NLP / natural language processing
+    domain: ml
+    parent: machine_learning
+    aliases: [nlp, pln, processamento de linguagem natural, natural language processing, text mining, mineracao de texto, mineracao de textos, analise de sentimento, analise de sentimentos, sentiment analysis, named entity recognition, reconhecimento de entidades nomeadas, ner, spacy, nltk, word2vec, word embeddings, tf-idf, tfidf, classificacao de texto, classificacao de textos, text classification, topic modeling, modelagem de topicos]
+    case_sensitive_aliases: [BERT]
+  - id: computer_vision
+    label: Visão computacional
+    label_en: Computer vision
+    domain: ml
+    parent: machine_learning
+    aliases: [visao computacional, computer vision, visao por computador, opencv, open cv, yolo, deteccao de objetos, object detection, segmentacao de imagens, image segmentation, processamento de imagens, processamento digital de imagens, image processing, reconhecimento de imagens, image recognition, classificacao de imagens, image classification, ocr, reconhecimento facial, facial recognition, face recognition]
+  - id: llm
+    label: LLMs / IA generativa
+    label_en: LLMs / generative AI
+    domain: ml
+    parent: machine_learning
+    aliases: [llm, llms, large language model, large language models, modelos de linguagem, modelo de linguagem, grandes modelos de linguagem, ia generativa, inteligencia artificial generativa, generative ai, genai, gen ai, gen-ai, gpt, openai, ollama, vllm, agentes de ia, agente de ia, ai agents, ai agent, agentic ai, agentes autonomos, llmops, chatbot, chatbots]
+  - id: rag
+    label: RAG
+    domain: ml
+    parent: llm
+    aliases: [rag, retrieval augmented generation, retrieval-augmented generation, geracao aumentada por recuperacao, geracao aumentada via recuperacao]
+    blockers: [rag status, status rag]
+  - id: langchain
+    label: LangChain / frameworks de LLM
+    label_en: LangChain / LLM frameworks
+    domain: ml
+    parent: llm
+    aliases: [langchain, lang chain, langgraph, llamaindex, llama index, llama-index, semantic kernel, crewai]
+  - {id: prompt_engineering, label: Engenharia de prompts, label_en: Prompt engineering, domain: ml, parent: llm, aliases: [prompt engineering, engenharia de prompt, engenharia de prompts, prompt design, design de prompt, design de prompts, prompting, prompt engineer]}
+  - id: vector_databases
+    label: Bancos vetoriais / busca semântica
+    label_en: Vector databases / semantic search
+    domain: ml
+    parent: llm
+    aliases: [banco de dados vetorial, bancos de dados vetoriais, banco vetorial, bancos vetoriais, vector database, vector databases, vector db, vector dbs, vector store, vector stores, busca vetorial, vector search, busca semantica, semantic search, pinecone, weaviate, qdrant, chromadb, faiss, milvus, pgvector]
+  - {id: hugging_face, label: Hugging Face, domain: ml, parent: nlp, aliases: [hugging face, huggingface, transformers]}
+  - id: mlops
+    label: MLOps
+    domain: ml
+    parent: machine_learning
+    aliases: [mlops, ml ops, machine learning operations, deploy de modelos, deploy de modelo, deployment de modelos, implantacao de modelos, model deployment, modelos em producao, modelo em producao, models in production, model serving, monitoramento de modelos, model monitoring, model registry, kubeflow, bentoml]
+  - {id: mlflow, label: MLflow, domain: ml, parent: mlops, aliases: [mlflow, ml flow]}
+  - id: time_series
+    label: Séries temporais / forecasting
+    label_en: Time series / forecasting
+    domain: ml
+    parent: machine_learning
+    aliases: [series temporais, serie temporal, time series, time-series, timeseries, forecasting, previsao de demanda, modelos de previsao, arima, sarima, prophet]
+    blockers: [sales forecasting, forecasting de vendas]
+  - id: recommender_systems
+    label: Sistemas de recomendação
+    label_en: Recommender systems
+    domain: ml
+    parent: machine_learning
+    aliases: [sistemas de recomendacao, sistema de recomendacao, recommender systems, recommender system, recommendation systems, recommendation system, recommendation engine, recommendation engines, motor de recomendacao, motores de recomendacao, filtragem colaborativa, collaborative filtering]
+  - id: feature_engineering
+    label: Feature engineering
+    domain: ml
+    parent: machine_learning
+    aliases: [feature engineering, engenharia de features, engenharia de atributos, engenharia de variaveis, engenharia de caracteristicas, feature store, feature stores, selecao de features, selecao de variaveis, feature selection]
+  - {id: numpy, label: NumPy / SciPy, domain: ml, parent: python, aliases: [numpy, scipy]}
+  - id: reinforcement_learning
+    label: Aprendizado por reforço
+    label_en: Reinforcement learning
+    domain: ml
+    parent: machine_learning
+    aliases: [aprendizado por reforco, aprendizagem por reforco, reinforcement learning, q-learning, multi-armed bandit, multi-armed bandits, bandit algorithms]
+
+  # ===================== data_eng =====================
+  - {id: data_engineering, label: Engenharia de dados, label_en: Data engineering, domain: data_eng, parent: null, aliases: [engenharia de dados, data engineering, engenheiro de dados, engenheira de dados, engenheiros de dados, data engineer, data engineers, big data]}
+  - id: etl
+    label: ETL / ELT e pipelines de dados
+    label_en: ETL / ELT and data pipelines
+    domain: data_eng
+    parent: data_engineering
+    aliases: [etl, elt, pipelines de dados, pipeline de dados, data pipeline, data pipelines, integracao de dados, data integration, ingestao de dados, data ingestion, ssis, pentaho, talend, powercenter, airbyte, fivetran, nifi]
+  - {id: airflow, label: Airflow / orquestração, label_en: Airflow / orchestration, domain: data_eng, parent: etl, aliases: [airflow, mwaa, cloud composer, dagster, prefect, orquestracao de pipelines, orquestracao de dados, data orchestration, pipeline orchestration]}
+  - {id: dbt, label: dbt, domain: data_eng, parent: etl, aliases: [dbt, dbt cloud, data build tool]}
+  - id: spark
+    label: Apache Spark
+    domain: data_eng
+    parent: data_engineering
+    aliases: [spark, spark sql, sparksql, spark streaming, structured streaming]
+    blockers: ['re:(?i)\bspark(?:s|ed|ing)?\s+(?:joy|innovation|curiosity|creativity|change|ideas|conversations?|interest|growth|engagement)\b']
+  - {id: pyspark, label: PySpark, domain: data_eng, parent: spark, aliases: [pyspark, py spark]}
+  - {id: databricks, label: Databricks, domain: data_eng, parent: spark, aliases: [databricks, delta lake, unity catalog]}
+  - id: hadoop
+    label: Hadoop / Hive
+    domain: data_eng
+    parent: data_engineering
+    aliases: [hadoop, hdfs, mapreduce, map reduce, apache hive, hiveql, hbase]
+    case_sensitive_aliases: [Hive]
+  - id: kafka
+    label: Kafka / streaming
+    domain: data_eng
+    parent: messaging
+    aliases: [kafka, confluent, event streaming, streaming de dados, streaming de eventos, data streaming, processamento em tempo real, processamento de dados em tempo real, real-time processing, real time processing, stream processing, processamento de streams, flink, kinesis]
+  - id: data_warehouse
+    label: Data warehouse
+    domain: data_eng
+    parent: data_engineering
+    aliases: [data warehouse, data warehouses, data warehousing, datawarehouse, dw, edw, armazem de dados, data mart, data marts, datamart, datamarts, azure synapse, synapse analytics, sap bw, sap hana, teradata]
+  - {id: data_lake, label: Data lake / lakehouse, domain: data_eng, parent: data_engineering, aliases: [data lake, data lakes, datalake, lakehouse, data lakehouse, lago de dados]}
+  - {id: snowflake, label: Snowflake, domain: data_eng, parent: data_warehouse, aliases: [snowflake, snowpark]}
+  - {id: bigquery, label: BigQuery, domain: data_eng, parent: data_warehouse, aliases: [bigquery, big query]}
+  - {id: redshift, label: Redshift, domain: data_eng, parent: data_warehouse, aliases: [redshift]}
+  - id: data_modeling
+    label: Modelagem de dados
+    label_en: Data modeling
+    domain: data_eng
+    parent: data_engineering
+    aliases: [modelagem de dados, data modeling, data modelling, modelagem dimensional, dimensional modeling, dimensional modelling, modelo dimensional, star schema, snowflake schema, esquema estrela, modelo estrela, kimball, data vault, modelagem relacional, analytics engineering, analytics engineer, engenharia de analytics]
+  - id: data_governance
+    label: Governança e qualidade de dados
+    label_en: Data governance & quality
+    domain: data_eng
+    parent: data_engineering
+    aliases: [governanca de dados, data governance, qualidade de dados, data quality, lgpd, gdpr, catalogo de dados, data catalog, linhagem de dados, data lineage, dados mestres, master data, data stewardship, great expectations]
+  - id: scala
+    label: Scala
+    domain: data_eng
+    also_domains: [backend]
+    parent: null
+    aliases: [scala]
+    blockers: [scala data centers, scala data center, scala datacenters, scala datacenter]
+  - {id: web_scraping, label: Web scraping, domain: data_eng, parent: python, aliases: [webscraping, scraping, raspagem de dados, raspagem web, scrapy, beautifulsoup, beautiful soup, bs4]}
+
+  # ===================== backend =====================
+  - {id: backend_development, label: Desenvolvimento back-end, label_en: Backend development, domain: backend, parent: null, aliases: [back-end, backend, back end, server-side, server side]}
+  - {id: python, label: Python, domain: backend, also_domains: [analytics, ml, data_eng], parent: null, aliases: [python, python3, pyhton]}
+  - {id: java, label: Java, domain: backend, parent: null, aliases: [java, j2ee, jakarta ee, jvm]}
+  - {id: kotlin, label: Kotlin, domain: backend, parent: null, aliases: [kotlin]}
+  - id: go
+    label: Go
+    domain: backend
+    parent: null
+    aliases: [golang, go lang, go-lang, linguagem go]
+    case_sensitive_aliases: [Go]
+    blockers: [go to, go-to, go live, go-live, go/no-go, no-go, go ahead, go-ahead, go beyond, go above, go back, go getter, go-getter, pokemon go, "let's go", lets go, on the go]
+  - id: node_js
+    label: Node.js
+    domain: backend
+    parent: javascript
+    aliases: [node.js, nodejs, node js, express.js, expressjs, nestjs, nest.js]
+    case_sensitive_aliases: [Node]
+  - {id: c_sharp, label: "C#", domain: backend, parent: null, aliases: ["c#", csharp, c sharp]}
+  - id: dotnet
+    label: .NET
+    domain: backend
+    parent: c_sharp
+    aliases: [dotnet, dot net, asp.net, ".net core", ".net framework", entity framework]
+    case_sensitive_aliases: [".NET"]
+  - {id: ruby, label: Ruby, domain: backend, parent: null, aliases: [ruby]}
+  - id: rails
+    label: Ruby on Rails
+    domain: backend
+    parent: ruby
+    aliases: [ruby on rails, rubyonrails]
+    case_sensitive_aliases: [Rails, RoR]
+  - {id: php, label: PHP, domain: backend, parent: null, aliases: [php]}
+  - {id: laravel, label: Laravel, domain: backend, parent: php, aliases: [laravel]}
+  - {id: django, label: Django, domain: backend, parent: python, aliases: [django, drf]}
+  - {id: flask, label: Flask, domain: backend, parent: python, aliases: [flask]}
+  - {id: fastapi, label: FastAPI, domain: backend, parent: python, aliases: [fastapi, fast api]}
+  - id: spring
+    label: Spring / Spring Boot
+    domain: backend
+    parent: java
+    aliases: [spring boot, springboot, spring framework, spring mvc, spring cloud, spring data, spring security, spring batch, spring webflux]
+    case_sensitive_aliases: [Spring]
+    blockers: [spring semester, spring term, spring break, spring internship, spring week, spring festival, 're:(?i)\bspring\s+(?:of\s+)?(?:19|20)\d\d\b']
+  - id: rest_api
+    label: APIs REST
+    label_en: REST APIs
+    domain: backend
+    parent: backend_development
+    aliases: [api rest, apis rest, rest api, rest apis, restful, web services, webservices, web service, desenvolvimento de apis, api development, consumo de apis, integracao de apis, integracao com apis, api integration, api integrations, openapi, swagger]
+    case_sensitive_aliases: [REST]
+  - {id: graphql, label: GraphQL, domain: backend, parent: backend_development, aliases: [graphql, graph ql]}
+  - id: microservices
+    label: Microsserviços / event-driven
+    label_en: Microservices / event-driven
+    domain: backend
+    parent: backend_development
+    aliases: [microsservicos, microservicos, micro servicos, micro-servicos, microsservico, microservico, microservices, microservice, micro services, micro-services, arquitetura orientada a eventos, event-driven, event driven]
+  - id: messaging
+    label: Mensageria / filas
+    label_en: Messaging / queues
+    domain: backend
+    parent: backend_development
+    aliases: [mensageria, message broker, message brokers, filas de mensagens, fila de mensagens, message queue, message queues, message queuing, pub/sub, pubsub, sqs, activemq]
+  - {id: rabbitmq, label: RabbitMQ, domain: backend, parent: messaging, aliases: [rabbitmq, rabbit mq]}
+  - id: nosql
+    label: NoSQL
+    domain: backend
+    parent: null
+    aliases: [nosql, no-sql, bancos nao relacionais, banco nao relacional, bancos de dados nao relacionais, banco de dados nao relacional, non-relational databases, non-relational database, cassandra, dynamodb, dynamo db, couchbase, couchdb, firestore, neo4j, elasticsearch, elastic search, opensearch]
+  - {id: mongodb, label: MongoDB, domain: backend, parent: nosql, aliases: [mongodb, mongo, mongo db]}
+  - {id: redis, label: Redis, domain: backend, parent: nosql, aliases: [redis, elasticache, memcached]}
+  - {id: postgresql, label: PostgreSQL, domain: backend, parent: sql, aliases: [postgresql, postgres, postgre, psql, pgsql, pl/pgsql]}
+  - {id: mysql, label: MySQL, domain: backend, parent: sql, aliases: [mysql, my sql, mariadb]}
+  - {id: sql_server, label: SQL Server, domain: backend, parent: sql, aliases: [sql server, sqlserver, ms sql, mssql, t-sql, tsql, transact-sql, ssms]}
+  - {id: oracle_db, label: Oracle Database, domain: backend, parent: sql, aliases: [oracle, pl/sql, plsql]}
+  - id: rust
+    label: Rust
+    domain: backend
+    parent: null
+    aliases: [rust lang, rustlang, linguagem rust]
+    case_sensitive_aliases: [Rust]
+    blockers: [rust belt]
+
+  # ===================== frontend =====================
+  - {id: frontend_development, label: Desenvolvimento front-end, label_en: Frontend development, domain: frontend, parent: null, aliases: [front-end, frontend, front end]}
+  - {id: javascript, label: JavaScript, domain: frontend, also_domains: [backend], parent: null, aliases: [javascript, java script, js, ecmascript, es6, jquery]}
+  - {id: typescript, label: TypeScript, domain: frontend, also_domains: [backend], parent: javascript, aliases: [typescript, type script]}
+  - id: react
+    label: React
+    domain: frontend
+    parent: javascript
+    aliases: [react.js, reactjs, react js, react native, react hooks, redux]
+    case_sensitive_aliases: [React]
+    blockers: [react quickly, react fast, react promptly, react proactively, react calmly]
+  - {id: vue, label: Vue.js, domain: frontend, parent: javascript, aliases: [vue, vuejs, vuex, nuxt, nuxtjs]}
+  - id: angular
+    label: Angular
+    domain: frontend
+    parent: javascript
+    aliases: [angular, angularjs]
+    blockers: [pedra angular, momento angular, angular momentum, velocidade angular, coeficiente angular]
+  - {id: next_js, label: Next.js, domain: frontend, parent: react, aliases: [next.js, nextjs, next js]}
+  - {id: html, label: HTML, domain: frontend, parent: frontend_development, aliases: [html, html5]}
+  - {id: css, label: CSS, domain: frontend, parent: frontend_development, aliases: [css, css3, sass, scss, styled-components, styled components]}
+  - {id: tailwind, label: Tailwind CSS, domain: frontend, parent: css, aliases: [tailwind, tailwindcss]}
+
+  # ===================== devops =====================
+  - {id: devops_practices, label: DevOps / SRE, domain: devops, parent: null, aliases: [devops, dev ops, devsecops, sre, site reliability, engenharia de confiabilidade, platform engineering, engenharia de plataforma]}
+  - {id: docker, label: Docker / containers, domain: devops, also_domains: [backend, data_eng, ml], parent: null, aliases: [docker, dockerfile, containerizacao, conteinerizacao, containerization, containerized, podman]}
+  - {id: kubernetes, label: Kubernetes, domain: devops, parent: docker, aliases: [kubernetes, k8s, eks, aks, gke, openshift, kubectl]}
+  - id: cloud_computing
+    label: Cloud computing
+    domain: devops
+    also_domains: [data_eng, backend, ml]
+    parent: null
+    aliases: [cloud, nuvem, multicloud, oracle cloud, oci]
+    blockers: [nuvem de palavras, word cloud, word clouds, nuvem de pontos, point cloud, point clouds]
+  - {id: aws, label: AWS, domain: devops, also_domains: [data_eng, backend, ml], parent: cloud_computing, aliases: [aws, amazon web services, s3, ec2, amazon athena, amazon emr, sagemaker, cloudwatch, fargate]}
+  - {id: gcp, label: Google Cloud (GCP), domain: devops, also_domains: [data_eng, backend, ml], parent: cloud_computing, aliases: [gcp, google cloud, vertex ai, cloud run, cloud functions, dataflow, dataproc]}
+  - {id: azure, label: Microsoft Azure, domain: devops, also_domains: [data_eng, backend, ml], parent: cloud_computing, aliases: [azure, data factory, microsoft fabric]}
+  - {id: terraform, label: Terraform / IaC, domain: devops, parent: devops_practices, aliases: [terraform, infraestrutura como codigo, infrastructure as code, iac, pulumi, cloudformation, ansible]}
+  - id: ci_cd
+    label: CI/CD
+    domain: devops
+    parent: devops_practices
+    aliases: [ci/cd, ci cd, cicd, ci-cd, integracao continua, entrega continua, implantacao continua, deploy continuo, continuous integration, continuous delivery, continuous deployment, jenkins, gitlab ci, circleci, azure devops, argocd, argo cd]
+  - {id: github_actions, label: GitHub Actions, domain: devops, parent: ci_cd, aliases: [github actions, github action, gh actions]}
+  - {id: linux, label: Linux / shell, domain: devops, parent: null, aliases: [linux, unix, ubuntu, debian, red hat, redhat, rhel, centos, bash, shell script, shell scripting, scripts shell, linha de comando, command line]}
+  - {id: git, label: Git / controle de versão, label_en: Git / version control, domain: devops, transversal: true, parent: null, aliases: [git, github, gitlab, bitbucket, controle de versao, controle de versoes, version control, versionamento de codigo]}
+  - id: observability
+    label: Observabilidade / monitoramento
+    label_en: Observability / monitoring
+    domain: devops
+    parent: devops_practices
+    aliases: [observabilidade, observability, prometheus, grafana, datadog, new relic, newrelic, elk, elastic stack, kibana, opentelemetry, open telemetry, splunk, dynatrace, apm, monitoramento de aplicacoes, monitoramento de infraestrutura, application monitoring, infrastructure monitoring]
+
+  # ===================== research =====================
+  - id: scientific_research
+    label: Pesquisa científica
+    label_en: Scientific research
+    domain: research
+    parent: null
+    aliases: [pesquisa cientifica, scientific research, pesquisa academica, academic research, iniciacao cientifica, pesquisador, pesquisadora, pesquisadores, researcher, researchers, research scientist, pesquisa e desenvolvimento, research and development, "p&d", "r&d", revisao de literatura, revisao sistematica, literature review, systematic review, metodologia cientifica]
+    blockers: [ux researcher, ux research, user researcher, user research, pesquisador de ux, pesquisadora de ux, market researcher]
+  - id: experimental_design
+    label: Desenho experimental
+    label_en: Experimental design
+    domain: research
+    parent: statistics
+    aliases: [desenho experimental, delineamento experimental, planejamento experimental, planejamento de experimentos, design of experiments, experimental design, desenho de experimentos, experimentos controlados, controlled experiments, randomized controlled trial, randomized controlled trials, ensaio randomizado, ensaios randomizados, rct, rcts]
+  - id: causal_inference
+    label: Inferência causal / econometria
+    label_en: Causal inference / econometrics
+    domain: research
+    parent: statistics
+    aliases: [inferencia causal, causal inference, causalidade, causality, diferencas em diferencas, difference in differences, difference-in-differences, diff-in-diff, propensity score, variaveis instrumentais, instrumental variables, regressao descontinua, regression discontinuity, controle sintetico, synthetic control, uplift modeling, modelagem de uplift, econometria, econometrics, dowhy, econml]
+  - id: bayesian_methods
+    label: Métodos bayesianos
+    label_en: Bayesian methods
+    domain: research
+    parent: statistics
+    aliases: [estatistica bayesiana, bayesian statistics, metodos bayesianos, bayesian methods, inferencia bayesiana, bayesian inference, modelos bayesianos, bayesian models, bayesian modeling, otimizacao bayesiana, bayesian optimization, pymc, pymc3, mcmc]
+  - id: academic_writing
+    label: Escrita acadêmica e publicação
+    label_en: Academic writing & publishing
+    domain: research
+    parent: scientific_research
+    aliases: [escrita academica, academic writing, escrita cientifica, redacao cientifica, scientific writing, artigos cientificos, artigo cientifico, publicacoes cientificas, publicacao cientifica, scientific publications, scientific papers, peer-reviewed, peer reviewed, revisao por pares, latex]
+  - id: optimization
+    label: Otimização / pesquisa operacional
+    label_en: Optimization / operations research
+    domain: research
+    parent: null
+    aliases: [otimizacao matematica, mathematical optimization, pesquisa operacional, operations research, programacao linear, linear programming, programacao inteira, integer programming, mixed integer programming, milp, otimizacao combinatoria, combinatorial optimization, otimizacao convexa, convex optimization, metaheuristicas, metaheuristics, algoritmos geneticos, genetic algorithms, gurobi, cplex, or-tools, ortools, pyomo]
+  - id: survey_methodology
+    label: Amostragem e pesquisas survey
+    label_en: Sampling & survey methodology
+    domain: research
+    parent: null
+    aliases: [amostragem, amostragem estatistica, desenho amostral, plano amostral, sampling, survey design, survey methodology, metodologia de pesquisa, pesquisa quantitativa, pesquisas quantitativas]
+
+  # ===================== business =====================
+  - id: sales
+    label: Vendas
+    label_en: Sales
+    domain: business
+    parent: null
+    aliases: [vendas b2b, vendas b2c, venda b2b, venda b2c, b2b sales, b2c sales, vendas consultivas, venda consultiva, consultative selling, consultative sales, vendas complexas, venda complexa, complex sales, inside sales, outside sales, field sales, vendas internas, vendas externas, vendas saas, saas sales, vendas de software, venda de software, software sales, experiencia em vendas, experiencia com vendas, experiencia comercial, sales experience, gestao de vendas, gestao comercial, sales management, prospeccao, prospecting, cold calling, cold call, fechamento de vendas, fechamento de negocios, closing deals, gerente de vendas, gerente comercial, sales manager, diretor comercial, diretor de vendas, head de vendas, head of sales, sales director, executivo de vendas, executiva de vendas, executivo comercial, executiva comercial, account executive, vendedor, vendedora, representante comercial, consultor de vendas, consultora de vendas, sales representative, sales executive, sdr, bdr]
+  - {id: negotiation, label: Negociação, label_en: Negotiation, domain: business, transversal: true, parent: null, aliases: [negociacao, negociacoes, negotiation, negotiations, negotiating]}
+  - id: crm
+    label: CRM
+    domain: business
+    parent: null
+    aliases: [crm, crms, hubspot, pipedrive, zoho crm, rd station crm, dynamics 365, microsoft dynamics, gestao de relacionamento com o cliente, gestao de relacionamento com clientes, customer relationship management]
+    blockers: [crm data, 're:(?i)\b(?:dados|base|bases|extracao|extracoes|tabelas?)\s+(?:do|de|da)\s+(?:crm|hubspot|pipedrive)\b']
+  - id: salesforce
+    label: Salesforce
+    domain: business
+    parent: crm
+    aliases: [salesforce, sfdc, sales cloud, service cloud, marketing cloud]
+    blockers: [salesforce data, 're:(?i)\b(?:dados|base|bases|extracao|extracoes|tabelas?)\s+(?:do|de|da)\s+salesforce\b']
+  - id: account_management
+    label: Gestão de contas / customer success
+    label_en: Account management / customer success
+    domain: business
+    parent: null
+    aliases: [gestao de contas, account management, account manager, key account, key accounts, kam, gerente de contas, gestao de carteira de clientes, customer success, sucesso do cliente]
+  - id: product_management
+    label: Gestão de produto
+    label_en: Product management
+    domain: business
+    parent: null
+    aliases: [gestao de produto, gestao de produtos, product management, product manager, product managers, gerente de produto, gerente de produtos, product owner, product owners, product discovery, discovery de produto, roadmap de produto, product roadmap]
+  - id: project_management
+    label: Gestão de projetos
+    label_en: Project management
+    domain: business
+    transversal: true
+    parent: null
+    aliases: [gestao de projetos, gerenciamento de projetos, gerencia de projetos, project management, project manager, gerente de projetos, gerente de projeto, pmbok, pmp, pmi, pmo, ms project, microsoft project]
+  - {id: agile_scrum, label: Métodos ágeis / Scrum, label_en: Agile / Scrum, domain: business, transversal: true, parent: null, aliases: [scrum, metodologias ageis, metodologia agil, metodos ageis, metodo agil, agile, kanban, jira]}
+  - {id: stakeholder_management, label: Gestão de stakeholders, label_en: Stakeholder management, domain: business, transversal: true, parent: null, aliases: [stakeholders, stakeholder, partes interessadas, interface com areas de negocio, interface com as areas de negocio]}
+  - id: marketing
+    label: Marketing
+    domain: business
+    parent: null
+    aliases: [marketing digital, digital marketing, growth marketing, marketing de performance, performance marketing, marketing de conteudo, content marketing, inbound marketing, estrategia de marketing, estrategias de marketing, marketing strategy, gestao de marketing, marketing management, planejamento de marketing, email marketing, e-mail marketing, automacao de marketing, marketing automation, seo, midia paga, midias pagas, paid media, trafego pago, gestor de trafego, gestora de trafego, google ads, meta ads, facebook ads, rd station, branding, gestao de marca, brand management, growth hacking]
+    blockers: ['re:(?i)\b(?:analise|analises|dados|dashboards?|relatorios?|metricas|indicadores|kpis)\s+(?:de|do|da|das|dos)\s+(?:campanhas?\s+(?:de\s+)?)?marketing\b']
+  - id: people_management
+    label: Gestão de pessoas / liderança de equipes
+    label_en: People management / team leadership
+    domain: business
+    transversal: true
+    parent: null
+    aliases: [gestao de pessoas, gestao de equipes, gestao de equipe, gestao de times, gestao de time, lideranca de equipes, lideranca de equipe, lideranca de times, lideranca de time, people management, team management, team leadership, people leadership, managing teams, leading teams, gerenciamento de equipes, gerenciamento de equipe, people manager]
+  - id: erp_sap
+    label: ERP / SAP
+    domain: business
+    parent: null
+    aliases: [erp, erps, sap, s/4hana, s4hana, sap fico, sap fi, sap mm, sap sd, totvs, protheus, oracle ebs, oracle erp, oracle fusion, netsuite, sankhya]
+    blockers: ['re:(?i)\b(?:dados|base|bases|extracao|extracoes|tabelas?)\s+(?:do|de|da)\s+(?:sap|erp|totvs|protheus)\b']
+  - id: financial_analysis
+    label: Análise financeira / FP&A
+    label_en: Financial analysis / FP&A
+    domain: business
+    parent: null
+    aliases: [analise financeira, analises financeiras, financial analysis, "fp&a", planejamento financeiro, financial planning, modelagem financeira, financial modeling, financial modelling, valuation, controladoria, controllership, fluxo de caixa, cash flow, dre, demonstracoes financeiras, financial statements]
+
+# ===================== languages =====================
+# A language is detected when an alias co-occurs with a level word within 4 tokens (either side) or sits in an
+# "Idiomas/Languages" section. Several level words -> highest. No level word -> level null.
+language_level_order: [basic, intermediate, advanced, fluent, native]
+languages:
+  - id: english
+    label: Inglês
+    label_en: English
+    aliases: [ingles, english, lingua inglesa]
+    level_words: &level_words
+      native: [nativo, nativa, lingua materna, idioma nativo, native, native speaker, mother tongue, bilingue, bilingual]
+      fluent: [fluente, fluencia, fluent, fluency, c2, full professional proficiency]
+      advanced: [avancado, avancada, advanced, proficiente, proficiencia, proficient, proficiency, c1, professional working proficiency]
+      intermediate: [intermediario, intermediaria, intermediate, upper intermediate, upper-intermediate, b1, b2, conversacao, conversacional, conversational, limited working proficiency]
+      basic: [basico, basica, basic, elementary, iniciante, beginner, a1, a2, instrumental, tecnico, leitura, reading, elementary proficiency]
+  - {id: spanish, label: Espanhol, label_en: Spanish, aliases: [espanhol, spanish, espanol, castelhano, lingua espanhola], level_words: *level_words}
+  - {id: portuguese, label: Português, label_en: Portuguese, aliases: [portugues, portuguese, lingua portuguesa], level_words: *level_words}
+  - {id: french, label: Francês, label_en: French, aliases: [frances, french, francais, lingua francesa], level_words: *level_words}
+  - {id: german, label: Alemão, label_en: German, aliases: [alemao, german, deutsch, lingua alema], level_words: *level_words}
+  - {id: italian, label: Italiano, label_en: Italian, aliases: [italiano, italian, lingua italiana], level_words: *level_words}
+  - {id: mandarin, label: Mandarim, label_en: Mandarin Chinese, aliases: [mandarim, mandarin, chines, chinese], level_words: *level_words}
+  - {id: japanese, label: Japonês, label_en: Japanese, aliases: [japones, japanese], level_words: *level_words}
+
+# ===================== seniority =====================
+# Title-only (job title, experience role). Folded, case-insensitive tokens with word boundaries;
+# case_sensitive_tokens (roman numerals) only as the last title token or before " - ", "(", "|", ",".
+seniority:
+  levels:
+    - {level: 1, id: intern, label_pt: Estágio, label_en: Intern, tokens: [estagio, estagiario, estagiaria, estagiarios, intern, interns, internship, aprendiz, jovem aprendiz, apprentice, bolsista]}
+    - {level: 2, id: junior, label_pt: Júnior, label_en: Junior, tokens: [junior, jr, trainee, entry level, entry-level, recem-formado, recem formado, graduate program], case_sensitive_tokens: [I]}
+    - {level: 3, id: mid, label_pt: Pleno, label_en: Mid-level, tokens: [pleno, plena, pl, mid, mid-level, mid level], case_sensitive_tokens: [II]}
+    - {level: 4, id: senior, label_pt: Sênior, label_en: Senior, tokens: [senior, sr], case_sensitive_tokens: [III]}
+    - {level: 5, id: staff, label_pt: Staff / Especialista / Lead, label_en: Staff / Lead, tokens: [staff, especialista, lead, tech lead, technical lead, lider tecnico, lider tecnica, team lead, lider], case_sensitive_tokens: [IV]}
+    - {level: 6, id: principal, label_pt: Principal, label_en: Principal, tokens: [principal, distinguished, fellow]}
+  # Weak tokens: used only when the title has no explicit level token above.
+  role_tokens:
+    - {level: 2, tokens: [assistente, auxiliar]}
+    - {level: 3, tokens: [supervisor, supervisora]}
+    - {level: 4, tokens: [coordenador, coordenadora, coordinator, gerente, manager]}
+    - {level: 5, tokens: [head]}
+    - {level: 6, tokens: [diretor, diretora, director, vp, vice-presidente, vice president, chief, cto, cdo, cio, ceo]}
+  # "manager/gerente" inside these role nouns is the job name, not a level: no level from them.
+  no_level_role_nouns: [product manager, gerente de produto, gerente de produtos, project manager, gerente de projetos, gerente de projeto, program manager, account manager, gerente de contas, key account manager, customer success manager, community manager, product owner, scrum master]
+  # Never a level signal on their own (fall back to years of experience).
+  no_level_tokens: [associate, specialist, consultant, consultor, consultora, analista, analyst, engenheiro, engenheira, engineer, developer, desenvolvedor, desenvolvedora, cientista, scientist, expert]
+  blockers: [pl/sql, lead generation, geracao de leads, lead scoring, head hunter, staff augmentation, senior sistemas]
+  rules:
+    - Explicit level tokens win over role_tokens; role_tokens apply only when no explicit token is present.
+    - Several explicit levels in one title (Jr/Pl, Pleno a Senior, Mid-Senior) -> the lowest one.
+    - No token at all -> years-of-experience fallback (BUILD_PLAN decision 9).

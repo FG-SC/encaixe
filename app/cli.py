@@ -40,6 +40,58 @@ def init_db_cmd() -> None:
     typer.echo(f"database ready: {get_settings().db_url}")
 
 
+@app.command()
+def seed(
+    recruiters: bool = typer.Option(True, help="Also load the synthetic B side (5 fictional companies)."),
+    vectors: bool = typer.Option(True, help="Compute embeddings and the market-map projection."),
+) -> None:
+    """Load the 60 fictional seed jobs (offline mode) and the synthetic recruiters."""
+    _setup()
+    from app.db import session_scope
+    from app.seed.loader import load_recruiters, load_seed_jobs, open_job_count
+
+    with session_scope() as s:
+        counts = load_seed_jobs(s)
+        recs = load_recruiters(s) if recruiters else []
+    typer.echo(f"seed jobs: {counts}; recruiters: {len(recs)}")
+    if vectors:
+        _vectors_and_projection()
+    with session_scope() as s:
+        typer.echo(f"open jobs: {open_job_count(s)}")
+
+
+def _vectors_and_projection() -> None:
+    from app.db import session_scope
+    from app.embeddings import embedding_status
+    from app.embeddings.projection import compute_projection
+    from app.jobs import ensure_job_vectors
+
+    with session_scope() as s:
+        n = ensure_job_vectors(s)
+    typer.echo(f"embedded {n} job versions ({embedding_status()})")
+    with session_scope() as s:
+        info = compute_projection(s)
+    typer.echo(f"projection: {info.get('n', 0)} jobs, {len(info.get('clusters', []))} clusters ({info.get('method')})")
+
+
+@app.command()
+def embed() -> None:
+    """Compute missing job vectors (all of them if the embedding backend changed)."""
+    _setup()
+    from app.db import session_scope
+    from app.jobs import ensure_job_vectors
+
+    with session_scope() as s:
+        typer.echo(f"embedded {ensure_job_vectors(s)} job versions")
+
+
+@app.command()
+def project() -> None:
+    """Recompute the 2D market map (PCA → t-SNE) and its clusters."""
+    _setup()
+    _vectors_and_projection()
+
+
 @clock_app.command("show")
 def clock_show() -> None:
     _setup()

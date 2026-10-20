@@ -214,19 +214,15 @@ def filtered_summary(total: int, groups: list[tuple[str, int]]) -> str:
 
 # --------------------------------------------------------------------------- explanations
 
-POSITION_NOTE = (
-    "A posição compara esta vaga com as outras da sua lista; bom encaixe é uma régua fixa."
-)
+POSITION_NOTE = "A posição compara esta vaga com as outras da sua lista; bom encaixe é uma régua fixa."
 POSITION_NOTE_RECRUITER = (
     "A posição compara este perfil com os outros da lista desta vaga; bom encaixe é uma régua fixa."
 )
 EXPLORE_SLOT_TEXT = (
-    "Esta vaga foi sorteada para ampliar seu horizonte; ela não está entre as que mais combinam "
-    "com você hoje."
+    "Esta vaga foi sorteada para ampliar seu horizonte; ela não está entre as que mais combinam com você hoje."
 )
 EXPLORE_SLOT_TEXT_RECRUITER = (
-    "Este perfil foi sorteado para ampliar seu horizonte; ele não está entre os que mais combinam "
-    "com a vaga hoje."
+    "Este perfil foi sorteado para ampliar seu horizonte; ele não está entre os que mais combinam com a vaga hoje."
 )
 APPLICANTS_FIRST_TEXT = "Quem se candidatou aparece primeiro, na ordem da fórmula."
 UNKNOWN_TEXT = "não informado"

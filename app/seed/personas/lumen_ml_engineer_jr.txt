@@ -1,0 +1,34 @@
+ML Engineer Jr
+
+Lumen Dados — Florianópolis, SC (híbrido, 2 dias no escritório)
+
+Sobre a Lumen Dados
+Somos uma empresa catarinense de dados e IA que ajuda indústrias da região a prever demanda e reduzir
+desperdício. Time pequeno, código revisado e muito aprendizado.
+
+O que você vai fazer
+• Treinar e avaliar modelos de deep learning para previsão de demanda e visão computacional.
+• Colocar modelos em produção junto com o time de engenharia.
+• Explorar dados de sensores e de vendas com SQL e Python.
+
+Requisitos
+• Python
+• SQL
+• Estatística (testes de hipótese, regressão)
+• PyTorch
+• Deep learning (redes neurais)
+
+Diferenciais
+• Inglês para leitura de documentação
+• Docker
+• Git
+• MLOps (MLflow)
+
+Remuneração e contratação
+Salário de R$ 6.000 a R$ 8.000 por mês, CLT.
+
+Benefícios
+Vale-refeição, plano de saúde, auxílio home office e orçamento anual para cursos.
+
+A Lumen Dados valoriza a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero,
+raça, orientação sexual, idade ou deficiência.

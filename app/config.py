@@ -139,9 +139,7 @@ class GoodFitRules:
 class WeightedRules:
     """Weighted-sum baseline (evaluation only, spec 7.5)."""
 
-    atende: FrozenDict = FrozenDict(
-        {"requirements": 0.45, "semantic": 0.25, "title": 0.15, "seniority": 0.15}
-    )
+    atende: FrozenDict = FrozenDict({"requirements": 0.45, "semantic": 0.25, "title": 0.15, "seniority": 0.15})
     interessa: FrozenDict = FrozenDict({"salary": 1 / 3, "distance": 1 / 3, "timezone": 1 / 3})
     pillars: FrozenDict = FrozenDict({"atende": 0.7, "interessa": 0.3})
     pillars_with_history: FrozenDict = FrozenDict({"atende": 0.6, "interessa": 0.25, "historico": 0.15})
@@ -235,9 +233,7 @@ class WorkdayRules:
 class SeniorityRules:
     """Seniority ladder L1-L6. Title rules first; years of experience only as a fallback."""
 
-    ladder: FrozenDict = FrozenDict(
-        {1: "Estágio", 2: "Júnior", 3: "Pleno", 4: "Sênior", 5: "Staff", 6: "Principal"}
-    )
+    ladder: FrozenDict = FrozenDict({1: "Estágio", 2: "Júnior", 3: "Pleno", 4: "Sênior", 5: "Staff", 6: "Principal"})
     # (min_years inclusive, max_years exclusive, level), used only when the title says nothing.
     years_fallback: tuple[tuple[int, int, int], ...] = (
         (0, 2, 2),
@@ -279,9 +275,7 @@ class CurrencyRules:
     rates_as_of: str = "2026-10"
     rates_source: str = "BCE (frankfurter.dev) e ExchangeRate-API (open.er-api.com), 19/10/2026, arredondado"
     # Multiply an amount per period by this factor to get an amount per month.
-    period_to_month: FrozenDict = FrozenDict(
-        {"hour": 168, "day": 21, "week": 4.33, "month": 1, "year": 1 / 12}
-    )
+    period_to_month: FrozenDict = FrozenDict({"hour": 168, "day": 21, "week": 4.33, "month": 1, "year": 1 / 12})
 
 
 @dataclass(frozen=True)
@@ -565,9 +559,7 @@ class Settings:
     log_level: str = "INFO"
 
     @classmethod
-    def from_env(
-        cls, environ: Mapping[str, str] | None = None, env_file: Path | None = DEFAULT_ENV_FILE
-    ) -> Settings:
+    def from_env(cls, environ: Mapping[str, str] | None = None, env_file: Path | None = DEFAULT_ENV_FILE) -> Settings:
         env: dict[str, str] = read_env_file(env_file)
         env.update(os.environ if environ is None else environ)
 

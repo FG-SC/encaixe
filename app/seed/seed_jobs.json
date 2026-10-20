@@ -1,0 +1,1246 @@
+[
+ {
+  "id": "seed-001",
+  "title": "Analista de Dados Júnior",
+  "company": "Tainha Analytics",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Tainha Analytics é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• SQL\n• Python\n• Power BI\n\nDiferenciais\n• dbt\n• Git\n\nRemuneração e modelo\nSalário: R$ 4.500 a R$ 6.000 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "power_bi"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 2,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-002",
+  "title": "Analista de BI",
+  "company": "Garapuvu Sistemas",
+  "lang": "pt",
+  "location_text": "São José, SC",
+  "url": null,
+  "description": "Sobre nós\nA Garapuvu Sistemas é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Power BI em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• SQL\n• Power BI\n• DAX\n\nDiferenciais\n• Python\n• Excel avançado\n\nRemuneração e modelo\nSalário: R$ 6.000 a R$ 8.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "power_bi",
+    "dax"
+   ],
+   "arrangement": "hybrid",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-003",
+  "title": "Analista de Dados Pleno",
+  "company": "Corvina Pagamentos",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Corvina Pagamentos captou R$ 40 milhões em 2025 e atende 2 milhões de clientes no Sul do Brasil.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• 3+ anos de experiência na área\n• SQL\n• Python\n• estatística\n• Power BI\n\nDiferenciais\n• Airflow",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "statistics",
+    "power_bi"
+   ],
+   "arrangement": "remote",
+   "seniority": 3,
+   "has_salary": false,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-004",
+  "title": "Analista de Dados Sênior",
+  "company": "Atlântica Seguros",
+  "lang": "pt",
+  "location_text": "Joinville, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• 5+ anos de experiência na área\n• SQL\n• Python\n• estatística\n• Tableau\n\nDiferenciais\n• Spark\n• AWS\n\nRemuneração e modelo\nSalário: R$ 11.000 a R$ 14.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "statistics",
+    "tableau"
+   ],
+   "arrangement": "onsite",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-005",
+  "title": "Estágio em Dados",
+  "company": "Ilha Dados",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Ilha Dados é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Excel avançado em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• SQL\n• Excel avançado\n\nDiferenciais\n• Python\n• Power BI\n\nRemuneração e modelo\nBolsa de R$ 1.800 por mês.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "excel"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 1,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-006",
+  "title": "Analytics Engineer Pleno",
+  "company": "Lagoa Labs",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "Sobre nós\nA Lagoa Labs é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e dbt em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• SQL\n• dbt\n• BigQuery\n• Python\n\nDiferenciais\n• Airflow\n• Looker\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "dbt",
+    "bigquery",
+    "python"
+   ],
+   "arrangement": "remote",
+   "seniority": 3,
+   "has_salary": false,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-007",
+  "title": "Analista de Business Intelligence Sênior",
+  "company": "Serra Azul Energia",
+  "lang": "pt",
+  "location_text": "Lages, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com SQL e Power BI em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• SQL\n• Power BI\n• DAX\n• visualização de dados\n\nDiferenciais\n• Python\n\nRemuneração e modelo\nSalário: R$ 9.000 a R$ 12.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "power_bi",
+    "dax",
+    "data_visualization"
+   ],
+   "arrangement": "onsite",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-008",
+  "title": "Analista de Dados Júnior (Power BI)",
+  "company": "Blumenau Têxtil Digital",
+  "lang": "pt",
+  "location_text": "Blumenau, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Power BI e Excel avançado em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• Power BI\n• Excel avançado\n• SQL\n\nDiferenciais\n• Python\n\nRemuneração e modelo\nSalário: R$ 3.500 a R$ 4.200 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "power_bi",
+    "excel",
+    "sql"
+   ],
+   "arrangement": "onsite",
+   "seniority": 2,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-009",
+  "title": "Analista de Dados de Marketing",
+  "company": "Mané Software",
+  "lang": "pt",
+  "location_text": "Palhoça, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• SQL\n• Python\n• testes A/B\n\nDiferenciais\n• Looker\n• marketing digital\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "a_b_testing"
+   ],
+   "arrangement": "hybrid",
+   "seniority": null,
+   "has_salary": false,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-010",
+  "title": "Analista de Dados Pleno",
+  "company": "Sampa Varejo Online",
+  "lang": "pt",
+  "location_text": "São Paulo, SP",
+  "url": null,
+  "description": "Sobre nós\nA Sampa Varejo Online é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• SQL\n• Python\n• Power BI\n\nDiferenciais\n• Spark\n\nRemuneração e modelo\nSalário: R$ 8.000 a R$ 10.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "power_bi"
+   ],
+   "arrangement": "onsite",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-011",
+  "title": "Data Analyst",
+  "company": "Bluecrest Analytics Inc.",
+  "lang": "en",
+  "location_text": "Remote - LATAM",
+  "url": null,
+  "description": "About us\nBluecrest Analytics Inc. is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with SQL and Python on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• SQL\n• Python\n• Looker\n• A/B testing\n• Fluent English\n\nNice to have\n• dbt\n\nCompensation and location\nSalary range: $3,000 - $4,000 per month.\nOverlap with 9am-1pm ET.\n\nBenefits\nHealth insurance, learning budget and home-office stipend.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "looker",
+    "a_b_testing"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "LATAM"
+  }
+ },
+ {
+  "id": "seed-012",
+  "title": "Product Analyst",
+  "company": "Polaris Commerce GmbH",
+  "lang": "en",
+  "location_text": "Remote (Europe)",
+  "url": null,
+  "description": "What you'll do\n• Work with SQL and Python on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• SQL\n• Python\n• A/B testing\n• statistics\n• Fluent English\n\nNice to have\n• Tableau\n\nCompensation and location\nSalary range: €55,000 - €70,000 per year.\nCET business hours.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "a_b_testing",
+    "statistics"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "EUROPE"
+  }
+ },
+ {
+  "id": "seed-013",
+  "title": "Cientista de Dados Júnior",
+  "company": "Catarina Agro Inteligência",
+  "lang": "pt",
+  "location_text": "Chapecó, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e SQL em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• SQL\n• machine learning\n• estatística\n\nDiferenciais\n• scikit-learn\n• séries temporais\n\nRemuneração e modelo\nSalário: R$ 5.000 a R$ 7.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "sql",
+    "machine_learning",
+    "statistics"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 2,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-014",
+  "title": "Cientista de Dados Pleno",
+  "company": "Corvina Pagamentos",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e SQL em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• 3+ anos de experiência na área\n• Python\n• SQL\n• machine learning\n• scikit-learn\n\nDiferenciais\n• MLflow\n• AWS\n\nRemuneração e modelo\nSalário: R$ 9.000 a R$ 12.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "sql",
+    "machine_learning",
+    "scikit_learn"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-015",
+  "title": "Cientista de Dados Sênior",
+  "company": "Butiá Saúde Digital",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e machine learning em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• 5+ anos de experiência na área\n• Python\n• machine learning\n• estatística\n• inferência causal\n• Inglês avançado\n\nDiferenciais\n• PyTorch\n• Spark",
+  "expected": {
+   "skills_must": [
+    "python",
+    "machine_learning",
+    "statistics",
+    "causal_inference"
+   ],
+   "arrangement": "remote",
+   "seniority": 4,
+   "has_salary": false,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-016",
+  "title": "Machine Learning Engineer Pleno",
+  "company": "Lagoa Labs",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Lagoa Labs é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Python e machine learning em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• machine learning\n• Docker\n• MLOps\n\nDiferenciais\n• Kubernetes\n• GCP\n\nRemuneração e modelo\nSalário: R$ 10.000 a R$ 13.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "machine_learning",
+    "docker",
+    "mlops"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-017",
+  "title": "Engenheiro de LLM",
+  "company": "Mangue Labs",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "Sobre nós\nA Mangue Labs é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Python e LLMs em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• Python\n• LLMs\n• RAG\n• LangChain\n\nDiferenciais\n• Docker\n• AWS\n\nRemuneração e modelo\nSalário: R$ 12.000 a R$ 16.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "llm",
+    "rag",
+    "langchain"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-018",
+  "title": "Senior Machine Learning Engineer",
+  "company": "Kestrel AI Ltd.",
+  "lang": "en",
+  "location_text": "Remote - US only",
+  "url": null,
+  "description": "About us\nKestrel AI Ltd. is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with Python and PyTorch on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• 5+ years of professional experience\n• Python\n• PyTorch\n• deep learning\n• MLOps\n• Must be a U.S. citizen and authorized to work in the United States\n\nNice to have\n• Kubernetes\n• AWS\n\nCompensation and location\nSalary range: $170,000 - $210,000 per year.\nOverlap with 10am-4pm PT.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "pytorch",
+    "deep_learning",
+    "mlops"
+   ],
+   "arrangement": "remote",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": "US"
+  }
+ },
+ {
+  "id": "seed-019",
+  "title": "NLP Engineer",
+  "company": "Andes Fintech S.A.",
+  "lang": "en",
+  "location_text": "Remote - LATAM",
+  "url": null,
+  "description": "What you'll do\n• Work with Python and NLP on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• Python\n• NLP\n• LLMs\n• PyTorch\n• Fluent English\n\nNice to have\n• RAG\n\nCompensation and location\nSalary range: $4,000 - $5,500 per month.\n\nBenefits\nHealth insurance, learning budget and home-office stipend.\n\nWe are an equal opportunity employer and value diversity at our company.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "nlp",
+    "llm",
+    "pytorch"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "LATAM"
+  }
+ },
+ {
+  "id": "seed-020",
+  "title": "Engenheira(o) de Visão Computacional",
+  "company": "Joinvalle Mobilidade",
+  "lang": "pt",
+  "location_text": "Joinville, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e visão computacional em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• Python\n• visão computacional\n• deep learning\n• PyTorch\n\nDiferenciais\n• Docker\n\nRemuneração e modelo\nSalário: R$ 9.000 a R$ 11.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "computer_vision",
+    "deep_learning",
+    "pytorch"
+   ],
+   "arrangement": "onsite",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-021",
+  "title": "MLOps Engineer",
+  "company": "Nimbus Remote Inc.",
+  "lang": "en",
+  "location_text": "Remote, worldwide",
+  "url": null,
+  "description": "About us\nNimbus Remote Inc. raised $30M in a Series B and serves 100M customers worldwide.\n\nWhat you'll do\n• Work with Python and MLOps on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• Python\n• MLOps\n• Kubernetes\n• Docker\n• Terraform\n\nNice to have\n• MLflow\n\nBenefits\nHealth insurance, learning budget and home-office stipend.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "mlops",
+    "kubernetes",
+    "docker",
+    "terraform"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": false,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-022",
+  "title": "Cientista de Dados (Recomendação)",
+  "company": "Carioca Streaming",
+  "lang": "pt",
+  "location_text": "Rio de Janeiro, RJ",
+  "url": null,
+  "description": "Sobre nós\nA Carioca Streaming é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Python e sistemas de recomendação em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• sistemas de recomendação\n• machine learning\n• Spark\n\nDiferenciais\n• AWS",
+  "expected": {
+   "skills_must": [
+    "python",
+    "recommender_systems",
+    "machine_learning",
+    "spark"
+   ],
+   "arrangement": "hybrid",
+   "seniority": null,
+   "has_salary": false,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-023",
+  "title": "Staff Machine Learning Scientist",
+  "company": "Kestrel AI Ltd.",
+  "lang": "en",
+  "location_text": "Remote - US only",
+  "url": null,
+  "description": "What you'll do\n• Work with Python and machine learning on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• 9+ years of professional experience\n• Python\n• machine learning\n• deep learning\n• scientific research\n\nNice to have\n• causal inference\n\nCompensation and location\nSalary range: $230,000 - $280,000 per year.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "machine_learning",
+    "deep_learning",
+    "scientific_research"
+   ],
+   "arrangement": "remote",
+   "seniority": 5,
+   "has_salary": true,
+   "eligibility": "US"
+  }
+ },
+ {
+  "id": "seed-024",
+  "title": "Engenheiro de Dados Júnior",
+  "company": "Ilha Dados",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e SQL em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• SQL\n• Airflow\n\nDiferenciais\n• Spark\n• Docker\n\nRemuneração e modelo\nSalário: R$ 5.000 a R$ 6.500 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "sql",
+    "airflow"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 2,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-025",
+  "title": "Engenheiro de Dados Pleno",
+  "company": "Pampa Logística",
+  "lang": "pt",
+  "location_text": "Porto Alegre, RS",
+  "url": null,
+  "description": "Sobre nós\nA Pampa Logística é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Python e Spark em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• Python\n• Spark\n• Airflow\n• SQL\n\nDiferenciais\n• AWS\n• Kafka\n\nRemuneração e modelo\nSalário: R$ 10.000 a R$ 12.000 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "spark",
+    "airflow",
+    "sql"
+   ],
+   "arrangement": "onsite",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-026",
+  "title": "Engenheira(o) de Dados Sênior",
+  "company": "Cerrado Agro",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "Sobre nós\nA Cerrado Agro é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Python e Spark em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• 5+ anos de experiência na área\n• Python\n• Spark\n• Kafka\n• AWS\n\nDiferenciais\n• Terraform\n\nRemuneração e modelo\nSalário: R$ 15.000 a R$ 19.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "spark",
+    "kafka",
+    "aws"
+   ],
+   "arrangement": "remote",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-027",
+  "title": "Data Engineer",
+  "company": "Bluecrest Analytics Inc.",
+  "lang": "en",
+  "location_text": "Remote - LATAM",
+  "url": null,
+  "description": "About us\nBluecrest Analytics Inc. is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with Python and SQL on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• Python\n• SQL\n• Snowflake\n• dbt\n• Airflow\n• Fluent English\n\nNice to have\n• Kafka\n\nCompensation and location\nSalary range: $4,500 - $6,000 per month.\nOverlap with 9am-1pm ET.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "sql",
+    "snowflake",
+    "dbt",
+    "airflow"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "LATAM"
+  }
+ },
+ {
+  "id": "seed-028",
+  "title": "Big Data Engineer",
+  "company": "Minas Dados & Café",
+  "lang": "pt",
+  "location_text": "Belo Horizonte, MG",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Spark e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Spark\n• Python\n• GCP\n• BigQuery\n\nDiferenciais\n• Airflow\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "spark",
+    "python",
+    "gcp",
+    "bigquery"
+   ],
+   "arrangement": "hybrid",
+   "seniority": null,
+   "has_salary": false,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-029",
+  "title": "Analista de Engenharia de Dados",
+  "company": "Amazônia Bio Dados",
+  "lang": "pt",
+  "location_text": "Manaus, AM",
+  "url": null,
+  "description": "Sobre nós\nA Amazônia Bio Dados é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• SQL\n• Python\n• Azure\n\nDiferenciais\n• Spark\n\nRemuneração e modelo\nSalário: R$ 7.000 a R$ 9.000 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "azure"
+   ],
+   "arrangement": "onsite",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-030",
+  "title": "Pesquisador(a) em Inteligência Artificial",
+  "company": "Instituto Lagoa de Pesquisa (fictício)",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e pesquisa científica em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• pesquisa científica\n• machine learning\n• escrita acadêmica\n\nDiferenciais\n• PyTorch\n\nRemuneração e modelo\nBolsa de R$ 6.500 por mês.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "scientific_research",
+    "machine_learning",
+    "academic_writing"
+   ],
+   "arrangement": "hybrid",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-031",
+  "title": "Research Scientist, NLP",
+  "company": "Kestrel AI Ltd.",
+  "lang": "en",
+  "location_text": "London, UK",
+  "url": null,
+  "description": "About us\nKestrel AI Ltd. is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with scientific research and NLP on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a on-site role.\n\nRequirements\n• scientific research\n• NLP\n• PyTorch\n• academic writing\n\nNice to have\n• LLMs\n\nCompensation and location\nSalary range: £80,000 - £100,000 per year.",
+  "expected": {
+   "skills_must": [
+    "scientific_research",
+    "nlp",
+    "pytorch",
+    "academic_writing"
+   ],
+   "arrangement": "onsite",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-032",
+  "title": "Pesquisador(a) Estatístico(a)",
+  "company": "Atlântica Seguros",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Atlântica Seguros é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com estatística e linguagem R em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• estatística\n• linguagem R\n• desenho experimental\n• métodos bayesianos\n\nDiferenciais\n• Python\n\nRemuneração e modelo\nSalário: R$ 8.000 a R$ 9.500 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "statistics",
+    "r",
+    "experimental_design",
+    "bayesian_methods"
+   ],
+   "arrangement": "onsite",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-033",
+  "title": "Cientista de Pesquisa em Inferência Causal",
+  "company": "Corvina Pagamentos",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com inferência causal e estatística em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• inferência causal\n• estatística\n• Python\n• desenho experimental\n\nDiferenciais\n• testes A/B",
+  "expected": {
+   "skills_must": [
+    "causal_inference",
+    "statistics",
+    "python",
+    "experimental_design"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": false,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-034",
+  "title": "Desenvolvedor Python Pleno",
+  "company": "Garapuvu Sistemas",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Garapuvu Sistemas é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Python e Django em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• Django\n• PostgreSQL\n• APIs REST\n\nDiferenciais\n• Docker\n• Redis\n\nRemuneração e modelo\nSalário: R$ 8.000 a R$ 10.500 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "django",
+    "postgresql",
+    "rest_api"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-035",
+  "title": "Backend Engineer (Go)",
+  "company": "Nimbus Remote Inc.",
+  "lang": "en",
+  "location_text": "Remote, worldwide",
+  "url": null,
+  "description": "What you'll do\n• Work with Golang and microservices on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• Golang\n• microservices\n• PostgreSQL\n• Kubernetes\n• Fluent English\n\nNice to have\n• Kafka\n\nCompensation and location\nSalary range: $6,000 - $8,000 per month.",
+  "expected": {
+   "skills_must": [
+    "go",
+    "microservices",
+    "postgresql",
+    "kubernetes"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-036",
+  "title": "Desenvolvedor Java Sênior",
+  "company": "Atlântica Seguros",
+  "lang": "pt",
+  "location_text": "Joinville, SC",
+  "url": null,
+  "description": "Sobre nós\nA Atlântica Seguros é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Java e Spring Boot em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Java\n• Spring Boot\n• microsserviços\n• PostgreSQL\n\nDiferenciais\n• AWS\n• Kafka\n\nRemuneração e modelo\nSalário: R$ 13.000 a R$ 16.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "java",
+    "spring",
+    "microservices",
+    "postgresql"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-037",
+  "title": "Desenvolvedora Node.js Pleno",
+  "company": "Sampa Varejo Online",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Node.js e TypeScript em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• Node.js\n• TypeScript\n• APIs REST\n• MongoDB\n\nDiferenciais\n• Docker\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "node_js",
+    "typescript",
+    "rest_api",
+    "mongodb"
+   ],
+   "arrangement": "remote",
+   "seniority": 3,
+   "has_salary": false,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-038",
+  "title": "Desenvolvedor .NET Pleno",
+  "company": "Serra Azul Energia",
+  "lang": "pt",
+  "location_text": "Criciúma, SC",
+  "url": null,
+  "description": "Sobre nós\nA Serra Azul Energia é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com C# e .NET em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• C#\n• .NET\n• SQL\n• APIs REST\n\nDiferenciais\n• Azure\n\nRemuneração e modelo\nSalário: R$ 7.000 a R$ 9.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "c_sharp",
+    "dotnet",
+    "sql",
+    "rest_api"
+   ],
+   "arrangement": "onsite",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-039",
+  "title": "Desenvolvedor Backend Júnior (FastAPI)",
+  "company": "Mané Software",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e FastAPI em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• FastAPI\n• PostgreSQL\n• Git\n\nDiferenciais\n• Docker\n\nRemuneração e modelo\nSalário: R$ 4.000 a R$ 5.500 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "fastapi",
+    "postgresql",
+    "git"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 2,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-040",
+  "title": "Desenvolvedor PHP/Laravel Pleno",
+  "company": "Orla Turismo Digital",
+  "lang": "pt",
+  "location_text": "Balneário Camboriú, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com PHP e Laravel em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• PHP\n• Laravel\n• SQL\n• APIs REST\n\nDiferenciais\n• Vue.js\n\nRemuneração e modelo\nSalário: R$ 6.000 a R$ 7.500 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "php",
+    "laravel",
+    "sql",
+    "rest_api"
+   ],
+   "arrangement": "onsite",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-041",
+  "title": "Senior Ruby on Rails Engineer",
+  "company": "Polaris Commerce GmbH",
+  "lang": "en",
+  "location_text": "Berlin, Germany",
+  "url": null,
+  "description": "What you'll do\n• Work with Ruby and Rails on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a on-site role.\n\nRequirements\n• Ruby\n• Rails\n• PostgreSQL\n• Redis\n• Fluent English\n\nNice to have\n• GraphQL\n\nCompensation and location\nSalary range: €75,000 - €90,000 per year.\n\nBenefits\nHealth insurance, learning budget and home-office stipend.",
+  "expected": {
+   "skills_must": [
+    "ruby",
+    "rails",
+    "postgresql",
+    "redis"
+   ],
+   "arrangement": "onsite",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-042",
+  "title": "Staff Backend Engineer",
+  "company": "Andes Fintech S.A.",
+  "lang": "en",
+  "location_text": "Remote - LATAM",
+  "url": null,
+  "description": "What you'll do\n• Work with Java and microservices on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• 10+ years of professional experience\n• Java\n• microservices\n• Kafka\n• AWS\n\nNice to have\n• Kubernetes\n\nCompensation and location\nSalary range: $9,000 - $11,000 per month.\n\nBenefits\nHealth insurance, learning budget and home-office stipend.",
+  "expected": {
+   "skills_must": [
+    "java",
+    "microservices",
+    "kafka",
+    "aws"
+   ],
+   "arrangement": "remote",
+   "seniority": 5,
+   "has_salary": true,
+   "eligibility": "LATAM"
+  }
+ },
+ {
+  "id": "seed-043",
+  "title": "Desenvolvedor(a) Backend Pleno",
+  "company": "Joinvalle Mobilidade",
+  "lang": "pt",
+  "location_text": "Itajaí, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e APIs REST em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• APIs REST\n• PostgreSQL\n• Docker\n\nDiferenciais\n• AWS\n\nRemuneração e modelo\nSalário: R$ 2.500 a R$ 3.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "rest_api",
+    "postgresql",
+    "docker"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-044",
+  "title": "Desenvolvedora Frontend React Pleno",
+  "company": "Tainha Analytics",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Tainha Analytics é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com React e TypeScript em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• React\n• TypeScript\n• HTML\n• CSS\n\nDiferenciais\n• GraphQL\n\nRemuneração e modelo\nSalário: R$ 7.500 a R$ 9.500 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "react",
+    "typescript",
+    "html",
+    "css"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-045",
+  "title": "DevOps Engineer Sênior",
+  "company": "Cerrado Agro",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com AWS e Terraform em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• AWS\n• Terraform\n• Kubernetes\n• CI/CD\n\nDiferenciais\n• observabilidade\n\nRemuneração e modelo\nSalário: R$ 14.000 a R$ 17.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "aws",
+    "terraform",
+    "kubernetes",
+    "ci_cd"
+   ],
+   "arrangement": "remote",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-046",
+  "title": "Site Reliability Engineer",
+  "company": "Nimbus Remote Inc.",
+  "lang": "en",
+  "location_text": "Remote, worldwide",
+  "url": null,
+  "description": "About us\nNimbus Remote Inc. is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with Kubernetes and Linux on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• Kubernetes\n• Linux\n• observability\n• Golang\n\nNice to have\n• Terraform\n\nCompensation and location\nUTC-3 to UTC+1 overlap.\n\nBenefits\nHealth insurance, learning budget and home-office stipend.",
+  "expected": {
+   "skills_must": [
+    "kubernetes",
+    "linux",
+    "observability",
+    "go"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": false,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-047",
+  "title": "Engenheiro de Cloud AWS",
+  "company": "Pampa Logística",
+  "lang": "pt",
+  "location_text": "Curitiba, PR",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com AWS e Terraform em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• AWS\n• Terraform\n• Docker\n• Linux\n\nDiferenciais\n• Python\n\nRemuneração e modelo\nSalário: R$ 9.500 a R$ 12.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "aws",
+    "terraform",
+    "docker",
+    "linux"
+   ],
+   "arrangement": "hybrid",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-048",
+  "title": "Desenvolvedor Fullstack Júnior",
+  "company": "Ilha Dados",
+  "lang": "pt",
+  "location_text": "São José, SC",
+  "url": null,
+  "description": "Sobre nós\nA Ilha Dados é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com React e Node.js em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• React\n• Node.js\n• SQL\n• Git\n\nDiferenciais\n• Docker\n\nRemuneração e modelo\nSalário: R$ 4.000 a R$ 5.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "react",
+    "node_js",
+    "sql",
+    "git"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 2,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-049",
+  "title": "Frontend Engineer (Vue)",
+  "company": "Bluecrest Analytics Inc.",
+  "lang": "en",
+  "location_text": "Remote - LATAM",
+  "url": null,
+  "description": "About us\nBluecrest Analytics Inc. is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with Vue.js and TypeScript on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• Vue.js\n• TypeScript\n• CSS\n• Fluent English\n\nNice to have\n• React\n\nCompensation and location\nSalary range: $3,500 - $4,500 per month.",
+  "expected": {
+   "skills_must": [
+    "vue",
+    "typescript",
+    "css"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "LATAM"
+  }
+ },
+ {
+  "id": "seed-050",
+  "title": "Sales Manager",
+  "company": "Polaris Commerce GmbH",
+  "lang": "en",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "About us\nPolaris Commerce GmbH is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with B2B sales and CRM on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a hybrid role.\n\nRequirements\n• 6+ years of professional experience\n• B2B sales\n• CRM\n• negotiation\n• account management\n\nNice to have\n• Salesforce\n• advanced Excel\n\nCompensation and location\nSalary range: R$ 12.000 - R$ 15.000 per month.",
+  "expected": {
+   "skills_must": [
+    "sales",
+    "crm",
+    "negotiation",
+    "account_management"
+   ],
+   "arrangement": "hybrid",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-051",
+  "title": "Executivo(a) de Vendas",
+  "company": "Corvina Pagamentos",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "Sobre nós\nA Corvina Pagamentos é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com vendas B2B e negociação em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• vendas B2B\n• negociação\n• CRM\n\nDiferenciais\n• Salesforce\n\nRemuneração e modelo\nSalário: R$ 5.000 a R$ 7.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "sales",
+    "negotiation",
+    "crm"
+   ],
+   "arrangement": "hybrid",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-052",
+  "title": "Gerente Comercial",
+  "company": "Blumenau Têxtil Digital",
+  "lang": "pt",
+  "location_text": "Blumenau, SC",
+  "url": null,
+  "description": "Sobre nós\nA Blumenau Têxtil Digital é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com vendas B2B e gestão de pessoas em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• vendas B2B\n• gestão de pessoas\n• negociação\n\nDiferenciais\n• CRM\n\nRemuneração e modelo\nSalário: R$ 15.000 a R$ 18.000 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "sales",
+    "people_management",
+    "negotiation"
+   ],
+   "arrangement": "onsite",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-053",
+  "title": "Customer Success Manager",
+  "company": "Lagoa Labs",
+  "lang": "en",
+  "location_text": "Remote (Brazil)",
+  "url": null,
+  "description": "What you'll do\n• Work with account management and CRM on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• account management\n• CRM\n• negotiation\n\nNice to have\n• Salesforce",
+  "expected": {
+   "skills_must": [
+    "account_management",
+    "crm",
+    "negotiation"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": false,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-054",
+  "title": "Gerente de Marketing",
+  "company": "Orla Turismo Digital",
+  "lang": "pt",
+  "location_text": "Itajaí, SC",
+  "url": null,
+  "description": "Sobre nós\nA Orla Turismo Digital é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com marketing digital e gestão de pessoas em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• marketing digital\n• gestão de pessoas\n• gestão de projetos\n\nDiferenciais\n• Excel avançado\n\nRemuneração e modelo\nSalário: R$ 10.000 a R$ 13.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.",
+  "expected": {
+   "skills_must": [
+    "marketing",
+    "people_management",
+    "project_management"
+   ],
+   "arrangement": "onsite",
+   "seniority": 4,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-055",
+  "title": "Analista Financeiro Pleno",
+  "company": "Atlântica Seguros",
+  "lang": "pt",
+  "location_text": "Florianópolis, SC",
+  "url": null,
+  "description": "O que você vai fazer\n• Trabalhar no dia a dia com análise financeira e Excel avançado em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• análise financeira\n• Excel avançado\n\nDiferenciais\n• SQL\n\nRemuneração e modelo\nSalário: R$ 6.000 a R$ 7.500 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "financial_analysis",
+    "excel"
+   ],
+   "arrangement": "onsite",
+   "seniority": 3,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-056",
+  "title": "Head of Data",
+  "company": "Sampa Varejo Online",
+  "lang": "en",
+  "location_text": "São Paulo, Brazil",
+  "url": null,
+  "description": "About us\nSampa Varejo Online is a fictional company building data products with small, autonomous teams. We love Python and AI.\n\nWhat you'll do\n• Work with SQL and Python on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a on-site role.\n\nRequirements\n• 12+ years of professional experience\n• SQL\n• Python\n• people management\n• machine learning\n\nNice to have\n• AWS\n\nCompensation and location\nSalary range: R$ 30.000 - R$ 38.000 per month.\n\nWe are an equal opportunity employer and value diversity at our company.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "people_management",
+    "machine_learning"
+   ],
+   "arrangement": "onsite",
+   "seniority": 5,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-057",
+  "title": "Principal Data Scientist",
+  "company": "Kestrel AI Ltd.",
+  "lang": "en",
+  "location_text": "New York, NY",
+  "url": null,
+  "description": "What you'll do\n• Work with Python and machine learning on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a on-site role.\n\nRequirements\n• 12+ years of professional experience\n• Python\n• machine learning\n• causal inference\n• statistics\n• Must be a U.S. citizen and authorized to work in the United States\n\nNice to have\n• scientific research\n\nCompensation and location\nSalary range: $260,000 - $320,000 per year.\n\nWe are an equal opportunity employer and value diversity at our company.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "machine_learning",
+    "causal_inference",
+    "statistics"
+   ],
+   "arrangement": "onsite",
+   "seniority": 6,
+   "has_salary": true,
+   "eligibility": "US"
+  }
+ },
+ {
+  "id": "seed-058",
+  "title": "Analista de Dados Júnior",
+  "company": "Mangue Labs",
+  "lang": "pt",
+  "location_text": "Recife, PE",
+  "url": null,
+  "description": "Sobre nós\nA Mangue Labs é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• SQL\n• Python\n• Power BI\n\nDiferenciais\n• Excel avançado\n\nRemuneração e modelo\nSalário: R$ 3.800 a R$ 4.800 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "python",
+    "power_bi"
+   ],
+   "arrangement": "onsite",
+   "seniority": 2,
+   "has_salary": true,
+   "eligibility": null
+  }
+ },
+ {
+  "id": "seed-059",
+  "title": "Analista de Dados",
+  "company": "Minas Dados & Café",
+  "lang": "pt",
+  "location_text": "Remoto (Brasil)",
+  "url": null,
+  "description": "Sobre nós\nA Minas Dados & Café é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Power BI em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• SQL\n• Power BI\n• Python\n\nDiferenciais\n• dbt\n\nRemuneração e modelo\nSalário: R$ 2.000 a R$ 2.600 por mês, CLT.",
+  "expected": {
+   "skills_must": [
+    "sql",
+    "power_bi",
+    "python"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "BR"
+  }
+ },
+ {
+  "id": "seed-060",
+  "title": "Data Scientist",
+  "company": "Kestrel AI Ltd.",
+  "lang": "en",
+  "location_text": "Remote - US only",
+  "url": null,
+  "description": "What you'll do\n• Work with Python and SQL on real business problems.\n• Partner with product and engineering to ship high-quality work.\n• This is a remote role.\n\nRequirements\n• Python\n• SQL\n• machine learning\n• statistics\n• Must be a U.S. citizen and authorized to work in the United States\n\nNice to have\n• PyTorch\n\nCompensation and location\nSalary range: $130,000 - $150,000 per year.",
+  "expected": {
+   "skills_must": [
+    "python",
+    "sql",
+    "machine_learning",
+    "statistics"
+   ],
+   "arrangement": "remote",
+   "seniority": null,
+   "has_salary": true,
+   "eligibility": "US"
+  }
+ }
+]

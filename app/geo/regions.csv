@@ -1,0 +1,8 @@
+region,aliases,definition,members
+LATAM,LATAM|LatAm|Latin America|America Latina|América Latina|Latinoamérica|Latinoamerica|Latin American|latino-americano,M49 sub-region 419 Latin America and the Caribbean,AG|AI|AR|AW|BB|BL|BO|BQ|BR|BS|BV|BZ|CL|CO|CR|CU|CW|DM|DO|EC|FK|GD|GF|GP|GS|GT|GY|HN|HT|JM|KN|KY|LC|MF|MQ|MS|MX|NI|PA|PE|PR|PY|SR|SV|SX|TC|TT|UY|VC|VE|VG|VI
+AMERICAS,Americas|The Americas|Américas,M49 region 019 Americas,AG|AI|AR|AW|BB|BL|BM|BO|BQ|BR|BS|BV|BZ|CA|CL|CO|CR|CU|CW|DM|DO|EC|FK|GD|GF|GL|GP|GS|GT|GY|HN|HT|JM|KN|KY|LC|MF|MQ|MS|MX|NI|PA|PE|PM|PR|PY|SR|SV|SX|TC|TT|US|UY|VC|VE|VG|VI
+SOUTH_AMERICA,South America|América do Sul|America do Sul|Sudamérica|Sudamerica,M49 intermediate region 005 South America,AR|BO|BR|BV|CL|CO|EC|FK|GF|GS|GY|PE|PY|SR|UY|VE
+EUROPE,Europe|Europa,M49 region 150 Europe + CY (EU member; M49 puts it in Western Asia),AD|AL|AT|AX|BA|BE|BG|BY|CH|CY|CZ|DE|DK|EE|ES|FI|FO|FR|GB|GG|GI|GR|HR|HU|IE|IM|IS|IT|JE|LI|LT|LU|LV|MC|MD|ME|MK|MT|NL|NO|PL|PT|RO|RS|RU|SE|SI|SJ|SK|SM|UA|VA
+EMEA,EMEA|Europe Middle East and Africa,M49 150 Europe + 002 Africa + 145 Western Asia,AD|AE|AL|AM|AO|AT|AX|AZ|BA|BE|BF|BG|BH|BI|BJ|BW|BY|CD|CF|CG|CH|CI|CM|CV|CY|CZ|DE|DJ|DK|DZ|EE|EG|EH|ER|ES|ET|FI|FO|FR|GA|GB|GE|GG|GH|GI|GM|GN|GQ|GR|GW|HR|HU|IE|IL|IM|IO|IQ|IS|IT|JE|JO|KE|KM|KW|LB|LI|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MK|ML|MR|MT|MU|MW|MZ|NA|NE|NG|NL|NO|OM|PL|PS|PT|QA|RE|RO|RS|RU|RW|SA|SC|SD|SE|SH|SI|SJ|SK|SL|SM|SN|SO|SS|ST|SY|SZ|TD|TF|TG|TN|TR|TZ|UA|UG|VA|YE|YT|ZA|ZM|ZW
+WORLDWIDE,Worldwide|Anywhere|Anywhere in the world|Global|Mundo todo|Qualquer lugar,wildcard: every country,*
+NORTH_AMERICA,North America|América do Norte|America do Norte,M49 sub-region 021 Northern America (excludes MX),BM|CA|GL|PM|US

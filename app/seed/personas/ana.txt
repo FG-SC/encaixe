@@ -1,0 +1,31 @@
+Ana Ribeiro Lima
+Analista de Dados Júnior | Florianópolis, SC
+ana.lima.exemplo@example.com · (48) 99999-0000
+
+Resumo
+Analista de dados júnior com foco em SQL, Python e Power BI. Gosto de transformar dados de operação em
+painéis e análises que ajudam o time a decidir. Interesse em machine learning e em projetos com dados reais.
+
+Experiência profissional
+
+Analista de Dados Júnior — Maré Logística Digital
+mar/2024 – atual | Florianópolis, SC
+• Construí painéis em Power BI (DAX) para acompanhar entregas e atrasos de 12 centros de distribuição.
+• Escrevi consultas SQL no PostgreSQL para consolidar dados de pedidos e reduzir o tempo de fechamento mensal em 30%.
+• Automatizei relatórios semanais com Python e pandas.
+• Fiz análises estatísticas (testes de hipótese) para avaliar mudanças de rota.
+
+Estagiária de BI — Cooperativa Vale do Itajaí Fictícia
+fev/2023 – fev/2024 | Blumenau, SC
+• Mantive planilhas e dashboards em Excel e Power BI para a área comercial.
+• Apoiei a migração de relatórios para SQL.
+
+Formação
+Bacharelado em Estatística — Universidade Federal do Litoral Catarinense (fictícia) — 2019 – 2023
+
+Habilidades
+SQL, Python, pandas, Power BI, DAX, Excel, estatística, Git
+
+Idiomas
+Inglês intermediário
+Espanhol básico

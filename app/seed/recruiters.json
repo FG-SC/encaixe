@@ -1,0 +1,71 @@
+[
+ {
+  "company": "Lumen Dados",
+  "recruiter": "Carla Menezes",
+  "jobs": []
+ },
+ {
+  "company": "Tainha Analytics",
+  "recruiter": "Rafael Duarte",
+  "jobs": [
+   {
+    "title": "Analista de Dados Pleno",
+    "location_text": "Florianópolis, SC",
+    "description": "Sobre nós\nA Tainha Analytics é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• SQL\n• Python\n• Power BI\n• estatística\n\nDiferenciais\n• dbt\n\nRemuneração e modelo\nSalário: R$ 7.000 a R$ 9.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office."
+   },
+   {
+    "title": "Cientista de Dados Júnior",
+    "location_text": "Florianópolis, SC",
+    "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e SQL em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• SQL\n• machine learning\n\nDiferenciais\n• scikit-learn\n\nRemuneração e modelo\nSalário: R$ 5.500 a R$ 7.000 por mês, CLT."
+   }
+  ]
+ },
+ {
+  "company": "Vale Sul Energia",
+  "recruiter": "Juliana Prado",
+  "jobs": [
+   {
+    "title": "Engenheiro de Dados Pleno",
+    "location_text": "Joinville, SC",
+    "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e SQL em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho híbrido.\n\nRequisitos\n• Python\n• SQL\n• Airflow\n• Spark\n\nDiferenciais\n• AWS\n\nRemuneração e modelo\nSalário: R$ 9.000 a R$ 11.500 por mês, CLT.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade."
+   },
+   {
+    "title": "Analista de BI Júnior",
+    "location_text": "Joinville, SC",
+    "description": "O que você vai fazer\n• Trabalhar no dia a dia com SQL e Power BI em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho presencial.\n\nRequisitos\n• SQL\n• Power BI\n• Excel avançado\n\nDiferenciais\n• DAX\n\nRemuneração e modelo\nSalário: R$ 4.000 a R$ 5.000 por mês, CLT."
+   }
+  ]
+ },
+ {
+  "company": "Ondina Saúde",
+  "recruiter": "Marcos Teixeira",
+  "jobs": [
+   {
+    "title": "Cientista de Dados Pleno",
+    "location_text": "Blumenau, SC",
+    "description": "Sobre nós\nA Ondina Saúde é uma empresa fictícia que usa dados para resolver problemas reais, com times pequenos e autonomia. Usamos Python e IA em tudo o que fazemos.\n\nO que você vai fazer\n• Trabalhar no dia a dia com Python e machine learning em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• Python\n• machine learning\n• estatística\n• SQL\n\nDiferenciais\n• NLP\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office."
+   }
+  ]
+ },
+ {
+  "company": "Farol Fintech",
+  "recruiter": "Beatriz Nunes",
+  "jobs": [
+   {
+    "title": "Desenvolvedor Python Sênior",
+    "location_text": "Remoto (Brasil)",
+    "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e FastAPI em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• 5+ anos de experiência na área\n• Python\n• FastAPI\n• PostgreSQL\n• Docker\n\nDiferenciais\n• AWS\n\nRemuneração e modelo\nSalário: R$ 14.000 a R$ 17.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office.\n\nValorizamos a diversidade: todas as pessoas candidatas serão consideradas sem distinção de gênero, raça ou idade."
+   },
+   {
+    "title": "Analista de Dados Júnior",
+    "location_text": "Remoto (Brasil)",
+    "description": "O que você vai fazer\n• Trabalhar no dia a dia com SQL e Python em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• SQL\n• Python\n• Power BI\n\nDiferenciais\n• dbt\n\nRemuneração e modelo\nSalário: R$ 4.500 a R$ 5.500 por mês, CLT."
+   },
+   {
+    "title": "Engenheiro de Machine Learning Pleno",
+    "location_text": "Remoto (Brasil)",
+    "description": "O que você vai fazer\n• Trabalhar no dia a dia com Python e machine learning em problemas do negócio.\n• Colaborar com produto e engenharia para entregar com qualidade.\n• Modelo de trabalho remoto.\n\nRequisitos\n• Python\n• machine learning\n• MLOps\n• Docker\n\nDiferenciais\n• Kubernetes\n\nRemuneração e modelo\nSalário: R$ 11.000 a R$ 14.000 por mês, CLT.\n\nBenefícios\nPlano de saúde, vale-refeição e auxílio home office."
+   }
+  ]
+ }
+]

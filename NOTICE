@@ -1,0 +1,18 @@
+Encaixe — third-party data notices
+
+app/geo/cities.csv
+  City coordinates and time zones derived from GeoNames (https://www.geonames.org/), licensed under
+  CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Changes: a subset of ~160 cities was selected,
+  coordinates were rounded to 4 decimals, and 2 points (Toronto, Dubai) were replaced with Wikidata (CC0) values.
+
+app/geo/countries.csv
+  Country names in Portuguese and English from the Unicode CLDR (https://github.com/unicode-org/cldr-json).
+  Copyright © 2015-2024 Unicode, Inc. Unicode and the Unicode Logo are registered trademarks of Unicode, Inc.
+  Distributed under the Unicode License V3 (https://www.unicode.org/license.txt).
+
+app/geo/regions.csv
+  Region memberships (Latin America and the Caribbean, Americas, South America, Europe, EMEA, Northern
+  America) follow the UN M49 standard (https://unstats.un.org/unsd/methodology/m49/).
+
+Time zone data at runtime comes from the IANA tz database (public domain) via the tzdata package.
+All companies and people in app/seed/ and tests/ are fictional.
