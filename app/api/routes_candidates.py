@@ -16,7 +16,7 @@ from app.events.status import application_status, candidate_judgments
 from app.models import Candidate, Job
 from app.privacy import export_candidate, purge_candidate
 from app.profiles import create_candidate, current_profile, revisions, save_profile
-from app.ranking.deck import candidate_deck, candidate_filtered, job_card, job_summary
+from app.ranking.deck import candidate_deck, candidate_filtered, displayable_description, job_card, job_summary
 from app.ranking.service import job_features_for, rank_for_candidate
 from app.schemas import CandidateProfile
 
@@ -161,7 +161,7 @@ def job_detail(candidate_id: int, job_id: int, session: Session = Depends(get_se
         raise HTTPException(404, "vaga não encontrada")
     result = rank_for_candidate(session, candidate_id)
     item = next((it for it in result.items if it.item_id == job_id), None)
-    detail = {"job": job_summary(session, job), "description_text": job.description_text}
+    detail = {"job": job_summary(session, job), "description_text": displayable_description(job)}
     if item is not None:
         card = job_card(session, item, result, [])
         card["rank_meta"]["slot"] = "direct"

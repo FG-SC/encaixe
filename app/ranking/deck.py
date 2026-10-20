@@ -163,6 +163,13 @@ def source_info(job: Job, company: str | None) -> dict:
     return {"key": job.source, "label": label, "url": job.url, "text": text}
 
 
+def displayable_description(job: Job) -> str | None:
+    """GitHub issue bodies are used for extraction but not redisplayed (terms + personal data): link instead."""
+    if job.source == "github":
+        return None
+    return job.description_text
+
+
 def comp_info(offers: Offers) -> dict | None:
     if offers.comp_max is None and offers.comp_min is None:
         return None

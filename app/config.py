@@ -346,47 +346,105 @@ class SourceRules:
     terms_note: str = ""
     terms_checked_on: str | None = None  # None = terms check pending
     disabled_reason: str | None = None
-    boards: tuple[str, ...] = ()  # ATS board tokens / company slugs (filled in Phase 5)
-    repos: tuple[str, ...] = ()  # GitHub "owner/repo" (filled in Phase 5)
+    boards: tuple[str, ...] = ()  # ATS board tokens / company slugs
+    board_names: FrozenDict = FrozenDict()  # token → company name shown in the attribution
+    repos: tuple[str, ...] = ()  # GitHub "owner/repo"
     requests_per_minute: float | None = None
     requests_per_hour: float | None = None
+    min_interval_s: float = 0.0  # between two requests to the same source
     max_runs_per_day: int | None = None
+    attribution: str = ""  # "Ver vaga original … (via X)"
 
 
 _DISABLED_MVP = "disabled in the MVP (spec 5.1): no connector; enabling a source is Felipe's decision"
+# Terms check of 2026-10-19 (research notes, verified independently): none of the three sources that the
+# spec turns on by default grants clear permission to aggregate and redisplay postings. The spec's rule
+# ("se não achar permissão clara, deixa a fonte desligada e registra no relatório") wins: they ship disabled,
+# with working connectors. Enabling one is Felipe's decision (set enabled=True, or pass --accept-terms).
+_TERMS_AMBIGUOUS = (
+    "termos ambíguos (verificados em 2026-10-19): API pública sem proibição, mas sem permissão clara para "
+    "agregar e reexibir vagas de terceiros; ligar é decisão do dono do projeto"
+)
+
+_GREENHOUSE_BOARDS = FrozenDict(
+    {
+        "stone": "Stone",
+        "btgpactual": "BTG Pactual",
+        "inter": "Inter",
+        "c6bank": "C6 Bank",
+        "xpinc": "XP Inc.",
+        "quintoandar": "QuintoAndar",
+        "agibank": "Agibank",
+        "gympass": "Wellhub (Gympass)",
+        "ifoodcarreiras": "iFood",
+        "abinbev": "AB InBev",
+        "ebanx": "EBANX",
+        "vtex": "VTEX",
+        "wildlifestudios": "Wildlife Studios",
+        "doordashinternational": "DoorDash",
+        "rdstation": "RD Station",
+        "arenaim": "Arena IM",
+        "coderoad": "CodeRoad",
+        "turing": "Turing",
+        "airbnb": "Airbnb",
+        "brex": "Brex",
+        "coinbase": "Coinbase",
+    }
+)
+_LEVER_COMPANIES = FrozenDict({"ciandt": "CI&T", "dlocal": "dLocal", "swile": "Swile", "toptal": "Toptal"})
 
 _SOURCES = FrozenDict(
     {
         "greenhouse": SourceRules(
-            enabled=True,  # pending the terms check (Phase 5)
+            enabled=False,
             kind="ats",
             label="Greenhouse",
             endpoint="https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true",
             terms_url="https://developers.greenhouse.io/job-board.html",
-            terms_note="Public job board API. Link to the posting.",
+            terms_note="API pública de job board, documentada para a página de carreiras da própria empresa.",
+            terms_checked_on="2026-10-19",
+            disabled_reason=_TERMS_AMBIGUOUS,
+            boards=tuple(_GREENHOUSE_BOARDS),
+            board_names=_GREENHOUSE_BOARDS,
             requests_per_minute=30,
+            min_interval_s=1.0,
+            max_runs_per_day=1,
+            attribution="Ver vaga original no site da empresa (via Greenhouse)",
         ),
         "lever": SourceRules(
-            enabled=True,  # pending the terms check (Phase 5)
+            enabled=False,
             kind="ats",
             label="Lever",
             endpoint="https://api.lever.co/v0/postings/{company}?mode=json",
             terms_url="https://github.com/lever/postings-api",
-            terms_note="Public postings API. Link to the posting.",
+            terms_note="API pública de vagas; robots.txt pede 1 s entre requisições.",
+            terms_checked_on="2026-10-19",
+            disabled_reason=_TERMS_AMBIGUOUS,
+            boards=tuple(_LEVER_COMPANIES),
+            board_names=_LEVER_COMPANIES,
             requests_per_minute=30,
+            min_interval_s=1.0,
+            max_runs_per_day=1,
+            attribution="Ver vaga original na página da empresa (via Lever)",
         ),
         "github": SourceRules(
-            enabled=True,  # pending the terms check (Phase 5)
+            enabled=False,
             kind="github",
             label="GitHub",
             endpoint="https://api.github.com/repos/{repo}/issues?state=open&per_page=100",
             terms_url="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
             terms_note=(
-                "Brazilian job repositories (spec examples: backend-br/vagas, frontendbr/vagas). "
-                "Unauthenticated REST API: 60 requests/hour. Link to the original issue; labels become "
-                "stated fields; contact data is not stored."
+                "Issues de repositórios brasileiros de vagas. API sem token: 60 requisições/hora. Link para a "
+                "issue original; labels viram campos declarados; contatos (e-mails, telefones) não são guardados "
+                "e o corpo da issue não é reexibido."
             ),
+            terms_checked_on="2026-10-19",
+            disabled_reason=_TERMS_AMBIGUOUS + " (e as issues contêm dados pessoais de recrutadores)",
+            repos=("backend-br/vagas", "frontendbr/vagas"),
             requests_per_hour=60,
+            min_interval_s=1.0,
+            max_runs_per_day=1,
+            attribution="Ver a issue original no GitHub",
         ),
         "ashby": SourceRules(
             enabled=False,
@@ -434,9 +492,13 @@ _SOURCES = FrozenDict(
             kind="remote_board",
             label="We Work Remotely",
             endpoint="https://weworkremotely.com/remote-jobs.rss",
-            terms_url=None,  # not found yet; check the site's terms before use
-            terms_note="RSS; the company comes in the title ('Company: Role'). Check the terms before use.",
-            disabled_reason=_DISABLED_MVP,
+            terms_url="https://weworkremotely.com/api",
+            terms_note="RSS; the company comes in the title ('Company: Role').",
+            terms_checked_on="2026-10-19",
+            disabled_reason=(
+                "proibido pelos termos: a API não pode ser usada para construir 'a job advertising or job search "
+                "service'; nunca ligar sem autorização por escrito"
+            ),
         ),
     }
 )
@@ -446,7 +508,8 @@ _SOURCES = FrozenDict(
 class IngestRules:
     sources: FrozenDict = _SOURCES
     close_after_missed_runs: int = 2  # a job missing from 2 consecutive runs of its source is closed
-    user_agent: str = f"Encaixe/{__version__} (open-rules job matching MVP; local, non-commercial)"
+    user_agent: str = f"Encaixe/{__version__} (open-rules job matching; local portfolio demo; non-commercial)"
+    backoff_s: tuple[float, ...] = (2.0, 8.0, 30.0)  # waits after 429/5xx before giving up on a board
     timeout_s: float = 20.0
     dedup_keys: tuple[str, ...] = ("company", "title", "city")  # cross-source dedup (normalized)
 

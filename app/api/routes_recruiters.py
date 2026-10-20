@@ -17,7 +17,7 @@ from app.jobs import company_name, ensure_job_vectors, upsert_job
 from app.models import Candidate, Company, Job, Match, Recruiter
 from app.privacy import candidate_card_profile
 from app.profiles import current_profile
-from app.ranking.deck import candidate_card, job_summary, recruiter_deck
+from app.ranking.deck import candidate_card, displayable_description, job_summary, recruiter_deck
 from app.ranking.service import rank_for_job
 from app.schemas import JobDraft
 
@@ -173,7 +173,7 @@ def get_job(jid: int, session: Session = Depends(get_session)) -> dict:
         raise HTTPException(404, "vaga não encontrada")
     return {
         "job": job_summary(session, job),
-        "description_text": job.description_text,
+        "description_text": displayable_description(job),
         "requires": job.requires,
         "offers": job.offers,
         "eligibility": job.eligibility,

@@ -1,7 +1,7 @@
 # Como o Encaixe decide
 
 > Esta página é gerada automaticamente a partir de `app/config.py`, a mesma configuração que o ranking usa.
-> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `847cf4f08be4`.
+> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `1d334d958fb5`.
 
 O Encaixe ordena vagas para candidatos (lado C) e candidatos para vagas (lado B) com o **mesmo procedimento**.
 Ele não usa pesos escolhidos à mão: cada item é ordenado em cada critério, as posições são somadas e a lista sai
@@ -165,7 +165,7 @@ A IA (provedor `groq`, modelo `openai/gpt-oss-20b`) é opcional. Sem chave, tudo
 
 ## 10. Fontes de vagas e câmbio
 
-Fontes ligadas: Greenhouse, Lever, GitHub. Toda vaga mostra de onde veio, com link. Fontes desligadas no MVP: Ashby, Remotive, RemoteOK, Himalayas, We Work Remotely.
+Fontes ligadas: nenhuma. Toda vaga mostra de onde veio, com link. Fontes desligadas no MVP: Greenhouse, Lever, GitHub, Ashby, Remotive, RemoteOK, Himalayas, We Work Remotely.
 Salários em outras moedas são convertidos com câmbio aproximado (2026-10; BCE (frankfurter.dev) e ExchangeRate-API (open.er-api.com), 19/10/2026, arredondado) e marcados como "câmbio aproximado".
 
 ## 11. Exemplo resolvido, passo a passo

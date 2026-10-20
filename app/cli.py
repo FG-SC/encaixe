@@ -102,6 +102,86 @@ def project() -> None:
     _vectors_and_projection()
 
 
+snapshot_app = typer.Typer(help="Congela e restaura as vagas (demo e avaliação reproduzíveis).", no_args_is_help=True)
+app.add_typer(snapshot_app, name="snapshot")
+
+
+@app.command()
+def ingest(
+    all_sources: bool = typer.Option(False, "--all", help="Every source with a connector."),
+    source: list[str] = typer.Option([], "--source", help="greenhouse | lever | github (repeatable)."),
+    board: list[str] = typer.Option([], "--board", help="Only these boards/repos (repeatable)."),
+    accept_terms: bool = typer.Option(
+        False, "--accept-terms", help="Run a source that is disabled because its terms are ambiguous."
+    ),
+    offline: bool = typer.Option(False, "--offline", help="Use only the local HTTP cache (no network)."),
+    force: bool = typer.Option(False, "--force", help="Ignore the once-per-24h limit per board."),
+) -> None:
+    """Fetch real jobs from public sources (heuristic extraction). Cron-friendly: `encaixe ingest --all`."""
+    _setup()
+    if not all_sources and not source:
+        typer.echo("use --all or --source")
+        raise typer.Exit(code=2)
+    from app.db import session_scope
+    from app.ingest.run import ingest as run_ingest
+
+    with session_scope() as s:
+        reports = run_ingest(
+            s,
+            None if all_sources else list(source),
+            list(board) or None,
+            accept_terms=accept_terms,
+            offline=offline,
+            force=force,
+        )
+    for r in reports:
+        run = r.run
+        counts = f" seen={run.n_seen} new={run.n_new} updated={run.n_updated} closed={run.n_closed}" if run else ""
+        typer.echo(f"{r.source:10} {r.board:24} {r.status:7}{counts} {r.message}")
+    if any(r.status == "ok" for r in reports):
+        _vectors_and_projection()
+
+
+@app.command()
+def sources() -> None:
+    """List job sources, whether they are on, and why."""
+    from app.config import RULES
+
+    for key, s in RULES.ingest.sources.items():
+        state = "ligada" if s.enabled else "desligada"
+        typer.echo(f"{key:15} {state:9} {s.disabled_reason or ''}")
+
+
+@snapshot_app.command("save")
+def snapshot_save(name: str) -> None:
+    _setup()
+    from app.db import session_scope
+    from app.ingest.snapshot import save_snapshot
+
+    with session_scope() as s:
+        typer.echo(f"saved {save_snapshot(s, name)}")
+
+
+@snapshot_app.command("load")
+def snapshot_load(name: str) -> None:
+    _setup()
+    from app.db import session_scope
+    from app.ingest.snapshot import load_snapshot
+
+    with session_scope() as s:
+        typer.echo(f"loaded: {load_snapshot(s, name)}")
+    _vectors_and_projection()
+
+
+@snapshot_app.command("list")
+def snapshot_list() -> None:
+    _setup()
+    from app.ingest.snapshot import list_snapshots
+
+    for name in list_snapshots():
+        typer.echo(name)
+
+
 @app.command()
 def export(candidate: int = typer.Option(..., "--candidate", help="Candidate id.")) -> None:
     """Print, as JSON, everything Encaixe stores about a candidate (events included)."""
