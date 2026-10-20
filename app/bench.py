@@ -117,6 +117,8 @@ def _run(name: str, code: str, env: dict[str, str], budget: int) -> dict:
         "within_budget": peak / 2**20 <= budget,
         "seconds": round(time.time() - t0, 1),
         "ok": ok,
+        # a native crash (e.g. an allocation failure inside ONNX Runtime) leaves no traceback, only this code
+        "returncode": proc.returncode,
         "output_tail": out[-800:] if not ok else "",
     }
 

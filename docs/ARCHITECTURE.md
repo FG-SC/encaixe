@@ -36,7 +36,7 @@ encaixe/
 │   ├── llm/               # Groq client, strict schemas, rate limiter, cache, background worker, status
 │   ├── rules/             # one Jinja2 template → docs/RULES.md and the in-app rules page
 │   ├── synth/             # synthetic recruiters, candidates, histories, drift oracle
-│   ├── eval/              # replay, drift, congestion, aggregator comparison, report + SVG charts
+│   ├── eval/              # replay, unbiased oracle check, drift, congestion, aggregator comparison, report + SVG charts
 │   ├── bench.py           # encaixe bench
 │   ├── api/               # FastAPI app factory + routers; serves front/dist
 │   ├── cli.py             # Typer app "encaixe"
@@ -71,7 +71,7 @@ encaixe/
 | `reasons` | `candidate=("role_area","company","salary","arrangement","seniority")`, `recruiter=("skills","seniority","salary","location","language","job_filled")` | enums (pt-BR labels in `texts.py`) |
 | `events` | `impression_min_ms=500, session_idle_minutes=30, reason_chips_seconds=3` | front behaviour, served to the front |
 | `revisions` | `relevant_skill_symdiff=3` | relevant revision threshold |
-| `privacy` | `k_anon=5, candidate_default_visible=False, blind_hidden=("name","contact","photo","age","company_names","institution_names")` | blind card + aggregates |
+| `privacy` | `k_anon=5, candidate_default_visible=False, blind_hidden=("name","contact","photo","age")` | blind card + aggregates |
 | `workday` | `start_hour=9, end_hour=18` | timezone overlap window |
 | `seniority` | ladder `{1:"Estágio",2:"Júnior",3:"Pleno",4:"Sênior",5:"Staff",6:"Principal"}`; `years_fallback=((0,2,2),(2,5,3),(5,9,4),(9,13,5),(13,99,6))` | title rules first; years only as fallback |
 | `currency` | `base="BRL"`, `rates_to_brl={…}`, `rates_as_of`, `period_to_month={hour:168, day:21, week:4.33, month:1, year:1/12}` | approximate FX, always flagged |
@@ -222,7 +222,7 @@ Passes the filters, must credit / must total ≥ `must_share`, seniority gap ≤
 
 ## 12. Privacy
 
-- Blind card until match: no name, contact, photo or age; company and institution names are also hidden (decision: consistent with "no prestige score"; configurable and shown on the rules page). Internal promotions still show as "promoção interna".
+- Blind card until match: no name, contact, photo or age. Company and institution names stay visible (owner's decision; hiding them is a `blind_hidden` switch, shown on the rules page). Internal promotions show as "promoção interna".
 - Real candidates start invisible; the toggle reads "visível para recrutadores, anônimo até o encaixe". Invisible candidates are excluded from every recruiter-side aggregate.
 - k-anonymity: any aggregate count < `k_anon` renders as "<5"; map cells with fewer than `k_anon` candidates are not shown.
 - `encaixe export --candidate <id>` / `GET /api/candidates/{id}/export`: everything stored about the person, events included. `encaixe purge --candidate <id>` / `DELETE /api/candidates/{id}`: candidate, revisions, events where they are actor or item, matches, CV LLM cache.
@@ -235,7 +235,7 @@ Passes the filters, must credit / must total ≥ `must_share`, seniority gap ≤
 
 ## 14. Ingestion and snapshots
 
-- Sources enabled by default: Greenhouse job boards, Lever postings, GitHub issues of Brazilian job repositories (only after the terms check; otherwise `enabled=False` with the reason). Others are listed disabled, without connectors.
+- Sources enabled: Greenhouse job boards, Lever postings, GitHub issues of Brazilian job repositories (the terms check found no explicit permission; the owner turned them on, DECISIONS #24). Others are listed disabled, without connectors; a disabled source runs only with `--accept-terms`.
 - HTTP: identifiable User-Agent, per-source rate limits from config, on-disk cache (`var/cache/http`, ETag/Last-Modified), `--record` / `--offline` modes; `encaixe bench` replays recorded responses.
 - Pipeline: raw posting → heuristic extraction → upsert by `(source, source_id)`; cross-source dedup by normalized company + normalized title + city; `last_seen` update; `IngestRun` per (source, board); a job missing from 2 consecutive runs of its source is closed. GitHub labels become `stated` fields (`method="label"`); issue bodies are stored without contact data (e-mails, phones) — the card links to the issue.
 - Every job shows its origin with a link ("via Greenhouse — <empresa>", "via backend-br/vagas").

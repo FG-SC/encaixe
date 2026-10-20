@@ -134,7 +134,8 @@ Uma carta conta como vista quando fica pelo menos {{ r.events.impression_min_ms 
 ## 8. O que o recrutador vê e o que não vê
 
 Até o encaixe, o card do candidato é **cego**: o recrutador não vê {{ hidden }}. Promoções internas continuam
-visíveis. O contato só é liberado quando os dois lados dão swipe à direita. Perfis criados por pessoas reais nascem
+visíveis.{% if "company_names" not in r.privacy.blind_hidden and "institution_names" not in r.privacy.blind_hidden %} Os nomes das
+empresas e das instituições de ensino aparecem desde o início: o recrutador sabe onde a pessoa trabalhou e estudou.{% endif %} O contato só é liberado quando os dois lados dão swipe à direita. Perfis criados por pessoas reais nascem
 invisíveis; quem fica invisível sai também de todo agregado do lado B. Qualquer contagem menor que
 {{ r.privacy.k_anon }} aparece como "<{{ r.privacy.k_anon }}", e células de mapa com menos de {{ r.privacy.k_anon }} candidatos não aparecem.
 
@@ -148,6 +149,10 @@ A IA (provedor `{{ r.llm.provider }}`, modelo `{{ r.llm.model }}`) é opcional. 
 ## 10. Fontes de vagas e câmbio
 
 Fontes ligadas: {{ sources_on }}. Toda vaga mostra de onde veio, com link. Fontes desligadas no MVP: {{ sources_off }}.
+{% for s in sources_terms %}
+- **{{ s.label }}** ([termos]({{ s.terms_url }})): {{ s.terms_note }}
+{%- endfor %}
+
 Salários em outras moedas são convertidos com câmbio aproximado ({{ r.currency.rates_as_of }}; {{ r.currency.rates_source }}) e marcados como "câmbio aproximado".
 
 ## 11. Exemplo resolvido, passo a passo

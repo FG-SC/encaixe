@@ -234,6 +234,7 @@ def build_context(rules: Rules = RULES) -> dict:
         "llm_consent_text": texts.LLM_CONSENT_TEXT,
         "sources_on": ", ".join(s.label for s in sources.values() if s.enabled) or "nenhuma",
         "sources_off": ", ".join(s.label for s in sources.values() if not s.enabled) or "nenhuma",
+        "sources_terms": [s for s in sources.values() if s.enabled],
         "example": worked_example(rules),
     }
 

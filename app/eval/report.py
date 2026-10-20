@@ -103,6 +103,31 @@ def write_report(session: Session, out_md: Path = EVAL_MD) -> Path:
             "decks served by `feedback-v1`, so the replay inherits that logging policy.",
             "",
         ]
+    oracle = load_result("oracle")
+    if oracle and "aggregators" in oracle:
+        lines += [
+            "### 1b. Unbiased check against the oracle (no logging policy)",
+            "",
+            f"{oracle['users']} fresh simulated users, each ranked by `static-v1` over all eligible jobs "
+            f"({oracle['jobs']} open), every job labelled by the oracle without noise. AUC 0.5 is a random order.",
+            "",
+            "| Aggregator | AUC (liked above disliked) | precision@10 | liked share among eligible jobs |",
+            "|---|---|---|---|",
+        ]
+        for agg, m in oracle["aggregators"].items():
+            lines.append(f"| {agg} | {_f(m['auc'])} | {_f(m['precision@10'])} | {_f(m['liked_share'])} |")
+        st_replay = (replay or {}).get("variants", {}).get("static-v1 (rank_sum)", {})
+        st_oracle = oracle["aggregators"].get("rank_sum", {})
+        if st_replay.get("auc") is not None and st_oracle.get("auc") is not None and st_replay["auc"] < 0.5:
+            lines += [
+                "",
+                f"**Reading:** the replay's static AUC ({_f(st_replay['auc'])}) is below 0.5 while the unbiased "
+                f"one is {_f(st_oracle['auc'])}. The replay compares only jobs that `feedback-v1` chose to show: "
+                "inside that narrow top band, a job that made it with a lower static score got there through its "
+                "history score (it resembles past likes), so static rank and likes are inversely related there. "
+                "It is a selection effect of the logging policy, not a ranking that prefers what people dislike.",
+            ]
+        lines.append("")
     if drift:
         charts.mkdir(parents=True, exist_ok=True)
         curves = drift["curves"]

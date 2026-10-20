@@ -23,6 +23,10 @@ function BlindCard({ card, showWhy }: { card: CandidateCardData; showWhy: boolea
             {e.skills_used.length > 0 && <span className="muted"> — {e.skills_used.join(", ")}</span>}</li>
         ))}
       </ul>
+      {p.education.length > 0 && (
+        <p className="small">{p.education.map((d) => [d.degree, d.field, d.institution].filter(Boolean).join(" — ")
+          + (d.in_progress ? " (em andamento)" : "")).join("; ")}</p>
+      )}
       <Chips items={card.requirements.must} title="Requisitos obrigatórios desta vaga" />
       <p className="small">{card.good_fit.text}</p>
       {p.blind && <p className="small muted">Card cego até o encaixe: sem {p.hidden_fields.join(", ")}.</p>}

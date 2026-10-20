@@ -27,6 +27,8 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture(autouse=True)
 def _isolated_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path]:
     var = tmp_path / "var"
+    # The developer's .env (e.g. a real GROQ_API_KEY) never reaches the tests.
+    monkeypatch.setattr("app.config.read_env_file", lambda path: {})
     monkeypatch.setenv("ENCAIXE_VAR_DIR", str(var))
     monkeypatch.delenv("ENCAIXE_DB_URL", raising=False)
     monkeypatch.setenv("EMBEDDINGS", "fake")

@@ -32,7 +32,7 @@ def _period(exp) -> str:  # type: ignore[no-untyped-def]
 
 
 def candidate_card_profile(profile: CandidateProfile, matched: bool, contact: str | None = None) -> dict:
-    """What a recruiter sees. Until the match: no name, contact, photo, age, company or institution names."""
+    """What a recruiter sees. Until the match, the fields in RULES.privacy.blind_hidden (name, contact, photo, age)."""
     tax = tax_mod.load()
     hidden = set(RULES.privacy.blind_hidden) if not matched else set()
     exps = recent_experiences(profile.experiences)

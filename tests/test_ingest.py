@@ -49,10 +49,27 @@ def _no_sleep(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(http_mod.time, "sleep", lambda s: None)
 
 
-def test_disabled_sources_are_skipped_with_their_reason(session: Session) -> None:
+def test_sources_on_by_owner_decision_and_wwr_off() -> None:
+    from app.config import RULES
+
+    sources = RULES.ingest.sources
+    assert all(sources[s].enabled for s in ("greenhouse", "lever", "github"))
+    assert not sources["weworkremotely"].enabled and "proibido" in (sources["weworkremotely"].disabled_reason or "")
+
+
+def test_disabled_sources_are_skipped_with_their_reason(session: Session, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    import dataclasses
+
+    from app.config import RULES, FrozenDict
+    from app.ingest import run as run_mod
+
+    sources = dict(RULES.ingest.sources)
+    sources["greenhouse"] = dataclasses.replace(sources["greenhouse"], enabled=False, disabled_reason="termos X")
+    patched = dataclasses.replace(RULES, ingest=dataclasses.replace(RULES.ingest, sources=FrozenDict(sources)))
+    monkeypatch.setattr(run_mod, "RULES", patched)
     reports = ingest(session, ["greenhouse", "weworkremotely"])
     assert [r.status for r in reports] == ["skipped", "skipped"]
-    assert "termos" in reports[0].message and "sem conector" in reports[1].message
+    assert "termos X" in reports[0].message and "sem conector" in reports[1].message
 
 
 def test_greenhouse_ingest_dedups_and_closes_after_two_missed_runs(session: Session, monkeypatch) -> None:  # type: ignore[no-untyped-def]

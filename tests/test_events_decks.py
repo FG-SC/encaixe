@@ -289,8 +289,10 @@ def test_blind_card_and_invisible_candidates(session: Session, world: dict) -> N
     profile = current_profile(session, cand)  # type: ignore[arg-type]
     blind = candidate_card_profile(profile, matched=False, contact=cand.contact)  # type: ignore[arg-type,union-attr]
     assert blind["name"] is None and blind["contact"] is None
-    assert all(e["company"] is None for e in blind["experiences"])
-    assert all(e["institution"] is None for e in blind["education"])
+    # company and institution names stay visible on the blind card (owner's decision)
+    assert "Empresa X" in [e["company"] for e in blind["experiences"]]
+    assert [e["institution"] for e in blind["education"]] == ["Universidade Y"]
+    assert blind["hidden_fields"] == ["nome", "contato", "foto", "idade"]
     full = candidate_card_profile(profile, matched=True, contact=cand.contact)  # type: ignore[arg-type,union-attr]
     assert full["name"] == "Bia Teste" and full["contact"] == "bia@example.com"
     cand.visible_to_recruiters = False  # type: ignore[union-attr]

@@ -216,6 +216,23 @@ def eval_drift(
         typer.echo(f"{name:40} recovery={v['recovery_days']} days")
 
 
+@eval_app.command("oracle")
+def eval_oracle(users: int = typer.Option(100, "--users"), seed: int = typer.Option(11, "--seed")) -> None:
+    """Static ranking vs the simulation's oracle over all eligible jobs (no logging policy)."""
+    _setup()
+    from app.db import session_scope
+    from app.eval.oracle import run_oracle_check
+    from app.eval.report import save_result
+
+    with session_scope() as s:
+        res = run_oracle_check(s, users=users, seed=seed)
+    save_result("oracle", res)
+    for name, m in res.get("aggregators", {}).items():
+        typer.echo(
+            f"{name:10} AUC={m['auc'] or 0:.3f} P@10={m['precision@10'] or 0:.3f} base={m['liked_share'] or 0:.3f}"
+        )
+
+
 @eval_app.command("congestion")
 def eval_congestion() -> None:
     _setup()
@@ -263,16 +280,18 @@ def bench() -> None:
     save_result("bench", res)
     for step in res["steps"]:
         flag = "ok " if step["within_budget"] and step["ok"] else "!! "
+        failed = "" if step["ok"] else f"  FALHOU (código {step['returncode']}): {step['output_tail'][-200:]}"
         typer.echo(
             f"{flag}{step['name']:50} pico {step['peak_mb']:6.0f} MB  (orçamento {step['budget_mb']} MB)"
-            f"  {step['seconds']} s{'' if step['ok'] else '  FALHOU: ' + step['output_tail'][-200:]}"
+            f"  {step['seconds']} s{failed}"
         )
 
 
 @eval_app.command("all")
 def eval_all() -> None:
-    """replay + drift + congestion + latency + report (one at a time)."""
+    """replay + oracle check + drift + congestion + latency + report (one at a time)."""
     eval_replay(400)
+    eval_oracle(100, 11)
     eval_drift(30, 40, 7)
     eval_congestion()
     eval_latency()

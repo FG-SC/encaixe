@@ -1,7 +1,7 @@
 # Como o Encaixe decide
 
 > Esta página é gerada automaticamente a partir de `app/config.py`, a mesma configuração que o ranking usa.
-> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `3b729c7c92dc`.
+> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `7c3cfca72c94`.
 
 O Encaixe ordena vagas para candidatos (lado C) e candidatos para vagas (lado B) com o **mesmo procedimento**.
 Ele não usa pesos escolhidos à mão: cada item é ordenado em cada critério, as posições são somadas e a lista sai
@@ -151,8 +151,9 @@ Uma carta conta como vista quando fica pelo menos 500 ms na tela. A sessão é r
 
 ## 8. O que o recrutador vê e o que não vê
 
-Até o encaixe, o card do candidato é **cego**: o recrutador não vê nome, contato, foto, idade, nomes das empresas, nomes das instituições de ensino. Promoções internas continuam
-visíveis. O contato só é liberado quando os dois lados dão swipe à direita. Perfis criados por pessoas reais nascem
+Até o encaixe, o card do candidato é **cego**: o recrutador não vê nome, contato, foto, idade. Promoções internas continuam
+visíveis. Os nomes das
+empresas e das instituições de ensino aparecem desde o início: o recrutador sabe onde a pessoa trabalhou e estudou. O contato só é liberado quando os dois lados dão swipe à direita. Perfis criados por pessoas reais nascem
 invisíveis; quem fica invisível sai também de todo agregado do lado B. Qualquer contagem menor que
 5 aparece como "<5", e células de mapa com menos de 5 candidatos não aparecem.
 
@@ -165,7 +166,12 @@ A IA (provedor `groq`, modelo `openai/gpt-oss-20b`) é opcional. Sem chave, tudo
 
 ## 10. Fontes de vagas e câmbio
 
-Fontes ligadas: nenhuma. Toda vaga mostra de onde veio, com link. Fontes desligadas no MVP: Greenhouse, Lever, GitHub, Ashby, Remotive, RemoteOK, Himalayas, We Work Remotely.
+Fontes ligadas: Greenhouse, Lever, GitHub. Toda vaga mostra de onde veio, com link. Fontes desligadas no MVP: Ashby, Remotive, RemoteOK, Himalayas, We Work Remotely.
+
+- **Greenhouse** ([termos](https://developers.greenhouse.io/job-board.html)): API pública de job board, documentada para a página de carreiras da própria empresa. Ligada por decisão do dono do projeto em 2026-10-20: os termos (verificados em 2026-10-19) não proíbem, mas também não dão permissão explícita para agregar e reexibir vagas de terceiros.
+- **Lever** ([termos](https://github.com/lever/postings-api)): API pública de vagas; robots.txt pede 1 s entre requisições. Ligada por decisão do dono do projeto em 2026-10-20: os termos (verificados em 2026-10-19) não proíbem, mas também não dão permissão explícita para agregar e reexibir vagas de terceiros.
+- **GitHub** ([termos](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)): Issues de repositórios brasileiros de vagas. API sem token: 60 requisições/hora. Link para a issue original; labels viram campos declarados; contatos (e-mails, telefones) não são guardados e o corpo da issue não é reexibido. Ligada por decisão do dono do projeto em 2026-10-20: os termos (verificados em 2026-10-19) não proíbem, mas também não dão permissão explícita para agregar e reexibir vagas de terceiros.
+
 Salários em outras moedas são convertidos com câmbio aproximado (2026-10; BCE (frankfurter.dev) e ExchangeRate-API (open.er-api.com), 19/10/2026, arredondado) e marcados como "câmbio aproximado".
 
 ## 11. Exemplo resolvido, passo a passo

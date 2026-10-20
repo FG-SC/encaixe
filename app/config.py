@@ -219,8 +219,9 @@ class PrivacyRules:
     k_anon: int = 5  # aggregates below this count render as "<5"
     candidate_default_visible: bool = False  # real candidates start invisible
     synthetic_default_visible: bool = True  # synthetic candidates start visible
-    # Hidden on the blind card until a match (company and institution names: anti-prestige decision).
-    blind_hidden: tuple[str, ...] = ("name", "contact", "photo", "age", "company_names", "institution_names")
+    # Hidden on the blind card until a match. Company and institution names stay visible (owner's decision,
+    # 2026-10-20: recruiters want to know which ones); add "company_names" / "institution_names" to hide them.
+    blind_hidden: tuple[str, ...] = ("name", "contact", "photo", "age")
 
 
 @dataclass(frozen=True)
@@ -361,12 +362,11 @@ class SourceRules:
 
 _DISABLED_MVP = "disabled in the MVP (spec 5.1): no connector; enabling a source is Felipe's decision"
 # Terms check of 2026-10-19 (research notes, verified independently): none of the three sources that the
-# spec turns on by default grants clear permission to aggregate and redisplay postings. The spec's rule
-# ("se não achar permissão clara, deixa a fonte desligada e registra no relatório") wins: they ship disabled,
-# with working connectors. Enabling one is Felipe's decision (set enabled=True, or pass --accept-terms).
-_TERMS_AMBIGUOUS = (
-    "termos ambíguos (verificados em 2026-10-19): API pública sem proibição, mas sem permissão clara para "
-    "agregar e reexibir vagas de terceiros; ligar é decisão do dono do projeto"
+# spec turns on by default grants clear permission to aggregate and redisplay postings (public APIs, no
+# prohibition). They first shipped disabled; Felipe, the owner, turned them on on 2026-10-20 (DECISIONS #24).
+_OWNER_ENABLED = (
+    " Ligada por decisão do dono do projeto em 2026-10-20: os termos (verificados em 2026-10-19) não proíbem, "
+    "mas também não dão permissão explícita para agregar e reexibir vagas de terceiros."
 )
 
 _GREENHOUSE_BOARDS = FrozenDict(
@@ -399,14 +399,14 @@ _LEVER_COMPANIES = FrozenDict({"ciandt": "CI&T", "dlocal": "dLocal", "swile": "S
 _SOURCES = FrozenDict(
     {
         "greenhouse": SourceRules(
-            enabled=False,
+            enabled=True,
             kind="ats",
             label="Greenhouse",
             endpoint="https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true",
             terms_url="https://developers.greenhouse.io/job-board.html",
-            terms_note="API pública de job board, documentada para a página de carreiras da própria empresa.",
+            terms_note="API pública de job board, documentada para a página de carreiras da própria empresa."
+            + _OWNER_ENABLED,
             terms_checked_on="2026-10-19",
-            disabled_reason=_TERMS_AMBIGUOUS,
             boards=tuple(_GREENHOUSE_BOARDS),
             board_names=_GREENHOUSE_BOARDS,
             requests_per_minute=30,
@@ -415,14 +415,13 @@ _SOURCES = FrozenDict(
             attribution="Ver vaga original no site da empresa (via Greenhouse)",
         ),
         "lever": SourceRules(
-            enabled=False,
+            enabled=True,
             kind="ats",
             label="Lever",
             endpoint="https://api.lever.co/v0/postings/{company}?mode=json",
             terms_url="https://github.com/lever/postings-api",
-            terms_note="API pública de vagas; robots.txt pede 1 s entre requisições.",
+            terms_note="API pública de vagas; robots.txt pede 1 s entre requisições." + _OWNER_ENABLED,
             terms_checked_on="2026-10-19",
-            disabled_reason=_TERMS_AMBIGUOUS,
             boards=tuple(_LEVER_COMPANIES),
             board_names=_LEVER_COMPANIES,
             requests_per_minute=30,
@@ -431,7 +430,7 @@ _SOURCES = FrozenDict(
             attribution="Ver vaga original na página da empresa (via Lever)",
         ),
         "github": SourceRules(
-            enabled=False,
+            enabled=True,
             kind="github",
             label="GitHub",
             endpoint="https://api.github.com/repos/{repo}/issues?state=open&per_page=100",
@@ -440,9 +439,9 @@ _SOURCES = FrozenDict(
                 "Issues de repositórios brasileiros de vagas. API sem token: 60 requisições/hora. Link para a "
                 "issue original; labels viram campos declarados; contatos (e-mails, telefones) não são guardados "
                 "e o corpo da issue não é reexibido."
-            ),
+            )
+            + _OWNER_ENABLED,
             terms_checked_on="2026-10-19",
-            disabled_reason=_TERMS_AMBIGUOUS + " (e as issues contêm dados pessoais de recrutadores)",
             repos=("backend-br/vagas", "frontendbr/vagas"),
             requests_per_hour=60,
             min_interval_s=1.0,

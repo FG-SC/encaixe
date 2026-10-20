@@ -9,12 +9,14 @@ import threading
 from dataclasses import dataclass
 
 import numpy as np
-from sqlmodel import Session, select
+from sqlalchemy import func
+from sqlalchemy.orm import defer
+from sqlmodel import Session, col, select
 
 from app import clock
 from app.db import from_blob
-from app.jobs import JOBS_VERSION_KEY, ensure_job_vectors, latest_version
-from app.models import Candidate, Job, ProfileRevision, Setting
+from app.jobs import JOBS_VERSION_KEY, ensure_job_vectors
+from app.models import Candidate, Job, JobVersion, ProfileRevision, Setting
 from app.profiles import CANDIDATES_VERSION_KEY, ensure_candidate_vectors
 from app.ranking.features import CandidateFeatures, JobFeatures, candidate_features, job_features
 from app.schemas import CandidateProfile
@@ -38,6 +40,7 @@ class CandidateIndex:
     title_emb: np.ndarray
 
 
+_JOB_HEAVY_FIELDS = ("description_text", "location_text", "provenance", "labels", "url")
 _lock = threading.Lock()
 _job_index: JobIndex | None = None
 _cand_index: CandidateIndex | None = None
@@ -57,12 +60,30 @@ def job_index(session: Session) -> JobIndex:
     with _lock:
         if _job_index is not None and _job_index.version == version:
             return _job_index
+    # Only the columns the ranking reads: descriptions, provenance and version snapshots stay on disk
+    # (with a few thousand real postings, loading them costs tens of MB of the server's 700 MB budget).
+    latest = (
+        select(JobVersion.job_id, func.max(JobVersion.version).label("version"))
+        .group_by(col(JobVersion.job_id))
+        .subquery()
+    )
+    vectors = {
+        job_id: (emb, title)
+        for job_id, emb, title in session.exec(
+            select(JobVersion.job_id, JobVersion.embedding, JobVersion.title_embedding).join(
+                latest, (col(JobVersion.job_id) == latest.c.job_id) & (col(JobVersion.version) == latest.c.version)
+            )
+        ).all()
+    }
+    open_jobs = session.exec(
+        select(Job).where(Job.status == "open").options(*(defer(getattr(Job, f)) for f in _JOB_HEAVY_FIELDS))
+    ).all()
     feats: list[JobFeatures] = []
-    for job in session.exec(select(Job).where(Job.status == "open")).all():
-        v = latest_version(session, job.id)  # type: ignore[arg-type]
-        if v is None or v.embedding is None or v.title_embedding is None:
+    for job in open_jobs:
+        emb, title = vectors.get(job.id, (None, None))  # type: ignore[arg-type]
+        if emb is None or title is None:
             continue
-        feats.append(job_features(job, from_blob(v.embedding), from_blob(v.title_embedding)))  # type: ignore[arg-type]
+        feats.append(job_features(job, from_blob(emb), from_blob(title)))
     dim = feats[0].emb.shape[0] if feats else 1
     idx = JobIndex(
         version=version,
@@ -71,6 +92,8 @@ def job_index(session: Session) -> JobIndex:
         emb=np.vstack([f.emb for f in feats]) if feats else np.zeros((0, dim), dtype=np.float32),
         title_emb=np.vstack([f.title_emb for f in feats]) if feats else np.zeros((0, dim), dtype=np.float32),
     )
+    for i, f in enumerate(feats):  # rows of the matrices instead of per-job copies (half the vector memory)
+        f.emb, f.title_emb = idx.emb[i], idx.title_emb[i]
     with _lock:
         _job_index = idx
     return idx
