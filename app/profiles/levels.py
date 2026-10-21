@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 from app import clock
 from app import taxonomy as tax_mod
 from app.config import RULES
@@ -15,9 +17,14 @@ def years_of_experience(profile: CandidateProfile) -> float:
 
 
 def candidate_level(profile: CandidateProfile) -> int | None:
-    """Most recent experience whose title states a level; else the headline; else years (fallback)."""
+    """Most recent experience (ended within the title window) whose title states a level; else the headline; else
+    years of experience (fallback)."""
     tax = tax_mod.load()
+    today = clock.today()
+    window_start = date(today.year - RULES.seniority.title_window_years, today.month, 1)
     for exp in recent_experiences(profile.experiences):
+        if exp.end is not None and exp.end < window_start:
+            break  # older experiences only count through the years of experience
         level = exp.seniority
         if level is None:
             m = tax.seniority_from_title(exp.role)

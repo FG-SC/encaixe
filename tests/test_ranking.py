@@ -260,9 +260,16 @@ def test_counterfactual_ana_and_carla(session: Session, world: dict) -> None:
 
 
 def test_unlock_counts(session: Session, world: dict) -> None:
+    # a sales job out of Ana's area, whose only must is "Vendas": adding it would "unlock" another career
+    text = "Requisitos\n- Experiência com vendas"
+    sales = extract_job(RawPosting(title="Consultor Comercial", description=text, location_text="Florianópolis, SC"))
+    assert sales.requires.skills_must == ["sales"]
+    upsert_job(session, sales, source="t", source_id="sales")
+    session.commit()
     c = rank_for_candidate(session, world["ana"]).meta["candidate"]
     counts = unlock_counts(c, job_index(session).jobs)
     assert counts and all(skill not in c.proven for skill in counts)
+    assert "sales" not in counts  # only jobs of the candidate's area count
 
 
 # --------------------------------------------------------------------------- aggregators and latency

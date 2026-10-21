@@ -24,7 +24,9 @@ Antes de ordenar, cada vaga passa por filtros. Uma vaga filtrada **não some em 
 | Fora da área | você não comprova nenhum requisito obrigatório da vaga **e** não tem nenhum domínio da taxonomia em comum com ela |
 
 A escada de senioridade é: {% for level, label in ladder %}L{{ level }} {{ label }}{% if not loop.last %} · {% endif %}{% endfor %}.
-O título do cargo manda; anos de experiência servem só quando o título não diz o nível.
+O título do cargo manda; anos de experiência servem só quando o título não diz o nível. Vale o título da
+experiência mais recente que diz o nível, desde que ela tenha terminado há menos de {{ r.seniority.title_window_years }} anos:
+um estágio de anos atrás não faz de alguém experiente um "Estágio" hoje.
 
 **Por que "fora da área" é filtro e não critério:** a soma de posições compensa um critério ruim com outro bom.
 Uma vaga de vendas com ótimo salário poderia subir para o meio da lista de um perfil de dados. O que não é

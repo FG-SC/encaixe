@@ -64,6 +64,24 @@ def test_seniority_from_title(title: str, level: int | None) -> None:
     assert (m.level if m else None) == level
 
 
+def test_old_internship_does_not_set_todays_level() -> None:
+    """A title only counts if its experience ended within RULES.seniority.title_window_years; else years decide."""
+    from app import clock
+    from app.profiles.levels import candidate_level
+    from app.schemas import CandidateProfile, ExperienceIn
+
+    today = clock.today()
+
+    def ago(years: int) -> date:
+        return date(today.year - years, today.month, 1)
+
+    current = ExperienceIn(role="Engenheiro de IA", company="Farol Fintech", start=ago(1), end=None)
+    old_intern = ExperienceIn(role="Estagiário de Dados", company="Tainha Analytics", start=ago(7), end=ago(5))
+    assert candidate_level(CandidateProfile(experiences=[current, old_intern])) == 3  # 3 years of experience: Pleno
+    recent_intern = ExperienceIn(role="Estagiário de Dados", company="Tainha Analytics", start=ago(1), end=None)
+    assert candidate_level(CandidateProfile(experiences=[recent_intern])) == 1
+
+
 def test_languages() -> None:
     found = [(m.language, m.level) for m in load_tax().find_languages("Inglês avançado e espanhol básico")]
     assert found == [("en", "advanced"), ("es", "basic")]

@@ -1,7 +1,7 @@
 # Como o Encaixe decide
 
 > Esta página é gerada automaticamente a partir de `app/config.py`, a mesma configuração que o ranking usa.
-> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `1b925f73e0bb`.
+> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `7270a9f9d4fb`.
 
 O Encaixe ordena vagas para candidatos (lado C) e candidatos para vagas (lado B) com o **mesmo procedimento**.
 Ele não usa pesos escolhidos à mão: cada item é ordenado em cada critério, as posições são somadas e a lista sai
@@ -24,7 +24,9 @@ Antes de ordenar, cada vaga passa por filtros. Uma vaga filtrada **não some em 
 | Fora da área | você não comprova nenhum requisito obrigatório da vaga **e** não tem nenhum domínio da taxonomia em comum com ela |
 
 A escada de senioridade é: L1 Estágio · L2 Júnior · L3 Pleno · L4 Sênior · L5 Staff · L6 Principal.
-O título do cargo manda; anos de experiência servem só quando o título não diz o nível.
+O título do cargo manda; anos de experiência servem só quando o título não diz o nível. Vale o título da
+experiência mais recente que diz o nível, desde que ela tenha terminado há menos de 3 anos:
+um estágio de anos atrás não faz de alguém experiente um "Estágio" hoje.
 
 **Por que "fora da área" é filtro e não critério:** a soma de posições compensa um critério ruim com outro bom.
 Uma vaga de vendas com ótimo salário poderia subir para o meio da lista de um perfil de dados. O que não é

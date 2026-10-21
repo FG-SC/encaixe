@@ -189,7 +189,7 @@ Passes the filters, must credit / must total ≥ `must_share`, seniority gap ≤
 
 ### 9.5 Counterfactuals and unlock analysis
 - Per C-side card that is not a good fit: the smallest change that makes it one. Skills: add missing musts, simulated as used in a recent experience, greedily (zero-credit skills first, ties broken by market unlock count) until the share reaches `must_share`. Preferences: when only a preference filter blocks the job, the preference change that lifts it (accept hybrid, raise `max_distance_km` to X, lower comp_min to Y). A seniority gap > `max_seniority_gap` is reported as "no small change". The message always speaks of "bom encaixe", never positions.
-- Unlock (Raio-X top 3, Explorar top 10): for every skill the candidate does not prove, the number of open jobs that become good fits when the skill is added as recently used (filters recomputed). Vectorized over skills × jobs.
+- Unlock (Raio-X top 3, Explorar top 10): for every skill the candidate does not prove, the number of open jobs of the candidate's area (not out of area today, DECISIONS #41) that become good fits when the skill is added as recently used (filters recomputed). Vectorized over skills × jobs.
 
 ### 9.6 Feedback (`feedback-v1`)
 - Judgments of the actor (candidate; or recruiter within `context_job_id`): likes = `swipe_right`, dislikes = `swipe_left`; recruiter reasons in `ignored_recruiter` are dropped entirely.

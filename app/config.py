@@ -248,6 +248,9 @@ class SeniorityRules:
         (13, 99, 6),
     )
     student_level: int = 1  # students and interns
+    # A title only sets the level if its experience ended within this window: an internship that ended years ago
+    # does not make an experienced person "Estágio" today (then the headline, then years of experience decide).
+    title_window_years: int = 3
 
 
 @dataclass(frozen=True)

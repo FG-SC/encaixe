@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 from app.config import RULES
 from app.ranking.features import CandidateFeatures, JobFeatures, job_comp_max_for
-from app.ranking.pair import FilterReason, distance_km, evaluate_requirements, good_fit, hard_filters
+from app.ranking.pair import FilterReason, distance_km, evaluate_requirements, good_fit, hard_filters, out_of_area
 
 PREFERENCE_FILTERS = {"arrangement_not_accepted", "beyond_distance", "salary_below_min"}
 
@@ -128,13 +128,20 @@ def skills_to_full_proof(c: CandidateFeatures, j: JobFeatures) -> tuple[list[str
 def unlock_counts(
     c: CandidateFeatures, jobs: list[JobFeatures], side: str = "candidate", candidates_skills: list[str] | None = None
 ) -> Counter[str]:
-    """For each skill the candidate does not prove: open jobs that become a good fit if it is added."""
+    """For each skill the candidate does not prove: open jobs of their area that become a good fit if it is added.
+
+    Jobs out of the candidate's area today are left out: one generic skill ("Vendas") would otherwise "unlock" a
+    whole other career (a sales profile still sees sales skills, since sales jobs are in its area).
+    """
     from app import taxonomy as tax_mod
 
     tax = tax_mod.load()
     base_good: dict[int, bool] = {}
     for j in jobs:
         r = evaluate_requirements(c, j)
+        if out_of_area(c, j, r):
+            base_good[j.job_id] = True  # skipped below, like a job that is already a good fit
+            continue
         base_good[j.job_id] = good_fit(c, j, r, not hard_filters(c, j, r, side)).is_good_fit
     skills = candidates_skills or sorted({s for j in jobs for s in j.must} - c.proven)
     counts: Counter[str] = Counter()
