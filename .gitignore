@@ -3,6 +3,7 @@ var/
 # environments and secrets
 .venv/
 .env
+.env.prod
 # Python build/test artefacts
 __pycache__/
 *.pyc

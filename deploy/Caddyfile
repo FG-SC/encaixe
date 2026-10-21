@@ -1,0 +1,9 @@
+# HTTPS for {$DOMAIN} (certificates are issued and renewed automatically), proxied to the app container.
+# The app's port 8000 is never published: only Caddy talks to it.
+{$DOMAIN} {
+	encode zstd gzip
+	request_body {
+		max_size 6MB
+	}
+	reverse_proxy app:8000
+}

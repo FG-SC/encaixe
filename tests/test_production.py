@@ -82,6 +82,31 @@ def test_demo_commands_refuse_to_run_in_prod(prod: None) -> None:
     assert db.exists()  # demo reset did not delete the production database
 
 
+def test_backup_copies_the_database_and_keeps_the_newest(session: Session) -> None:
+    import sqlite3
+
+    from typer.testing import CliRunner
+
+    from app.cli import app
+    from app.config import get_settings
+
+    session.add(Setting(key="marker", value="kept in the backup"))
+    session.commit()
+    folder = get_settings().var_dir / "backups"
+    folder.mkdir(parents=True, exist_ok=True)
+    for i in range(3):  # older backups, oldest first by name
+        (folder / f"encaixe-2020010{i}-000000.db").write_bytes(b"old")
+    result = CliRunner().invoke(app, ["backup", "--keep", "2"])
+    assert result.exit_code == 0, result.output
+    backups = sorted(folder.glob("encaixe-*.db"))
+    assert len(backups) == 2 and backups[0].name == "encaixe-20200102-000000.db"
+    con = sqlite3.connect(backups[-1])
+    try:
+        assert con.execute("select value from setting where key = 'marker'").fetchone()[0] == '"kept in the backup"'
+    finally:
+        con.close()
+
+
 def test_blind_card_text_follows_the_rule() -> None:
     text = texts.PRIVACY_TEXTS["blind_card"]
     hidden_part, shown_part = text.split("Eles veem")

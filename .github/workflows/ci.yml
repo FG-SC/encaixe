@@ -1,0 +1,71 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install (pinned by constraints.txt)
+        run: pip install -c constraints.txt -e ".[dev]"
+      - name: Packages installed on Linux but not pinned (informational)
+        run: |
+          python - <<'EOF'
+          import re, subprocess, sys
+          def key(name): return name.lower().replace("_", "-")
+          pinned = {key(re.split(r"[=;<> ]", l.strip())[0]) for l in open("constraints.txt") if l.strip() and not l.startswith("#")}
+          frozen = subprocess.run([sys.executable, "-m", "pip", "freeze", "--exclude-editable"], capture_output=True, text=True).stdout.split()
+          print("not pinned:", [p for p in frozen if key(p.split("==")[0]) not in pinned] or "none")
+          EOF
+      - name: Lint
+        run: |
+          ruff check app tests tools
+          ruff format --check app tests tools
+      - name: Tests (offline, fake embeddings)
+        run: pytest
+
+  front:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        run: docker build -t encaixe:ci .
+      - name: Start in production mode (downloads the model) and wait for /api/health
+        run: |
+          docker run -d --name encaixe -p 8000:8000 \
+            -e BASE_URL=https://encaixe.example -e SMTP_HOST=smtp.example -e SMTP_FROM=ci@encaixe.example \
+            encaixe:ci
+          for i in $(seq 1 120); do
+            if curl -fsS http://127.0.0.1:8000/api/health; then echo; exit 0; fi
+            sleep 2
+          done
+          docker logs encaixe
+          exit 1
+      - name: Production has no dev routes and requires login
+        run: |
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/api/dev/status)" = 404
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/api/candidates/1/xray)" = 401
+          curl -fsS http://127.0.0.1:8000/ | grep -q "<title>"
+      - name: Container logs
+        if: always()
+        run: docker logs encaixe 2>&1 | tail -n 40

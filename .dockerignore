@@ -1,0 +1,17 @@
+# Local data and secrets never go into the image (the dev database, 250 MB of models, the Groq key).
+var/
+.env
+.env.*
+!deploy/env.prod.example
+.venv/
+.git/
+**/__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+front/node_modules/
+front/dist/
+tests/
+docs/eval/

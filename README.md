@@ -1,8 +1,10 @@
 # Encaixe — job matching with open rules
 
+[![ci](https://github.com/FG-SC/encaixe/actions/workflows/ci.yml/badge.svg)](https://github.com/FG-SC/encaixe/actions/workflows/ci.yml) [![license: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+
 **Encaixe** ("fit", in Portuguese) is a two-sided job-matching MVP for the Brazilian market — candidates and recruiters — built around one promise: **the rules are public**. Anyone can see how the ranking decides, why a job or a candidate showed up, why something did not, and what would change the result. The UI is in Brazilian Portuguese; the code, docs and this README are in English.
 
-> Portfolio project, local-first, free to run (local embeddings, optional free-tier LLM). All people in the demo are synthetic; all seed companies are fictional.
+> An MVP built in the open. It runs on a laptop as a demo (synthetic people, fictional companies) or on one small Linux server with Docker (real accounts, real job postings). Free to run: local embeddings, optional free-tier LLM.
 
 ## Why
 
@@ -46,41 +48,68 @@ From [docs/EVAL.md](docs/EVAL.md): 727 open jobs (659 real postings from Greenho
 
 Python 3.12 · FastAPI · SQLModel/SQLite · Typer · numpy/scikit-learn · local embeddings: `paraphrase-multilingual-MiniLM-L12-v2` on ONNX Runtime with its sentencepiece vocabulary (no PyTorch) · optional Groq LLM (`openai/gpt-oss-20b`, strict structured outputs) · Vite + React + TypeScript · Zustand · Observable Plot · Leaflet + OpenStreetMap. Designed for a machine with ~3 GB of free RAM: one heavy process at a time (`tools/heavy.py`).
 
-## Quickstart
+## Status (v1)
+
+| | |
+|---|---|
+| Ranking, explanations, rules page, evaluation | done |
+| Login by e-mail link (no passwords), access control on every route | done |
+| Production mode (no demo data, no dev tools) and Docker deployment | done |
+| Terms of use and privacy pages, "report this job", account deletion from the UI | **next — required before opening to the public** |
+| Match e-mails, validation events | after that |
+
+## Run it locally (demo)
 
 ```bash
-cd encaixe
+git clone https://github.com/FG-SC/encaixe.git && cd encaixe
 python -m venv .venv
-python tools/heavy.py -- .venv/Scripts/python -m pip install -c constraints.txt -e ".[dev]"   # Linux/macOS: .venv/bin/python
+# Windows: .venv/Scripts/…   Linux/macOS: .venv/bin/…
+python tools/heavy.py -- .venv/Scripts/python -m pip install -c constraints.txt -e ".[dev]"
 python tools/heavy.py -- npm --prefix front ci
 python tools/heavy.py -- npm --prefix front run build      # production build, served by FastAPI
 
-.venv/Scripts/encaixe demo reset     # seed jobs + synthetic B side + 100 synthetic candidates with histories
+.venv/Scripts/encaixe demo reset     # seed jobs + synthetic recruiters + 100 synthetic candidates with histories
 .venv/Scripts/encaixe serve          # http://127.0.0.1:8000
 ```
 
-The first run downloads the embedding model (~250 MB) into `var/models`; without it, Encaixe falls back to TF-IDF and says so in the dev panel. To demo on real postings, after the first `demo reset`: `encaixe ingest --all`, `encaixe snapshot save demo`, then `encaixe demo reset --snapshot demo` (the snapshot keeps the fictional seed jobs the demo story uses). Then follow the demo script in [docs/DEMO.md](docs/DEMO.md): Ana is rejected, learns why, evolves, and it becomes a match.
+Locally there is no e-mail server: log in by picking a persona in the header (demo only), or ask for a link and copy it from the server log. The first run downloads the embedding model (~250 MB) into `var/models`; without it the demo falls back to TF-IDF and says so in the dev panel. To demo on real postings, after the first `demo reset`: `encaixe ingest --all`, `encaixe snapshot save demo`, then `encaixe demo reset --snapshot demo` (the snapshot keeps the fictional seed jobs the demo story uses). Then follow [docs/DEMO.md](docs/DEMO.md): Ana is rejected, learns why, evolves, and it becomes a match.
 
-Useful commands, with the venv activated (`encaixe --help` lists them all; wrap batch commands in `python tools/heavy.py --` on a small machine):
+## Run it in production (Docker)
+
+One Linux VM with 2 GB of RAM plus swap, a domain and an SMTP account:
+
+```bash
+git clone https://github.com/FG-SC/encaixe.git && cd encaixe
+cp deploy/env.prod.example .env.prod      # DOMAIN, BASE_URL, SMTP_*, optional GROQ_API_KEY
+docker compose build
+docker compose run --rm app encaixe embed && docker compose run --rm app encaixe ingest --all
+docker compose up -d                      # the app behind Caddy, with automatic HTTPS
+```
+
+Daily collection and backups by cron, restore and updates: [docs/DEPLOY.md](docs/DEPLOY.md). In production (`ENCAIXE_ENV=prod`, set in the image) there are no fictional jobs, no synthetic people and no dev tools, and the server refuses to start without https, SMTP and the embedding model.
+
+## Commands
+
+`encaixe --help` lists them all (wrap batch commands in `python tools/heavy.py --` on a small machine; in Docker, prefix them with `docker compose exec app`).
 
 | command | what it does |
 |---|---|
-| `encaixe seed` | load the 60 fictional jobs and the synthetic recruiters (offline mode) |
+| `encaixe serve` | the web app (API + front) |
 | `encaixe ingest --all` | fetch real jobs from the enabled sources (cron-friendly; heuristic extraction) |
+| `encaixe status` | counts, embeddings, LLM usage and the last collection runs |
+| `encaixe backup` | consistent copy of the database into `var/backups` (keeps the 7 newest) |
 | `encaixe sources` | which job sources are on, and why |
-| `encaixe snapshot save NAME` / `load NAME` | freeze/restore the jobs so the demo and the replay are reproducible |
-| `encaixe synth candidates --n 100 --seed 42` | synthetic candidates and their simulated histories |
-| `encaixe eval all` | replay, unbiased oracle check, drift, congestion, latency → [docs/EVAL.md](docs/EVAL.md) |
-| `encaixe bench` | peak RSS of five steps against the RAM budget |
-| `encaixe rules export` | regenerate [docs/RULES.md](docs/RULES.md) from the config |
 | `encaixe export --candidate ID` / `purge --candidate ID` | everything stored about a person / delete it (LGPD) |
-| `encaixe clock advance --days N` | the demo's clock |
+| `encaixe rules export` | regenerate [docs/RULES.md](docs/RULES.md) from the config |
+| `encaixe eval all` / `bench` | evaluation → [docs/EVAL.md](docs/EVAL.md) / peak memory of five steps against the RAM budget |
+| `encaixe demo reset`, `seed`, `synth …`, `snapshot load`, `clock …` | demo only: they refuse to run in production |
 
-Tests: `python tools/heavy.py -- .venv/Scripts/python -m pytest` (offline, fake embeddings) and `npm --prefix front test`.
+Tests: `python tools/heavy.py -- .venv/Scripts/python -m pytest` (offline, fake embeddings) and `npm --prefix front test`; CI runs both, plus a production boot of the Docker image, on every push.
 
 ## Data, sources and privacy
 
-- **Everything stays local**, in `var/` (database, model cache, HTTP cache, snapshots), which is never committed. Seed and test data are fictional.
+- **Data stays where Encaixe runs**: `var/` on a laptop, the `/data` volume on a server (database, model cache, HTTP cache, backups). It is never committed; seed and test data are fictional.
+- **Accounts**: login by a one-time e-mail link, no passwords; sessions are HttpOnly cookies. A profile is reachable only by its own account (other ids answer 404), and recruiters see a blind card until the match.
 - **What goes to the LLM**: nothing unless `GROQ_API_KEY` is set. With a key, a CV is sent only when the person ticks "Usar IA para ler meu CV" (off by default), once, at onboarding; recruiter-published jobs and market jobs entering someone's top 20 may be re-read in the background. The LLM never rewrites a saved profile; any failure falls back to the heuristic extractor, visibly.
 - **Scope: a sample.** Ingestion keeps onsite/hybrid jobs in Santa Catarina and remote jobs open to people in Brazil; other postings are not stored, only counted per board, and the rules page states the rule.
 - **Job sources.** Greenhouse and Lever public job-board APIs and GitHub issues of Brazilian job repositories, only through their documented endpoints, serially, at least 1 s apart, once a day per board. A terms check (2026-10-19) found public endpoints and no prohibition, but no explicit permission to aggregate and redisplay third-party postings; they first shipped disabled and were **turned on by the project owner's decision** (2026-10-20), which the rules page states. Every job links back to its source, contacts are stripped, and GitHub issue bodies are never redisplayed. Other boards are listed and off; We Work Remotely's terms forbid this use.
@@ -103,7 +132,7 @@ Matching people and jobs is a *reciprocal* recommendation problem (Pizzato et al
 
 ## Repository map
 
-`app/` backend (config, extraction, taxonomy, geography, embeddings, ranking, events, explore, ingest, llm, synth, eval) · `front/` web app · `tests/` · `docs/` ([ARCHITECTURE](docs/ARCHITECTURE.md), [DECISIONS](docs/DECISIONS.md), [RULES](docs/RULES.md), [EVAL](docs/EVAL.md), [DEMO](docs/DEMO.md)) · [FUTURE.md](FUTURE.md) · [NOTICE](NOTICE) (GeoNames CC BY 4.0, Unicode CLDR, UN M49).
+`app/` backend (config, auth, extraction, taxonomy, geography, embeddings, ranking, events, explore, ingest, llm, synth, eval) · `front/` web app · `tests/` · `deploy/` + `Dockerfile` + `docker-compose.yml` · `docs/` ([ARCHITECTURE](docs/ARCHITECTURE.md), [DECISIONS](docs/DECISIONS.md), [RULES](docs/RULES.md), [EVAL](docs/EVAL.md), [DEMO](docs/DEMO.md), [DEPLOY](docs/DEPLOY.md)) · [FUTURE.md](FUTURE.md) · [NOTICE](NOTICE) (GeoNames CC BY 4.0, Unicode CLDR, UN M49).
 
 ## License and contributing
 

@@ -40,6 +40,31 @@ def _dev_only(command: str) -> None:
 
 
 @app.command()
+def backup(keep: int = typer.Option(7, "--keep", help="How many backups to keep (newest first).")) -> None:
+    """Consistent copy of the SQLite database (VACUUM INTO, safe while the server writes) into var/backups."""
+    import sqlite3
+
+    _setup()
+    from app import clock
+    from app.db import get_engine
+
+    db_path = get_engine().url.database
+    if not db_path:
+        typer.echo("backup only supports the SQLite database file", err=True)
+        raise typer.Exit(code=2)
+    folder = get_settings().var_dir / "backups"
+    folder.mkdir(parents=True, exist_ok=True)
+    target = folder / f"encaixe-{clock.real_now():%Y%m%d-%H%M%S}.db"
+    con = sqlite3.connect(db_path)
+    try:
+        con.execute("VACUUM INTO ?", (str(target),))
+    finally:
+        con.close()
+    removed = [p.unlink() or p.name for p in sorted(folder.glob("encaixe-*.db"))[: -max(keep, 1)]]
+    typer.echo(f"wrote {target} ({target.stat().st_size // 1024} KB); removed {len(removed)} old backup(s)")
+
+
+@app.command()
 def status() -> None:
     """Counts, clock, embeddings, LLM and the last ingest runs (the dev panel's data, for production too)."""
     import json
