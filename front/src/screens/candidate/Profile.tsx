@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api } from "../../api";
+import { api, type Me } from "../../api";
 import { ErrorBox, Loading, useAsync } from "../../components/common";
 import { type Profile as ProfileT, ProfileEditor } from "../../components/ProfileEditor";
 import { useApp } from "../../store";
@@ -15,7 +15,7 @@ interface CandidateOut {
 export function Profile() {
   const rules = useApp((s) => s.rules)!;
   const candidateId = useApp((s) => s.candidateId)!;
-  const setCandidate = useApp((s) => s.setCandidate);
+  const setMe = useApp((s) => s.setMe);
   const cand = useAsync(() => api.get<CandidateOut>(`/api/candidates/${candidateId}`), [candidateId]);
   const [draft, setDraft] = useState<ProfileT | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export function Profile() {
   const purge = async () => {
     if (!window.confirm("Apagar definitivamente seu perfil, histórico e encaixes?")) return;
     await api.del(`/api/candidates/${candidateId}`);
-    setCandidate(null);
+    setMe(await api.get<Me>("/api/me"));
   };
 
   return (

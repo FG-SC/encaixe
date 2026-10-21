@@ -7,8 +7,15 @@ export class ApiError extends Error {
   }
 }
 
+let unauthorizedHandler: (() => void) | null = null;
+
+/** Called on any 401 outside the login routes: the session expired or was closed elsewhere. */
+export function onUnauthorized(handler: (() => void) | null): void {
+  unauthorizedHandler = handler;
+}
+
 async function request<T>(method: string, path: string, body?: unknown, form?: FormData): Promise<T> {
-  const init: RequestInit = { method, headers: {} };
+  const init: RequestInit = { method, headers: {}, credentials: "same-origin" };
   if (form) init.body = form;
   else if (body !== undefined) {
     init.body = JSON.stringify(body);
@@ -16,6 +23,7 @@ async function request<T>(method: string, path: string, body?: unknown, form?: F
   }
   const res = await fetch(path, init);
   if (!res.ok) {
+    if (res.status === 401 && !path.startsWith("/api/auth/")) unauthorizedHandler?.();
     let detail = res.statusText;
     try {
       const j = await res.json();
@@ -39,6 +47,21 @@ export const api = {
 };
 
 // ---------------------------------------------------------------- shared payload types
+
+export interface MeAccount {
+  email: string;
+  candidate_id: number | null;
+  recruiter_id: number | null;
+  terms_version: string | null;
+  recruiter: { id: number; name: string; company: string | null } | null;
+}
+
+/** GET /api/me: who is logged in (account null = logged out); dev = local demo tools available. */
+export interface Me {
+  account: MeAccount | null;
+  dev: boolean;
+  source_url: string;
+}
 
 export interface Option {
   code: string;

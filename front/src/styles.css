@@ -136,3 +136,7 @@ textarea { min-height: 220px; resize: vertical; }
   .card { transition: none; }
   .piece.left, .piece.right { animation: none; }
 }
+
+/* login and footer */
+.login { max-width: 520px; margin: 32px auto; }
+.foot { display: flex; gap: 12px; align-items: center; justify-content: center; margin-top: 32px; }

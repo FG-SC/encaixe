@@ -15,6 +15,7 @@ const fx = (name: string) => JSON.parse(readFileSync(join(__dirname, "fixtures",
 const ids = fx("ids") as { rec: number; job: number };
 
 const ROUTES: [RegExp, string][] = [
+  [/\/api\/me$/, "me"],
   [/\/api\/rules\/public$/, "rules_public"],
   [/\/api\/rules$/, "rules"],
   [/\/api\/candidates\?limit/, "candidates"],
@@ -49,9 +50,34 @@ afterEach(() => cleanup());
 async function show(state: Record<string, unknown>) {
   const { useApp } = await import("../src/store");
   const { App } = await import("../src/App");
-  useApp.setState({ rules: null, overlay: null, match: null, ...state });
+  useApp.setState({ rules: null, overlay: null, match: null, me: fx("me"), ...state });
   render(<App />);
 }
+
+describe("login", () => {
+  it("logged out shows the e-mail login", async () => {
+    await show({ me: { ...fx("me"), account: null } });
+    expect(await screen.findByText("Receber link de acesso", {}, { timeout: 3000 })).toBeTruthy();
+    expect(screen.queryByText("Sair")).toBeNull();
+  });
+
+  it("a login link asks for a click to enter", async () => {
+    window.history.pushState({}, "", "/entrar#t=token-ficticio");
+    try {
+      await show({ me: { ...fx("me"), account: null } });
+      expect(await screen.findByText("Entrar no Encaixe", {}, { timeout: 3000 })).toBeTruthy();
+    } finally {
+      window.history.pushState({}, "", "/");
+    }
+  });
+
+  it("production shows no dev tools, and links the source code", async () => {
+    await show({ me: { ...fx("me"), dev: false }, role: "candidate", candidateId: 5, candidateTab: "xray" });
+    expect(await screen.findByText("Código-fonte (AGPL-3.0)", {}, { timeout: 3000 })).toBeTruthy();
+    expect(screen.queryByText("Painel de dev")).toBeNull();
+    expect(screen.queryByLabelText(/Perfil de candidato/)).toBeNull();
+  });
+});
 
 describe("candidate screens", () => {
   it.each([

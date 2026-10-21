@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../../api";
+import { api, type Me } from "../../api";
 import { ErrorBox } from "../../components/common";
 import { type Profile, ProfileEditor, type Provenance } from "../../components/ProfileEditor";
 import { useApp } from "../../store";
@@ -15,6 +15,7 @@ interface Draft extends Profile {
 export function Onboarding() {
   const rules = useApp((s) => s.rules)!;
   const setCandidate = useApp((s) => s.setCandidate);
+  const setMe = useApp((s) => s.setMe);
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [llm, setLlm] = useState(false); // unchecked by default (spec 6)
@@ -47,6 +48,7 @@ export function Onboarding() {
       const res = await api.post<{ candidate_id: number }>("/api/candidates", {
         profile, visible_to_recruiters: visible, llm_consent: llm, llm_cache_key,
       });
+      setMe(await api.get<Me>("/api/me"));  // the account now has a candidate profile
       setCandidate(res.candidate_id, "xray");
     } catch (e) {
       setError(e);

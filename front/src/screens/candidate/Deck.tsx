@@ -44,6 +44,7 @@ export function Deck() {
   const candidateId = useApp((s) => s.candidateId)!;
   const showMatch = useApp((s) => s.showMatch);
   const setTab = useApp((s) => s.setCandidateTab);
+  const dev = useApp((s) => s.me?.dev ?? false);
   const sessionId = currentSession(rules.events.session_idle_minutes);
   const deck = useAsync(() => api.get<DeckT<JobCardData>>(
     `/api/candidates/${candidateId}/deck?session_id=${sessionId}&limit=20`), [candidateId]);
@@ -122,8 +123,12 @@ export function Deck() {
           <div className="panel">Você viu todas as vagas por agora. Volte depois ou ajuste suas preferências.</div>
         )}
       </div>
-      <p className="small muted">Ranking: {deck.data?.ranker_version} ({deck.data?.aggregator})
-        {deck.data?.history_active ? " · aprendendo com seus swipes" : ""} · regras {deck.data?.rules_hash}</p>
+      {dev ? (
+        <p className="small muted">Ranking: {deck.data?.ranker_version} ({deck.data?.aggregator})
+          {deck.data?.history_active ? " · aprendendo com seus swipes" : ""} · regras {deck.data?.rules_hash}</p>
+      ) : deck.data?.history_active ? (
+        <p className="small muted">A ordem já leva em conta seus swipes.</p>
+      ) : null}
     </section>
   );
 }
