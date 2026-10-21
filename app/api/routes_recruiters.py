@@ -9,12 +9,13 @@ from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
 from app import texts
+from app.auth import current_account, dev_only, owned_job, owned_recruiter, session_recruiter
 from app.companies import get_or_create_company
 from app.db import get_session
 from app.events import applicants
 from app.extraction.job import RawPosting
 from app.jobs import company_name, ensure_job_vectors, upsert_job
-from app.models import Candidate, Company, Job, Match, Recruiter
+from app.models import Account, Candidate, Company, Job, Match, Recruiter
 from app.privacy import candidate_card_profile
 from app.profiles import current_profile
 from app.ranking.deck import candidate_card, displayable_description, job_summary, recruiter_deck
@@ -24,13 +25,6 @@ from app.schemas import JobDraft
 router = APIRouter(prefix="/api", tags=["recruiters"])
 
 
-def _recruiter(session: Session, rid: int) -> Recruiter:
-    rec = session.get(Recruiter, rid)
-    if rec is None:
-        raise HTTPException(404, "recrutador não encontrado")
-    return rec
-
-
 def _owned_job(session: Session, rid: int, jid: int) -> Job:
     job = session.get(Job, jid)
     if job is None or job.owner_recruiter_id != rid:
@@ -38,7 +32,7 @@ def _owned_job(session: Session, rid: int, jid: int) -> Job:
     return job
 
 
-@router.get("/recruiters")
+@router.get("/recruiters", dependencies=[Depends(dev_only)])
 def list_recruiters(session: Session = Depends(get_session)) -> list:
     out = []
     for r in session.exec(select(Recruiter).order_by(col(Recruiter.id))).all():
@@ -61,19 +55,27 @@ class RecruiterIn(BaseModel):
 
 
 @router.post("/recruiters")
-def create_recruiter(body: RecruiterIn, session: Session = Depends(get_session)) -> dict:
+def create_recruiter(
+    body: RecruiterIn, session: Session = Depends(get_session), account: Account = Depends(current_account)
+) -> dict:
+    if account.recruiter_id is not None:
+        raise HTTPException(409, "esta conta já tem um perfil de recrutador")
     company = get_or_create_company(session, body.company)
     if company is None:
         raise HTTPException(422, "informe a empresa")
     rec = Recruiter(name=body.name.strip(), company_id=company.id)  # type: ignore[arg-type]
     session.add(rec)
+    session.flush()
+    account.recruiter_id = rec.id
+    session.add(account)
     session.commit()
     return {"id": rec.id, "name": rec.name, "company": company.name}
 
 
 @router.get("/recruiters/{rid}/jobs")
-def recruiter_jobs(rid: int, session: Session = Depends(get_session)) -> list:
-    _recruiter(session, rid)
+def recruiter_jobs(
+    rid: int, session: Session = Depends(get_session), rec: Recruiter = Depends(owned_recruiter)
+) -> list:
     out = []
     for job in session.exec(select(Job).where(Job.owner_recruiter_id == rid).order_by(col(Job.id))).all():
         n_matches = len(session.exec(select(Match.id).where(Match.job_id == job.id)).all())
@@ -96,7 +98,7 @@ class JobParseIn(BaseModel):
 
 
 @router.post("/jobs/parse")
-def parse_job(body: JobParseIn) -> dict:
+def parse_job(body: JobParseIn, rec: Recruiter = Depends(session_recruiter)) -> dict:
     """Pasted job text → draft for review. Title = first line when not given."""
     text = body.text.strip()
     if not text:
@@ -126,8 +128,9 @@ class PublishIn(BaseModel):
 
 
 @router.post("/recruiters/{rid}/jobs")
-def publish_job(rid: int, body: PublishIn, session: Session = Depends(get_session)) -> dict:
-    rec = _recruiter(session, rid)
+def publish_job(
+    rid: int, body: PublishIn, session: Session = Depends(get_session), rec: Recruiter = Depends(owned_recruiter)
+) -> dict:
     company = session.get(Company, rec.company_id)
     try:
         reviewed = JobDraft.model_validate({k: v for k, v in body.draft.items() if k in JobDraft.model_fields})
@@ -148,13 +151,18 @@ def publish_job(rid: int, body: PublishIn, session: Session = Depends(get_sessio
 
 
 class JobStatusIn(BaseModel):
-    recruiter_id: int
     status: str
+    recruiter_id: int | None = None  # ignored: the recruiter comes from the session
 
 
 @router.patch("/jobs/{jid}")
-def set_job_status(jid: int, body: JobStatusIn, session: Session = Depends(get_session)) -> dict:
-    job = _owned_job(session, body.recruiter_id, jid)
+def set_job_status(
+    jid: int,
+    body: JobStatusIn,
+    session: Session = Depends(get_session),
+    rec: Recruiter = Depends(session_recruiter),
+) -> dict:
+    job = _owned_job(session, rec.id, jid)  # type: ignore[arg-type]
     if body.status not in ("open", "paused", "closed"):
         raise HTTPException(422, "status inválido")
     job.status = body.status
@@ -167,7 +175,7 @@ def set_job_status(jid: int, body: JobStatusIn, session: Session = Depends(get_s
 
 
 @router.get("/jobs/{jid}")
-def get_job(jid: int, session: Session = Depends(get_session)) -> dict:
+def get_job(jid: int, session: Session = Depends(get_session), account: Account = Depends(current_account)) -> dict:
     job = session.get(Job, jid)
     if job is None:
         raise HTTPException(404, "vaga não encontrada")
@@ -190,14 +198,15 @@ def deck(
     ranker: str | None = None,
     aggregator: str | None = None,
     session: Session = Depends(get_session),
+    job: Job = Depends(owned_job),
 ) -> dict:
-    _owned_job(session, rid, jid)
     return recruiter_deck(session, rid, jid, session_id, limit, ranker, aggregator)
 
 
 @router.get("/recruiters/{rid}/jobs/{jid}/candidates/{cid}")
-def candidate_detail(rid: int, jid: int, cid: int, session: Session = Depends(get_session)) -> dict:
-    _owned_job(session, rid, jid)
+def candidate_detail(
+    rid: int, jid: int, cid: int, session: Session = Depends(get_session), job: Job = Depends(owned_job)
+) -> dict:
     result = rank_for_job(session, jid, applicants=applicants(session, jid))
     item = next((it for it in result.items if it.item_id == cid), None)
     if item is None:
@@ -208,8 +217,7 @@ def candidate_detail(rid: int, jid: int, cid: int, session: Session = Depends(ge
 
 
 @router.get("/recruiters/{rid}/matches")
-def matches(rid: int, session: Session = Depends(get_session)) -> list:
-    _recruiter(session, rid)
+def matches(rid: int, session: Session = Depends(get_session), rec: Recruiter = Depends(owned_recruiter)) -> list:
     out = []
     for m in session.exec(select(Match).where(Match.recruiter_id == rid).order_by(col(Match.ts).desc())).all():
         cand = session.get(Candidate, m.candidate_id)
@@ -228,16 +236,14 @@ def matches(rid: int, session: Session = Depends(get_session)) -> list:
 
 
 @router.get("/recruiters/{rid}/jobs/{jid}/funnel")
-def job_funnel(rid: int, jid: int, session: Session = Depends(get_session)) -> dict:
+def job_funnel(rid: int, jid: int, session: Session = Depends(get_session), job: Job = Depends(owned_job)) -> dict:
     from app.explore.recruiter import funnel
 
-    _owned_job(session, rid, jid)
     return funnel(session, jid)
 
 
 @router.get("/recruiters/{rid}/jobs/{jid}/explore")
-def job_explore(rid: int, jid: int, session: Session = Depends(get_session)) -> dict:
+def job_explore(rid: int, jid: int, session: Session = Depends(get_session), job: Job = Depends(owned_job)) -> dict:
     from app.explore.recruiter import explore
 
-    _owned_job(session, rid, jid)
     return explore(session, jid)

@@ -219,3 +219,40 @@ class Setting(SQLModel, table=True):
 
     key: str = Field(primary_key=True)
     value: Any = Field(default=None, sa_column=_json(nullable=True))
+
+
+# --------------------------------------------------------------------------- login (magic link)
+
+
+class Account(SQLModel, table=True):
+    """A login identity: one e-mail, at most one candidate and one recruiter profile.
+
+    The links are plain ints (no foreign keys, like ``current_revision_id``) so purging a profile stays simple.
+    """
+
+    id: int | None = Field(default=None, primary_key=True)
+    email: str = Field(index=True, unique=True)  # lowercased
+    candidate_id: int | None = Field(default=None, index=True, unique=True)
+    recruiter_id: int | None = Field(default=None, index=True, unique=True)
+    terms_version: str | None = None
+    terms_accepted_at: datetime | None = None
+    created_at: datetime = Field(default_factory=_now)
+
+
+class LoginToken(SQLModel, table=True):
+    """A one-time login link. Only the sha256 of the token is stored; times are real (``clock.real_now``)."""
+
+    token_hash: str = Field(primary_key=True)
+    email: str = Field(index=True)
+    created_at: datetime
+    expires_at: datetime
+    used_at: datetime | None = None
+
+
+class AuthSession(SQLModel, table=True):
+    """A logged-in browser (HttpOnly cookie). Named so it does not clash with ``sqlmodel.Session``."""
+
+    token_hash: str = Field(primary_key=True)
+    account_id: int = Field(index=True)
+    created_at: datetime
+    expires_at: datetime

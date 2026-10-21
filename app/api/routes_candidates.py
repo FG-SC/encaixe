@@ -9,12 +9,13 @@ from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
 from app import texts
+from app.auth import current_account, dev_only, owned_candidate
 from app.config import RULES, get_settings
 from app.db import get_session
 from app.events import match_for
 from app.events.feedback import rejection_feedback
 from app.events.status import application_status, candidate_judgments
-from app.models import Candidate, Job
+from app.models import Account, Candidate, Job
 from app.privacy import export_candidate, purge_candidate
 from app.profiles import create_candidate, current_profile, revisions, save_profile
 from app.ranking.deck import candidate_deck, candidate_filtered, displayable_description, job_card, job_summary
@@ -45,6 +46,7 @@ async def parse_cv(
     text: str | None = Form(None),
     file: UploadFile | None = File(None),
     llm_consent: bool = Form(False),
+    account: Account = Depends(current_account),
 ) -> dict:
     """CV text or PDF → draft for review (declared × inferred chips). Nothing is saved yet."""
     limits = RULES.limits
@@ -73,12 +75,18 @@ class CreateCandidateIn(BaseModel):
 
 
 @router.post("")
-def create(body: CreateCandidateIn, session: Session = Depends(get_session)) -> dict:
+def create(
+    body: CreateCandidateIn, session: Session = Depends(get_session), account: Account = Depends(current_account)
+) -> dict:
     from app.models import Setting
 
+    if account.candidate_id is not None:
+        raise HTTPException(409, "esta conta já tem um perfil de candidato")
     res = create_candidate(session, body.profile, visible=body.visible_to_recruiters, llm_consent=body.llm_consent)
     if body.llm_cache_key:
         session.add(Setting(key=f"llm_cv_cache:{res.candidate.id}:{body.llm_cache_key}", value=body.llm_cache_key))
+    account.candidate_id = res.candidate.id
+    session.add(account)
     session.commit()
     return {
         "candidate_id": res.candidate.id,
@@ -87,7 +95,7 @@ def create(body: CreateCandidateIn, session: Session = Depends(get_session)) -> 
     }
 
 
-@router.get("")
+@router.get("", dependencies=[Depends(dev_only)])
 def list_candidates(synthetic: bool | None = None, limit: int = 200, session: Session = Depends(get_session)) -> list:
     q = select(Candidate).order_by(col(Candidate.synthetic), col(Candidate.id).desc())
     if synthetic is not None:
@@ -99,8 +107,7 @@ def list_candidates(synthetic: bool | None = None, limit: int = 200, session: Se
 
 
 @router.get("/{candidate_id}")
-def get_candidate(candidate_id: int, session: Session = Depends(get_session)) -> dict:
-    cand = _candidate(session, candidate_id)
+def get_candidate(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     profile = current_profile(session, cand)
     return {
         "id": cand.id,
@@ -114,8 +121,7 @@ def get_candidate(candidate_id: int, session: Session = Depends(get_session)) ->
 
 
 @router.put("/{candidate_id}/profile")
-def update_profile(candidate_id: int, profile: CandidateProfile, session: Session = Depends(get_session)) -> dict:
-    cand = _candidate(session, candidate_id)
+def update_profile(candidate_id: int, profile: CandidateProfile, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     res = save_profile(session, cand, profile)
     session.commit()
     return {"changed": res.changed, "revision_id": res.revision.id if res.revision else None, "kind": res.kind}
@@ -127,8 +133,7 @@ class SettingsIn(BaseModel):
 
 
 @router.patch("/{candidate_id}/settings")
-def update_settings(candidate_id: int, body: SettingsIn, session: Session = Depends(get_session)) -> dict:
-    cand = _candidate(session, candidate_id)
+def update_settings(candidate_id: int, body: SettingsIn, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     if body.visible_to_recruiters is not None:
         cand.visible_to_recruiters = body.visible_to_recruiters
     if body.llm_consent is not None:
@@ -149,8 +154,8 @@ def deck(
     ranker: str | None = None,
     aggregator: str | None = None,
     session: Session = Depends(get_session),
+    cand: Candidate = Depends(owned_candidate),
 ) -> dict:
-    _candidate(session, candidate_id)
     limit = max(1, min(limit, RULES.limits.deck_max_limit))
     if get_settings().is_prod:  # ranker overrides are a dev-panel tool: production serves the public default
         ranker = aggregator = None
@@ -163,15 +168,13 @@ def deck(
 
 
 @router.get("/{candidate_id}/filtered")
-def filtered(candidate_id: int, session: Session = Depends(get_session)) -> dict:
-    _candidate(session, candidate_id)
+def filtered(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     return candidate_filtered(session, candidate_id)
 
 
 @router.get("/{candidate_id}/jobs/{job_id}")
-def job_detail(candidate_id: int, job_id: int, session: Session = Depends(get_session)) -> dict:
+def job_detail(candidate_id: int, job_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     """A job seen outside the deck (map, saved list): same explanation; actions use slot "direct"."""
-    _candidate(session, candidate_id)
     job = session.get(Job, job_id)
     if job is None:
         raise HTTPException(404, "vaga não encontrada")
@@ -191,8 +194,7 @@ def job_detail(candidate_id: int, job_id: int, session: Session = Depends(get_se
 
 
 @router.get("/{candidate_id}/applications")
-def applications(candidate_id: int, session: Session = Depends(get_session)) -> list:
-    _candidate(session, candidate_id)
+def applications(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> list:
     result = None
     out = []
     job_ids = list(
@@ -225,8 +227,7 @@ def applications(candidate_id: int, session: Session = Depends(get_session)) -> 
 
 
 @router.get("/{candidate_id}/saved")
-def saved(candidate_id: int, session: Session = Depends(get_session)) -> list:
-    _candidate(session, candidate_id)
+def saved(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> list:
     latest: dict[int, str] = {}
     for e in candidate_judgments(session, candidate_id):
         latest[e.item_id] = e.type
@@ -245,15 +246,14 @@ def saved(candidate_id: int, session: Session = Depends(get_session)) -> list:
 
 
 @router.get("/{candidate_id}/xray")
-def xray(candidate_id: int, session: Session = Depends(get_session)) -> dict:
+def xray(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     from app.explore.candidate import xray_data
 
-    _candidate(session, candidate_id)
     return xray_data(session, candidate_id)
 
 
 @router.get("/{candidate_id}/export")
-def export(candidate_id: int, session: Session = Depends(get_session)) -> dict:
+def export(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     data = export_candidate(session, candidate_id)
     if data is None:
         raise HTTPException(404, "candidato não encontrado")
@@ -261,10 +261,17 @@ def export(candidate_id: int, session: Session = Depends(get_session)) -> dict:
 
 
 @router.delete("/{candidate_id}")
-def purge(candidate_id: int, session: Session = Depends(get_session)) -> dict:
+def purge(
+    candidate_id: int,
+    session: Session = Depends(get_session),
+    cand: Candidate = Depends(owned_candidate),
+    account: Account = Depends(current_account),
+) -> dict:
     counts = purge_candidate(session, candidate_id)
     if not counts:
         raise HTTPException(404, "candidato não encontrado")
+    account.candidate_id = None  # the account stays (it may still be a recruiter); DELETE /api/me removes it
+    session.add(account)
     session.commit()
     return {"deleted": counts}
 
@@ -277,8 +284,7 @@ def candidate_profile_or_404(session: Session, candidate_id: int) -> CandidatePr
 
 
 @router.get("/{candidate_id}/explore")
-def explore(candidate_id: int, session: Session = Depends(get_session)) -> dict:
+def explore(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
     from app.explore.candidate import explore_data
 
-    _candidate(session, candidate_id)
     return explore_data(session, candidate_id)

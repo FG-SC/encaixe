@@ -84,6 +84,7 @@ def _optional_routers(include_dev: bool = True) -> list:
 
     modules = []
     names = [
+        "app.api.routes_auth",
         "app.api.routes_rules",
         "app.api.routes_candidates",
         "app.api.routes_recruiters",

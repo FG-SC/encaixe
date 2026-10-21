@@ -532,6 +532,18 @@ class IngestRules:
 
 
 @dataclass(frozen=True)
+class AuthRules:
+    """Magic-link login: no passwords; a one-time link by e-mail, then an HttpOnly session cookie."""
+
+    login_link_minutes: int = 15
+    session_days: int = 30
+    min_seconds_between_links: int = 60  # per e-mail
+    max_links_per_hour: int = 5  # per e-mail
+    max_links_per_day: int = 300  # all e-mails together: protects the sender's daily quota
+    terms_version: str = "2026-10-21"  # accepting a newer version is asked at the next login
+
+
+@dataclass(frozen=True)
 class LimitRules:
     """Input limits of a public service (uploads and page sizes)."""
 
@@ -576,6 +588,7 @@ class Rules:
     ingest: IngestRules = field(default_factory=IngestRules)
     scope: ScopeRules = field(default_factory=ScopeRules)
     limits: LimitRules = field(default_factory=LimitRules)
+    auth: AuthRules = field(default_factory=AuthRules)
 
 
 RULES = Rules()
@@ -668,6 +681,7 @@ class Settings:
     smtp_user: str | None = None
     smtp_password: str | None = field(default=None, repr=False)
     smtp_from: str | None = None
+    allowed_emails: tuple[str, ...] = ()  # ALLOWED_EMAILS: invite-only beta when set; empty = open sign-up
 
     @classmethod
     def from_env(cls, environ: Mapping[str, str] | None = None, env_file: Path | None = DEFAULT_ENV_FILE) -> Settings:
@@ -723,6 +737,7 @@ class Settings:
             smtp_user=opt("SMTP_USER"),
             smtp_password=opt("SMTP_PASSWORD"),
             smtp_from=opt("SMTP_FROM"),
+            allowed_emails=tuple(e.strip().lower() for e in (opt("ALLOWED_EMAILS") or "").split(",") if e.strip()),
         )
 
     @property

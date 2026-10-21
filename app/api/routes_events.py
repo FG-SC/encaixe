@@ -9,8 +9,10 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from app import texts
+from app.auth import current_account
 from app.db import get_session
 from app.events import EventError, record_event
+from app.models import Account
 
 router = APIRouter(prefix="/api", tags=["events"])
 
@@ -52,13 +54,26 @@ def _out(res) -> dict:  # type: ignore[no-untyped-def]
     }
 
 
+def _actor_id(account: Account, actor_type: str) -> int:
+    """The actor is always the logged account's own profile, whatever id the client sent."""
+    actor_id = {"candidate": account.candidate_id, "recruiter": account.recruiter_id}.get(actor_type)
+    if actor_id is None:
+        raise HTTPException(403, "esta conta não tem um perfil para registrar este evento")
+    return actor_id
+
+
 @router.post("/events")
-def post_events(body: EventIn | list[EventIn], session: Session = Depends(get_session)) -> dict:
+def post_events(
+    body: EventIn | list[EventIn],
+    session: Session = Depends(get_session),
+    account: Account = Depends(current_account),
+) -> dict:
     events = body if isinstance(body, list) else [body]
     results = []
     try:
         for e in events:
-            results.append(_out(record_event(session, e.model_dump())))
+            data = e.model_dump() | {"actor_id": _actor_id(account, e.actor_type)}
+            results.append(_out(record_event(session, data)))
         session.commit()
     except EventError as exc:
         session.rollback()
