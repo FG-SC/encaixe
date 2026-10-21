@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
 from app import texts
+from app.config import RULES, get_settings
 from app.db import get_session
 from app.events import match_for
 from app.events.feedback import rejection_feedback
@@ -34,6 +35,8 @@ def pdf_to_text(data: bytes) -> str:
     from pypdf import PdfReader
 
     reader = PdfReader(io.BytesIO(data))
+    if len(reader.pages) > RULES.limits.cv_max_pdf_pages:
+        raise HTTPException(413, f"o PDF tem mais de {RULES.limits.cv_max_pdf_pages} páginas")
     return "\n".join((page.extract_text() or "") for page in reader.pages)
 
 
@@ -44,11 +47,16 @@ async def parse_cv(
     llm_consent: bool = Form(False),
 ) -> dict:
     """CV text or PDF → draft for review (declared × inferred chips). Nothing is saved yet."""
+    limits = RULES.limits
     if file is not None:
-        raw = await file.read()
+        raw = await file.read(limits.cv_max_bytes + 1)
+        if len(raw) > limits.cv_max_bytes:
+            raise HTTPException(413, f"o arquivo passa de {limits.cv_max_bytes // (1024 * 1024)} MB")
         cv_text = pdf_to_text(raw) if (file.filename or "").lower().endswith(".pdf") else raw.decode("utf-8", "ignore")
     else:
         cv_text = text or ""
+    if len(cv_text) > limits.cv_max_chars:
+        raise HTTPException(413, f"o texto do CV passa de {limits.cv_max_chars} caracteres")
     if not cv_text.strip():
         raise HTTPException(422, "cole o texto do CV ou envie um PDF")
     from app.llm.onboarding import extract_cv_for_onboarding
@@ -143,6 +151,9 @@ def deck(
     session: Session = Depends(get_session),
 ) -> dict:
     _candidate(session, candidate_id)
+    limit = max(1, min(limit, RULES.limits.deck_max_limit))
+    if get_settings().is_prod:  # ranker overrides are a dev-panel tool: production serves the public default
+        ranker = aggregator = None
     out = candidate_deck(session, candidate_id, session_id, limit, ranker, aggregator)
     from app.llm.worker import enqueue_top_market_jobs
 

@@ -238,13 +238,34 @@ SALARY_UNKNOWN_FLAG = "salário não informado"
 RECRUITER_TRANSPARENCY_NOTICE = "Quem se candidatou verá o motivo da recusa e o que faltou."
 
 VISIBILITY_TOGGLE_TEXT = "Visível para recrutadores, anônimo até o encaixe"
-LLM_CONSENT_TEXT = "Usar IA para ler meu CV (o texto é enviado ao provedor de LLM)"
+LLM_CONSENT_TEXT = "Usar IA para ler meu CV (o texto do CV é enviado ao Groq, provedor de IA nos EUA)"
+EXPORT_STORED_IN = (
+    "No banco de dados do Encaixe, no servidor da aplicação. O texto do CV só sai dele para o provedor de IA "
+    "(Groq, EUA) se você consentiu na leitura por IA."
+)
+
+
+def _join(items: list[str]) -> str:
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " e " + items[-1]
+
+
+def blind_card_text(hidden: tuple[str, ...] = RULES.privacy.blind_hidden) -> str:
+    """What the blind card hides and shows, generated from the rule so the consent text never drifts from it."""
+    shown = ["cargos", "datas", "skills", "cidade"]
+    if "company_names" not in hidden:
+        shown.append("nomes das empresas")
+    if "institution_names" not in hidden:
+        shown.append("formação (com as instituições de ensino)")
+    return (
+        f"Até o encaixe, recrutadores não veem seu {_join([BLIND_HIDDEN_LABELS[h] for h in hidden])}. "
+        f"Eles veem {_join(shown)}. Recrutadores se cadastram sozinhos e não são verificados pelo Encaixe."
+    )
+
 
 PRIVACY_TEXTS: dict[str, str] = {
     "visibility_toggle": VISIBILITY_TOGGLE_TEXT,
     "llm_consent": LLM_CONSENT_TEXT,
-    "blind_card": "Até o encaixe, recrutadores não veem seu nome, contato, foto, idade, nem os nomes "
-    "das empresas e instituições do seu perfil.",
+    "blind_card": blind_card_text(),
     "contact_released": "Contato liberado: os dois lados deram swipe à direita.",
     "recruiter_transparency": RECRUITER_TRANSPARENCY_NOTICE,
 }

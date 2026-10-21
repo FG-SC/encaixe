@@ -164,8 +164,10 @@ def source_info(job: Job, company: str | None) -> dict:
 
 
 def displayable_description(job: Job) -> str | None:
-    """GitHub issue bodies are used for extraction but not redisplayed (terms + personal data): link instead."""
-    if job.source == "github":
+    """Collected postings (job boards, GitHub issues) are used for extraction but not redisplayed: the card shows
+    what was extracted and links to the original (the sources' terms do not grant redisplay). Seed and platform
+    jobs keep their text."""
+    if job.origin == "market" and job.source != "seed":
         return None
     return job.description_text
 

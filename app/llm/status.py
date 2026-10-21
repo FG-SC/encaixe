@@ -22,7 +22,7 @@ def _load(session: Session) -> dict:
     row = session.get(Setting, STATUS_KEY)
     data = dict(row.value or {}) if row else {}
     if data.get("day") != _today():
-        data.update(day=_today(), requests_today=0, tokens_today=0)
+        data.update(day=_today(), requests_today=0, tokens_today=0, background_today=0)
     return data
 
 

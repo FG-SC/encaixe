@@ -12,9 +12,11 @@ import logging
 
 from sqlmodel import Session
 
+from app.config import RULES
 from app.db import session_scope
 from app.extraction.job import RawPosting
 from app.jobs import company_name, job_draft, reextract_job
+from app.llm.status import _load as _load_status
 from app.llm.status import update_status
 from app.models import Job
 
@@ -26,10 +28,14 @@ _pending: set[int] = set()
 
 
 def enqueue(session: Session, job_ids: list[int]) -> int:
+    """Queue market jobs for a background re-read, at most RULES.llm.background_daily_cap per day."""
     if _loop is None or _queue is None:
         return 0
+    room = RULES.llm.background_daily_cap - int(_load_status(session).get("background_today", 0))
     n = 0
     for jid in job_ids:
+        if n >= room:
+            break
         job = session.get(Job, jid)
         if job is None or job.origin != "market" or job.extraction_method == "llm" or jid in _pending:
             continue
@@ -37,7 +43,7 @@ def enqueue(session: Session, job_ids: list[int]) -> int:
         _loop.call_soon_threadsafe(_queue.put_nowait, jid)
         n += 1
     if n:
-        update_status(queue_size=len(_pending))
+        update_status(queue_size=len(_pending), background_today_inc=n)
     return n
 
 

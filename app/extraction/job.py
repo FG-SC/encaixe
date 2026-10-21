@@ -25,6 +25,10 @@ _NOT_REMOTE = re.compile(
     r"\b(?:not (?:a )?remote|no remote|não (?:é )?remot[oa]|sem home office|não aceitamos remoto)\b", re.IGNORECASE
 )
 _HYBRID = re.compile(r"\b(?:h[ií]brid[oa]|hybrid|flex[ií]vel \(h[ií]brido\))\b", re.IGNORECASE)
+# The posting's own workplace tag (LinkedIn convention on ATS boards) wins over prose such as "home office" listed
+# as a benefit of a field-sales job.
+_LI_TAG = re.compile(r"#LI-(ONSITE|HYBRID|REMOTE)\b", re.IGNORECASE)
+_LI_TAG_ARRANGEMENT = {"ONSITE": "onsite", "HYBRID": "hybrid", "REMOTE": "remote"}
 _ONSITE = re.compile(
     r"\b(?:presencial|on[- ]?site|in[- ]office|no escrit[oó]rio|in person|in-person|100% presencial)\b",
     re.IGNORECASE,
@@ -202,6 +206,8 @@ def extract_job(raw: RawPosting) -> JobDraft:
     # ---- arrangement, location, eligibility, timezone
     location = raw.location_text or ""
     arrangement, where, stated = _arrangement(raw.title, location, clean)
+    if tag := _LI_TAG.search(text):  # the full text: the tag often sits in a section stripped as institutional
+        arrangement, where, stated = _LI_TAG_ARRANGEMENT[tag.group(1).upper()], tag.group(0), True
     if raw.structured.get("arrangement"):
         arrangement, stated, where = raw.structured["arrangement"], True, "source"
     if arrangement:

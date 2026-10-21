@@ -123,8 +123,7 @@ def export_candidate(session: Session, candidate_id: int) -> dict | None:
             m.model_dump(mode="json")
             for m in session.exec(select(Match).where(Match.candidate_id == candidate_id)).all()
         ],
-        "stored_in": "var/ (local SQLite database); nothing is sent anywhere except, with consent, the CV text "
-        "to the LLM provider at onboarding",
+        "stored_in": texts.EXPORT_STORED_IN,
     }
 
 

@@ -9,6 +9,8 @@ name = "encaixe"
 version = "0.1.0"
 description = "Open-rules job matching MVP: every ranking rule is public, every card explains itself."
 readme = "README.md"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.12,<3.13"
 # Pins = newest release uploaded to PyPI on/before 2026-10-05 (14 days before 2026-10-19),
 # lowered only where a dependency's requires_dist forces it (see notes).

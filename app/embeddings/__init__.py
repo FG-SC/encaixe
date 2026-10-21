@@ -213,6 +213,8 @@ def get_embedder() -> Embedder:
                 onnx.load()
                 emb = onnx
             except Exception as exc:  # no model, no network, ONNX error…
+                if settings.is_prod:  # a silent tfidf fallback would re-embed every job in another space
+                    raise RuntimeError(f"embedding model unavailable in production: {exc}") from exc
                 reason = f"{type(exc).__name__}: {exc}"[:300]
                 log.warning("embeddings fallback to tfidf: %s", reason)
                 _status["fallback_reason"] = reason

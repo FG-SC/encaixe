@@ -28,6 +28,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_VAR_DIR = REPO_ROOT / "var"
 DEFAULT_ENV_FILE = REPO_ROOT / ".env"
 
+ENVIRONMENTS = ("dev", "prod")
+DEFAULT_SOURCE_URL = "https://github.com/FG-SC/encaixe"
 EMBEDDING_BACKENDS = ("onnx", "tfidf", "fake")
 EMBEDDING_ALIASES = {"fastembed": "onnx"}  # the first backend; same model and vectors
 LOG_LEVELS = ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
@@ -343,6 +345,8 @@ class LlmRules:
     background_timeout_s: int = 60
     onboarding_timeout_s: int = 20  # one synchronous call at onboarding, then heuristic fallback
     background_top_n: int = 20  # market jobs entering someone's top 20 get a background upgrade
+    # At most this many background re-reads per day: the free tier's ~200k tokens/day go to people's CVs first.
+    background_daily_cap: int = 20
     prompt_versions: FrozenDict = FrozenDict({"cv_extraction": "cv-v1", "job_extraction": "job-v1"})
     # What is sent to the provider, per use (pt-BR descriptions in app/texts.py).
     sends: FrozenDict = FrozenDict({"cv_extraction": ("cv_text",), "job_extraction": ("job_text",)})
@@ -521,10 +525,20 @@ _SOURCES = FrozenDict(
 class IngestRules:
     sources: FrozenDict = _SOURCES
     close_after_missed_runs: int = 2  # a job missing from 2 consecutive runs of its source is closed
-    user_agent: str = f"Encaixe/{__version__} (open-rules job matching; local portfolio demo; non-commercial)"
+    user_agent: str = f"Encaixe/{__version__} (+{DEFAULT_SOURCE_URL}; open-rules job matching; non-commercial)"
     backoff_s: tuple[float, ...] = (2.0, 8.0, 30.0)  # waits after 429/5xx before giving up on a board
     timeout_s: float = 20.0
     dedup_keys: tuple[str, ...] = ("company", "title", "city")  # cross-source dedup (normalized)
+
+
+@dataclass(frozen=True)
+class LimitRules:
+    """Input limits of a public service (uploads and page sizes)."""
+
+    cv_max_bytes: int = 5 * 1024 * 1024
+    cv_max_pdf_pages: int = 10
+    cv_max_chars: int = 30_000
+    deck_max_limit: int = 200
 
 
 @dataclass(frozen=True)
@@ -561,6 +575,7 @@ class Rules:
     llm: LlmRules = field(default_factory=LlmRules)
     ingest: IngestRules = field(default_factory=IngestRules)
     scope: ScopeRules = field(default_factory=ScopeRules)
+    limits: LimitRules = field(default_factory=LimitRules)
 
 
 RULES = Rules()
@@ -645,6 +660,14 @@ class Settings:
     llm_model: str = RULES.llm.model
     embed_threads: int = RULES.embeddings.threads
     log_level: str = "INFO"
+    env: str = "dev"  # dev | prod (prod: no demo data, no dev routes, no clock offset, fail fast)
+    base_url: str = "http://127.0.0.1:8000"  # public address, used in the e-mailed login links
+    source_url: str = DEFAULT_SOURCE_URL  # the AGPL source offered to users (site footer, rules page)
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: str | None = field(default=None, repr=False)
+    smtp_from: str | None = None
 
     @classmethod
     def from_env(cls, environ: Mapping[str, str] | None = None, env_file: Path | None = DEFAULT_ENV_FILE) -> Settings:
@@ -674,15 +697,48 @@ class Settings:
         if log_level not in LOG_LEVELS:
             raise ValueError(f"LOG_LEVEL must be one of {LOG_LEVELS}, got {log_level!r}")
 
+        app_env = (env.get("ENCAIXE_ENV") or "dev").strip().lower()
+        if app_env not in ENVIRONMENTS:
+            raise ValueError(f"ENCAIXE_ENV must be one of {ENVIRONMENTS}, got {app_env!r}")
+        raw_port = (env.get("SMTP_PORT") or "587").strip()
+        if not raw_port.isdigit():
+            raise ValueError(f"SMTP_PORT must be an integer, got {raw_port!r}")
+
+        def opt(key: str) -> str | None:
+            return (env.get(key) or "").strip() or None
+
         return cls(
             var_dir=var_dir,
             db_url=db_url,
             embeddings=embeddings,
-            groq_api_key=(env.get("GROQ_API_KEY") or "").strip() or None,
-            llm_model=(env.get("LLM_MODEL") or "").strip() or RULES.llm.model,
+            groq_api_key=opt("GROQ_API_KEY"),
+            llm_model=opt("LLM_MODEL") or RULES.llm.model,
             embed_threads=embed_threads,
             log_level=log_level,
+            env=app_env,
+            base_url=(opt("BASE_URL") or cls.base_url).rstrip("/"),
+            source_url=opt("ENCAIXE_SOURCE_URL") or DEFAULT_SOURCE_URL,
+            smtp_host=opt("SMTP_HOST"),
+            smtp_port=int(raw_port),
+            smtp_user=opt("SMTP_USER"),
+            smtp_password=opt("SMTP_PASSWORD"),
+            smtp_from=opt("SMTP_FROM"),
         )
+
+    @property
+    def is_prod(self) -> bool:
+        return self.env == "prod"
+
+    def prod_problems(self) -> list[str]:
+        """What keeps this configuration from running in production (empty = fine)."""
+        problems = []
+        if not self.base_url.startswith("https://"):
+            problems.append("BASE_URL must be the public https address")
+        if not (self.smtp_host and self.smtp_from):
+            problems.append("SMTP_HOST and SMTP_FROM are required (login links go by e-mail)")
+        if self.embeddings != "onnx":
+            problems.append("EMBEDDINGS must be onnx in production")
+        return problems
 
     @property
     def llm_enabled(self) -> bool:

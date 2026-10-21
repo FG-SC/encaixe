@@ -32,6 +32,26 @@ def _setup() -> None:
     init_db()
 
 
+def _dev_only(command: str) -> None:
+    """Demo commands never run against a production database (`demo reset` deletes it)."""
+    if get_settings().is_prod:
+        typer.echo(f"'encaixe {command}' só existe fora de produção (ENCAIXE_ENV=prod).", err=True)
+        raise typer.Exit(code=2)
+
+
+@app.command()
+def status() -> None:
+    """Counts, clock, embeddings, LLM and the last ingest runs (the dev panel's data, for production too)."""
+    import json
+
+    _setup()
+    from app.api.routes_dev import status as status_data
+    from app.db import session_scope
+
+    with session_scope() as s:
+        typer.echo(json.dumps(status_data(s), ensure_ascii=False, indent=1, default=str))
+
+
 @app.command()
 def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
     """Start the API and the production front build."""
@@ -56,6 +76,7 @@ def seed(
     vectors: bool = typer.Option(True, help="Compute embeddings and the market-map projection."),
 ) -> None:
     """Load the 60 fictional seed jobs (offline mode) and the synthetic recruiters."""
+    _dev_only("seed")
     _setup()
     from app.db import session_scope
     from app.seed.loader import load_recruiters, load_seed_jobs, open_job_count
@@ -111,6 +132,7 @@ app.add_typer(demo_app, name="demo")
 @synth_app.command("recruiters")
 def synth_recruiters() -> None:
     """The synthetic B side: 5 fictional companies with one recruiter each (Lumen Dados / Carla included)."""
+    _dev_only("synth recruiters")
     _setup()
     from app.db import session_scope
     from app.seed.loader import load_recruiters
@@ -126,6 +148,7 @@ def synth_candidates(
     days: int = typer.Option(56, "--days", help="Simulated history length (days before now)."),
 ) -> None:
     """Generate synthetic candidates and play their histories (swipes, applications, recruiter reviews)."""
+    _dev_only("synth candidates")
     _setup()
     _vectors_and_projection()
     counts = _synth(n, seed, days)
@@ -152,6 +175,7 @@ def demo_reset(
     days: int = typer.Option(56, "--days"),
 ) -> None:
     """Fresh demo world: jobs (seed or snapshot), synthetic B side, 100 synthetic candidates with histories."""
+    _dev_only("demo reset")
     import shutil
 
     settings = get_settings()
@@ -365,6 +389,7 @@ def snapshot_save(name: str) -> None:
 
 @snapshot_app.command("load")
 def snapshot_load(name: str) -> None:
+    _dev_only("snapshot load")
     _setup()
     from app.db import session_scope
     from app.ingest.snapshot import load_snapshot
@@ -429,6 +454,7 @@ def clock_show() -> None:
 
 @clock_app.command("set")
 def clock_set(days: float = typer.Option(..., "--days", help="Days ahead of the real clock.")) -> None:
+    _dev_only("clock set")
     _setup()
     from app import clock
 
@@ -438,6 +464,7 @@ def clock_set(days: float = typer.Option(..., "--days", help="Days ahead of the 
 
 @clock_app.command("advance")
 def clock_advance(days: float = typer.Option(..., "--days")) -> None:
+    _dev_only("clock advance")
     _setup()
     from app import clock
 

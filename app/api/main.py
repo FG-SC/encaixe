@@ -24,6 +24,10 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     settings.ensure_var_dirs()
     init_db()
+    if settings.is_prod:  # load the model now: in production a missing model stops the server at boot
+        from app.embeddings import get_embedder
+
+        get_embedder()
     for hook in app.state.startup_hooks:
         await hook()
     yield
@@ -50,10 +54,14 @@ def _mount_front(app: FastAPI, dist: Path) -> None:
 
 
 def create_app(front_dist: Path | None = FRONT_DIST) -> FastAPI:
-    app = FastAPI(title="Encaixe", version=__version__, lifespan=_lifespan)
+    settings = get_settings()
+    if settings.is_prod and (problems := settings.prod_problems()):
+        raise RuntimeError("ENCAIXE_ENV=prod, but: " + "; ".join(problems))
+    docs = {} if not settings.is_prod else {"docs_url": None, "redoc_url": None, "openapi_url": None}
+    app = FastAPI(title="Encaixe", version=__version__, lifespan=_lifespan, **docs)
     app.state.startup_hooks = []
     app.state.shutdown_hooks = []
-    if get_settings().llm_enabled:  # background LLM upgrades of market jobs (never blocks a request)
+    if settings.llm_enabled:  # background LLM upgrades of market jobs (never blocks a request)
         from app.llm import queue
 
         app.state.startup_hooks.append(queue.start_worker)
@@ -62,7 +70,7 @@ def create_app(front_dist: Path | None = FRONT_DIST) -> FastAPI:
     from app.api import routes_meta
 
     app.include_router(routes_meta.router)
-    for module in _optional_routers():
+    for module in _optional_routers(include_dev=not settings.is_prod):
         app.include_router(module.router)
 
     if front_dist is not None:
@@ -70,19 +78,21 @@ def create_app(front_dist: Path | None = FRONT_DIST) -> FastAPI:
     return app
 
 
-def _optional_routers() -> list:
-    """Routers added by later phases; each module exposes ``router``."""
+def _optional_routers(include_dev: bool = True) -> list:
+    """Routers added by later phases; each module exposes ``router``. The dev panel's routes only outside prod."""
     import importlib
 
     modules = []
-    for name in (
+    names = [
         "app.api.routes_rules",
         "app.api.routes_candidates",
         "app.api.routes_recruiters",
         "app.api.routes_events",
         "app.api.routes_market",
-        "app.api.routes_dev",
-    ):
+    ]
+    if include_dev:
+        names.append("app.api.routes_dev")
+    for name in names:
         try:
             modules.append(importlib.import_module(name))
         except ModuleNotFoundError as exc:

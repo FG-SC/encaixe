@@ -146,7 +146,7 @@ invisíveis; quem fica invisível sai também de todo agregado do lado B. Qualqu
 
 A IA (provedor `{{ r.llm.provider }}`, modelo `{{ r.llm.model }}`) é opcional. Sem chave, tudo funciona com o extrator heurístico.
 - **Seu CV** só é enviado se você marcar "{{ llm_consent_text }}", uma única vez no cadastro. A IA nunca reescreve um perfil já salvo.
-- **Vagas** publicadas na plataforma e vagas de mercado que entram no top {{ r.llm.background_top_n }} de alguém podem ser relidas pela IA em segundo plano.
+- **Vagas** publicadas na plataforma e vagas de mercado que entram no top {{ r.llm.background_top_n }} de alguém podem ser relidas pela IA em segundo plano, no máximo {{ r.llm.background_daily_cap }} por dia (a cota gratuita vai primeiro para os CVs).
 - Limites do plano gratuito configurados: {{ r.llm.rpm }} requisições/min, {{ r.llm.rpd }} por dia, {{ r.llm.tpm }} tokens/min{% if r.llm.tpd %}, {{ r.llm.tpd }} tokens/dia{% endif %} ({{ r.llm.limits_as_of }}). Quando a IA falha ou o limite estoura, o Encaixe usa o extrator heurístico e avisa.
 
 ## 10. Fontes de vagas e câmbio

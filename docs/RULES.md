@@ -1,7 +1,7 @@
 # Como o Encaixe decide
 
 > Esta página é gerada automaticamente a partir de `app/config.py`, a mesma configuração que o ranking usa.
-> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `7270a9f9d4fb`.
+> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `75d6163d3904`.
 
 O Encaixe ordena vagas para candidatos (lado C) e candidatos para vagas (lado B) com o **mesmo procedimento**.
 Ele não usa pesos escolhidos à mão: cada item é ordenado em cada critério, as posições são somadas e a lista sai
@@ -163,8 +163,8 @@ invisíveis; quem fica invisível sai também de todo agregado do lado B. Qualqu
 ## 9. O que vai para a IA
 
 A IA (provedor `groq`, modelo `openai/gpt-oss-20b`) é opcional. Sem chave, tudo funciona com o extrator heurístico.
-- **Seu CV** só é enviado se você marcar "Usar IA para ler meu CV (o texto é enviado ao provedor de LLM)", uma única vez no cadastro. A IA nunca reescreve um perfil já salvo.
-- **Vagas** publicadas na plataforma e vagas de mercado que entram no top 20 de alguém podem ser relidas pela IA em segundo plano.
+- **Seu CV** só é enviado se você marcar "Usar IA para ler meu CV (o texto do CV é enviado ao Groq, provedor de IA nos EUA)", uma única vez no cadastro. A IA nunca reescreve um perfil já salvo.
+- **Vagas** publicadas na plataforma e vagas de mercado que entram no top 20 de alguém podem ser relidas pela IA em segundo plano, no máximo 20 por dia (a cota gratuita vai primeiro para os CVs).
 - Limites do plano gratuito configurados: 30 requisições/min, 1000 por dia, 8000 tokens/min, 200000 tokens/dia (documentação do Groq, plano gratuito, lida em 19/10/2026). Quando a IA falha ou o limite estoura, o Encaixe usa o extrator heurístico e avisa.
 
 ## 10. Fontes de vagas e câmbio

@@ -104,3 +104,9 @@ Matching people and jobs is a *reciprocal* recommendation problem (Pizzato et al
 ## Repository map
 
 `app/` backend (config, extraction, taxonomy, geography, embeddings, ranking, events, explore, ingest, llm, synth, eval) · `front/` web app · `tests/` · `docs/` ([ARCHITECTURE](docs/ARCHITECTURE.md), [DECISIONS](docs/DECISIONS.md), [RULES](docs/RULES.md), [EVAL](docs/EVAL.md), [DEMO](docs/DEMO.md)) · [FUTURE.md](FUTURE.md) · [NOTICE](NOTICE) (GeoNames CC BY 4.0, Unicode CLDR, UN M49).
+
+## License and contributing
+
+Encaixe is free software under the **GNU Affero General Public License v3.0** ([LICENSE](LICENSE)). Open rules deserve open code: the rules page links to the code that applies them, and anyone who runs a modified Encaixe as a public service must offer its source to their users (AGPL §13). Third-party data and model notices are in [NOTICE](NOTICE).
+
+Issues and pull requests are welcome. Run both test suites before opening a PR (`python tools/heavy.py -- .venv/Scripts/python -m pytest` and `npm --prefix front test`), keep rules in `app/config.py` and regenerate the rules page with `encaixe rules export`. Never commit `var/` (local data), `.env` (secrets), real CVs or collected job postings; tests use fictional people and companies. Security issues: see [SECURITY.md](SECURITY.md).

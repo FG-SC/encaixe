@@ -53,11 +53,17 @@ def _read_offset() -> tuple[float, bool]:
 
 
 def get_offset_days() -> float:
+    """The demo offset; always 0 in production (a stray Setting row cannot move real users' time).
+
+    Hot path (called per ranked pair): a cached value, so production is only checked when the cache refreshes.
+    """
     global _cached_offset, _cached_at
     with _lock:
         if _cached_offset is not None and time.monotonic() - _cached_at < CACHE_TTL_SECONDS:
             return _cached_offset
-    offset, cacheable = _read_offset()
+    from app.config import get_settings
+
+    offset, cacheable = (0.0, True) if get_settings().is_prod else _read_offset()
     if cacheable:
         with _lock:
             _cached_offset = offset
@@ -75,6 +81,11 @@ def reset_cache() -> None:
 def now() -> datetime:
     """Timezone-aware UTC: real time plus the configured offset."""
     return _real_utcnow() + timedelta(days=get_offset_days())
+
+
+def real_now() -> datetime:
+    """Real UTC time, never shifted: login tokens and sessions expire in real time even in a demo."""
+    return _real_utcnow()
 
 
 def today() -> date:
