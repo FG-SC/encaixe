@@ -93,7 +93,8 @@ def test_blind_card_text_follows_the_rule() -> None:
     assert "nomes das empresas" in stricter.split("Eles veem")[0]
 
 
-def test_collected_postings_are_not_redisplayed(client, session: Session) -> None:  # type: ignore[no-untyped-def]
+def test_collected_postings_are_not_redisplayed(client, login, session: Session) -> None:  # type: ignore[no-untyped-def]
+    login("leitor@example.com")
     text = "Requisitos\n- SQL\n- Python"
     raw = RawPosting(title="Analista de Dados", description=text, location_text="Joinville, SC")
     market = upsert_job(session, extract_job(raw), source="greenhouse", source_id="tainha:1").job
@@ -133,6 +134,7 @@ def test_the_postings_own_workplace_tag_wins() -> None:
     assert extract_job(raw).offers.arrangement == "onsite"
 
 
-def test_cv_size_is_limited(client) -> None:  # type: ignore[no-untyped-def]
+def test_cv_size_is_limited(client, login) -> None:  # type: ignore[no-untyped-def]
+    login("ana@example.com")
     too_long = "Experiência com Python. " * (RULES.limits.cv_max_chars // 20)
     assert client.post("/api/candidates/parse", data={"text": too_long}).status_code == 413

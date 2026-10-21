@@ -56,9 +56,7 @@ def request_login(session: Session, email: str) -> None:
         raise HTTPException(403, "o Encaixe está em beta fechado: peça um convite")
     rules, now = RULES.auth, clock.real_now()
     recent = session.exec(
-        select(LoginToken.created_at).where(
-            LoginToken.email == email, LoginToken.created_at > now - timedelta(hours=1)
-        )
+        select(LoginToken.created_at).where(LoginToken.email == email, LoginToken.created_at > now - timedelta(hours=1))
     ).all()
     if any(t > now - timedelta(seconds=rules.min_seconds_between_links) for t in recent):
         raise HTTPException(429, "acabamos de enviar um link: confira sua caixa de entrada e o spam")
@@ -193,7 +191,9 @@ def owned_job(jid: int, rec: Recruiter = Depends(owned_recruiter), session: Sess
     return job
 
 
-def session_recruiter(account: Account = Depends(current_account), session: Session = Depends(get_session)) -> Recruiter:
+def session_recruiter(
+    account: Account = Depends(current_account), session: Session = Depends(get_session)
+) -> Recruiter:
     """The logged account's recruiter profile (routes without a recruiter id in the path)."""
     rec = session.get(Recruiter, account.recruiter_id) if account.recruiter_id is not None else None
     if rec is None:

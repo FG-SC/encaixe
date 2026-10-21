@@ -31,6 +31,7 @@ with TestClient(create_app(front_dist=None)) as c:
     with session_scope() as s:
         cand = s.exec(select(Candidate).where(Candidate.current_revision_id.is_not(None))).first()
     if cand is not None:
+        c.post("/api/dev/login", json={"candidate_id": cand.id})  # the bench runs on the local demo (dev)
         r = c.get(f"/api/candidates/{cand.id}/deck", params={"session_id": "bench"})
         assert r.status_code == 200, r.text
     c.get("/api/rules")

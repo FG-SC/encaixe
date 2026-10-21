@@ -194,7 +194,8 @@ def test_background_job_upgrade_keeps_the_version(session: Session, groq) -> Non
         assert len(json.load(fh)["llm_cache"]) == 1
 
 
-def test_purge_removes_the_cv_cache_entry(client, groq) -> None:  # type: ignore[no-untyped-def]
+def test_purge_removes_the_cv_cache_entry(client, groq, login) -> None:  # type: ignore[no-untyped-def]
+    login("ana@example.com")
     draft = client.post("/api/candidates/parse", data={"text": persona_text("ana"), "llm_consent": "true"}).json()
     profile = {
         k: draft[k]

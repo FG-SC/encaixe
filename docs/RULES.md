@@ -1,7 +1,7 @@
 # Como o Encaixe decide
 
 > Esta página é gerada automaticamente a partir de `app/config.py`, a mesma configuração que o ranking usa.
-> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `75d6163d3904`.
+> Não existe regra escondida: se um número muda lá, muda aqui. Versão das regras: `af7be9c1f8a4`.
 
 O Encaixe ordena vagas para candidatos (lado C) e candidatos para vagas (lado B) com o **mesmo procedimento**.
 Ele não usa pesos escolhidos à mão: cada item é ordenado em cada critério, as posições são somadas e a lista sai

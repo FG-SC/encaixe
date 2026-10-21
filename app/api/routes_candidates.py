@@ -107,7 +107,9 @@ def list_candidates(synthetic: bool | None = None, limit: int = 200, session: Se
 
 
 @router.get("/{candidate_id}")
-def get_candidate(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def get_candidate(
+    candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> dict:
     profile = current_profile(session, cand)
     return {
         "id": cand.id,
@@ -121,7 +123,12 @@ def get_candidate(candidate_id: int, session: Session = Depends(get_session), ca
 
 
 @router.put("/{candidate_id}/profile")
-def update_profile(candidate_id: int, profile: CandidateProfile, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def update_profile(
+    candidate_id: int,
+    profile: CandidateProfile,
+    session: Session = Depends(get_session),
+    cand: Candidate = Depends(owned_candidate),
+) -> dict:
     res = save_profile(session, cand, profile)
     session.commit()
     return {"changed": res.changed, "revision_id": res.revision.id if res.revision else None, "kind": res.kind}
@@ -133,7 +140,12 @@ class SettingsIn(BaseModel):
 
 
 @router.patch("/{candidate_id}/settings")
-def update_settings(candidate_id: int, body: SettingsIn, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def update_settings(
+    candidate_id: int,
+    body: SettingsIn,
+    session: Session = Depends(get_session),
+    cand: Candidate = Depends(owned_candidate),
+) -> dict:
     if body.visible_to_recruiters is not None:
         cand.visible_to_recruiters = body.visible_to_recruiters
     if body.llm_consent is not None:
@@ -168,12 +180,16 @@ def deck(
 
 
 @router.get("/{candidate_id}/filtered")
-def filtered(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def filtered(
+    candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> dict:
     return candidate_filtered(session, candidate_id)
 
 
 @router.get("/{candidate_id}/jobs/{job_id}")
-def job_detail(candidate_id: int, job_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def job_detail(
+    candidate_id: int, job_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> dict:
     """A job seen outside the deck (map, saved list): same explanation; actions use slot "direct"."""
     job = session.get(Job, job_id)
     if job is None:
@@ -194,7 +210,9 @@ def job_detail(candidate_id: int, job_id: int, session: Session = Depends(get_se
 
 
 @router.get("/{candidate_id}/applications")
-def applications(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> list:
+def applications(
+    candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> list:
     result = None
     out = []
     job_ids = list(
@@ -227,7 +245,9 @@ def applications(candidate_id: int, session: Session = Depends(get_session), can
 
 
 @router.get("/{candidate_id}/saved")
-def saved(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> list:
+def saved(
+    candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> list:
     latest: dict[int, str] = {}
     for e in candidate_judgments(session, candidate_id):
         latest[e.item_id] = e.type
@@ -246,14 +266,18 @@ def saved(candidate_id: int, session: Session = Depends(get_session), cand: Cand
 
 
 @router.get("/{candidate_id}/xray")
-def xray(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def xray(
+    candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> dict:
     from app.explore.candidate import xray_data
 
     return xray_data(session, candidate_id)
 
 
 @router.get("/{candidate_id}/export")
-def export(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def export(
+    candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> dict:
     data = export_candidate(session, candidate_id)
     if data is None:
         raise HTTPException(404, "candidato não encontrado")
@@ -284,7 +308,9 @@ def candidate_profile_or_404(session: Session, candidate_id: int) -> CandidatePr
 
 
 @router.get("/{candidate_id}/explore")
-def explore(candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)) -> dict:
+def explore(
+    candidate_id: int, session: Session = Depends(get_session), cand: Candidate = Depends(owned_candidate)
+) -> dict:
     from app.explore.candidate import explore_data
 
     return explore_data(session, candidate_id)

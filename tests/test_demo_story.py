@@ -24,12 +24,13 @@ def _find(cards: list[dict], item_id: int) -> dict | None:
     return next((c for c in cards if c["item_id"] == item_id), None)
 
 
-def test_demo_story(client) -> None:  # type: ignore[no-untyped-def]
+def test_demo_story(client, login) -> None:  # type: ignore[no-untyped-def]
     with session_scope() as s:
         load_seed_jobs(s)
         load_recruiters(s)
 
-    # 1. Ana pastes her CV, reviews and saves; preferences come from onboarding.
+    # 1. Ana logs in by e-mail link, pastes her CV, reviews and saves; preferences come from onboarding.
+    login("ana@example.com")
     draft = client.post("/api/candidates/parse", data={"text": persona_text("ana"), "llm_consent": "false"}).json()
     assert draft["city_id"] == "florianopolis-sc-br" and draft["llm_status"].startswith("off")
     profile = {
@@ -57,12 +58,14 @@ def test_demo_story(client) -> None:  # type: ignore[no-untyped-def]
 
     # 3. Carla (Lumen Dados) publishes "ML Engineer Jr" by pasting its text.
     carla = next(r for r in client.get("/api/recruiters").json() if r["name"] == "Carla Menezes")["id"]
+    login(recruiter_id=carla)
     job_draft = client.post("/api/jobs/parse", json={"text": persona_text("lumen_ml_engineer_jr")}).json()
     assert job_draft["requires"]["skills_must"] == ["python", "sql", "statistics", "pytorch", "deep_learning"]
     assert "motivo da recusa" in job_draft["notice"]
     job = client.post(f"/api/recruiters/{carla}/jobs", json={"draft": job_draft}).json()["job_id"]
 
     # 4. Ana finds the job in her deck and applies.
+    login(candidate_id=ana)
     deck = client.get(f"/api/candidates/{ana}/deck", params={"session_id": "s-ana", "limit": 200}).json()
     card = _find(deck["cards"], job)
     assert card is not None and not card["good_fit"]["is_good_fit"]
@@ -80,6 +83,8 @@ def test_demo_story(client) -> None:  # type: ignore[no-untyped-def]
     assert apps[0]["status"] == "sent"
 
     # 5. Carla's deck: Ana's blind card first, as an applicant; she declines with reason "skills".
+    login(recruiter_id=carla)
+    assert client.get(f"/api/candidates/{ana}/applications").status_code == 404  # Carla cannot read Ana's data
     rdeck = client.get(f"/api/recruiters/{carla}/jobs/{job}/deck", params={"session_id": "s-carla"}).json()
     first = rdeck["cards"][0]
     assert first["item_id"] == ana and first["applicant"] and first["candidate"]["name"] is None
@@ -109,6 +114,7 @@ def test_demo_story(client) -> None:  # type: ignore[no-untyped-def]
     assert ok.status_code == 200
 
     # 6. Ana sees that it did not advance, why, and what was missing.
+    login(candidate_id=ana)
     app = client.get(f"/api/candidates/{ana}/applications").json()[0]
     assert app["status"] == "not_advanced" and app["seen_at"] is not None
     fb = app["feedback"]
@@ -154,6 +160,7 @@ def test_demo_story(client) -> None:  # type: ignore[no-untyped-def]
     assert client.get(f"/api/candidates/{ana}/applications").json()[0]["status"] == "sent"
 
     # 9. Ana is back in Carla's deck ("perfil atualizado…"), now 5 of 5; Carla swipes right → É um encaixe!
+    login(recruiter_id=carla)
     rdeck = client.get(f"/api/recruiters/{carla}/jobs/{job}/deck", params={"session_id": "s-carla-2"}).json()
     card = _find(rdeck["cards"], ana)
     assert card is not None and "profile_updated_since_last_review" in [b["code"] for b in card["badges"]]
@@ -171,6 +178,7 @@ def test_demo_story(client) -> None:  # type: ignore[no-untyped-def]
         **_card_meta(card),
     ).json()
     assert res["results"][0]["match"]["title"] == "É um encaixe!"
-    assert client.get(f"/api/candidates/{ana}/applications").json()[0]["status"] == "matched"
     matches = client.get(f"/api/recruiters/{carla}/matches").json()
     assert matches[0]["candidate"]["name"] == "Ana Ribeiro Lima" and matches[0]["candidate"]["contact"]
+    login(candidate_id=ana)
+    assert client.get(f"/api/candidates/{ana}/applications").json()[0]["status"] == "matched"

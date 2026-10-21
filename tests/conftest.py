@@ -90,3 +90,34 @@ def client() -> Iterator[object]:
 @pytest.fixture
 def anyio_backend() -> str:
     return "asyncio"
+
+
+@pytest.fixture(autouse=True)
+def _empty_outbox() -> Iterator[None]:
+    from app import mailer
+
+    mailer.OUTBOX.clear()
+    yield
+    mailer.OUTBOX.clear()
+
+
+@pytest.fixture
+def login(client):  # type: ignore[no-untyped-def]
+    """Log the test client in. By e-mail: the real link flow (request → e-mail in OUTBOX → verify).
+    By candidate_id / recruiter_id: the dev-only persona login. Returns the /api/me payload."""
+    import re
+
+    from app import mailer
+
+    def _login(email: str | None = None, *, candidate_id: int | None = None, recruiter_id: int | None = None) -> dict:
+        if email is not None and candidate_id is None and recruiter_id is None:
+            assert client.post("/api/auth/request", json={"email": email}).status_code == 200
+            token = re.search(r"#t=([\w-]+)", mailer.OUTBOX[-1]["body"]).group(1)  # type: ignore[union-attr]
+            r = client.post("/api/auth/verify", json={"token": token, "accept_terms": True})
+        else:
+            body = {"email": email, "candidate_id": candidate_id, "recruiter_id": recruiter_id}
+            r = client.post("/api/dev/login", json=body)
+        assert r.status_code == 200, r.text
+        return r.json()
+
+    return _login
