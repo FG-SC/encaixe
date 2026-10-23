@@ -56,9 +56,14 @@ async function show(state: Record<string, unknown>) {
 
 describe("login", () => {
   it("logged out shows the e-mail login", async () => {
-    await show({ me: { ...fx("me"), account: null } });
+    await show({ me: { ...fx("me"), account: null, dev: false } });
     expect(await screen.findByText("Receber link de acesso", {}, { timeout: 3000 })).toBeTruthy();
     expect(screen.queryByText("Sair")).toBeNull();
+  });
+
+  it("the local demo enters with any e-mail, without a link", async () => {
+    await show({ me: { ...fx("me"), account: null } });
+    expect(await screen.findByText(/Modo local: entra direto/, {}, { timeout: 3000 })).toBeTruthy();
   });
 
   it("a login link asks for a click to enter", async () => {

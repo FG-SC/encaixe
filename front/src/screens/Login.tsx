@@ -8,7 +8,8 @@ function message(err: unknown): string {
 }
 
 export function Login() {
-  const setOverlay = useApp((s) => s.setOverlay);
+  const { me, setMe, setOverlay } = useApp();
+  const dev = me?.dev ?? false; // local demo: enter straight away, no e-mail (the dev route never exists in production)
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +20,8 @@ export function Login() {
     setBusy(true);
     setError(null);
     try {
-      setSent((await api.post<{ message: string }>("/api/auth/request", { email })).message);
+      if (dev) setMe(await api.post<Me>("/api/dev/login", { email }));
+      else setSent((await api.post<{ message: string }>("/api/auth/request", { email })).message);
     } catch (err) {
       setError(message(err));
     } finally {
@@ -42,8 +44,14 @@ export function Login() {
             Seu e-mail
             <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </label>
-          <button type="submit" className="btn primary" disabled={busy || !email}>Receber link de acesso</button>
-          <p className="small muted">Sem senha: enviamos um link que vale por alguns minutos e só uma vez.</p>
+          <button type="submit" className="btn primary" disabled={busy || !email}>
+            {dev ? "Entrar" : "Receber link de acesso"}
+          </button>
+          <p className="small muted">
+            {dev
+              ? "Modo local: entra direto com qualquer e-mail, sem link (em produção o link vai por e-mail)."
+              : "Sem senha: enviamos um link que vale por alguns minutos e só uma vez."}
+          </p>
         </form>
       )}
       {error && <p role="alert" className="error">{error}</p>}
