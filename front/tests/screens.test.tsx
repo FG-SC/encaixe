@@ -88,7 +88,7 @@ describe("candidate screens", () => {
   it.each([
     ["xray", "Seu Raio-X"],
     ["deck", "Suas vagas"],
-    ["applications", "Vagas salvas"],
+    ["applications", /Vagas salvas/],
     ["explore", "Qual skill destrava mais vagas"],
     ["profile", "Revisões"],
   ])("%s renders", async (tab, text) => {

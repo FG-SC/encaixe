@@ -35,8 +35,9 @@ export function Applications() {
     <section className="stack" aria-labelledby="apps-title">
       <h1 id="apps-title">Candidaturas</h1>
       <ErrorBox error={apps.error} />
-      {(apps.data ?? []).length === 0 && <p className="muted">Nenhuma candidatura ainda: dê swipe à direita numa vaga
-        publicada na plataforma.</p>}
+      {(apps.data ?? []).length === 0 && <p className="muted">Nenhuma candidatura enviada pelo Encaixe ainda: elas
+        nascem do swipe à direita numa vaga publicada aqui na plataforma.{(saved.data ?? []).length > 0 &&
+        " As vagas de outros sites que você curtiu estão em Vagas salvas, logo abaixo: nelas a candidatura é no site da empresa."}</p>}
       {(apps.data ?? []).map((a) => (
         <article key={a.job.id} className="panel stack">
           <h2 style={{ margin: 0 }}>{a.job.title} <span className="small muted">· {a.job.company}</span></h2>
@@ -56,7 +57,7 @@ export function Applications() {
           )}
         </article>
       ))}
-      <h2>Vagas salvas</h2>
+      <h2>Vagas salvas{(saved.data ?? []).length > 0 && ` (${saved.data!.length})`}</h2>
       {(saved.data ?? []).length === 0 && <p className="muted small">Vagas de mercado em que você deu swipe à direita
         aparecem aqui, com o link para se candidatar no site da empresa.</p>}
       <ul>
